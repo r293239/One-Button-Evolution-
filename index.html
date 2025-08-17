@@ -1,1 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One Button Evolution</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(180deg, #87CEEB 0%, #98FB98 100%);
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
 
+        #gameContainer {
+            position: relative;
+            margin-top: 20px;
+        }
+
+        #gameCanvas {
+            border: 3px solid #333;
+            border-radius: 10px;
+            background: linear-gradient(180deg, #87CEEB 0%, #90EE90 70%, #8B4513 100%);
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            cursor: pointer;
+        }
+
+        #ui {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            font-size: 18px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            z-index: 10;
+        }
+
+        #mutationDisplay {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white;
+            font-size: 14px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            z-index: 10;
+            text-align: right;
+            max-width: 200px;
+        }
+
+        #controls {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 16px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            text-align: center;
+        }
+
+        #gameOver {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+            z-index: 20;
+            max-width: 400px;
+        }
+
+        #evolutionHistory {
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            text-align: left;
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .mutation-entry {
+            margin: 5px 0;
+            padding: 5px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        #mutationAlert {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(45deg, #FF6B35, #F7931E);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            display: none;
+            z-index: 15;
+            animation: pulse 0.5s ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        .restart-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background 0.3s;
+        }
+
+        .restart-btn:hover {
+            background: #45a049;
+        }
+
+        #startScreen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            z-index: 10;
+        }
+
+        #startScreen h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #FFD700;
+        }
+
+        #startScreen p {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        
+        <div id="ui">
+            <div>Time: <span id="timeDisplay">0.0</span>s</div>
+            <div>Mutations: <span id="mutationCount">0</span></div>
+        </div>
+
+        <div id="mutationDisplay">
+            <div><strong>Current Traits:</strong></div>
+            <div id="traitsList">Base Blob</div>
+        </div>
+
+        <div id="controls">
+            <div><strong>SPACE or CLICK</strong> to jump/flap</div>
+            <div>Survive as long as possible while your blob evolves!</div>
+        </div>
+
+        <div id="startScreen">
+            <h1>🧬 One Button Evolution</h1>
+            <p>Your blob evolves every 10-20 seconds!</p>
+            <p>Adapt to new traits and survive obstacles</p>
+            <p><strong>Click anywhere or press SPACE to start!</strong></p>
+        </div>
+
+        <div id="mutationAlert"></div>
+
+        <div id="gameOver">
+            <h2>🧬 Evolution Complete!</h2>
+            <p>Survival Time: <span id="finalTime">0</span> seconds</p>
+            <p>Total Mutations: <span id="finalMutations">0</span></p>
+            <div id="evolutionHistory"></div>
+            <button class="restart-btn" onclick="restartGame()">🧬 Evolve Again</button>
+        </div>
+    </div>
+
+    <script>
+        console.log("Game loading...");
+        
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Game state
+        let gameRunning = false;
+        let gameStarted = false;
+        let gameTime = 0;
+        let animationId = null;
+        
+        // Player object
+        let player = {
+            x: 100,
+            y: 300,
+            vx: 0,
+            vy: 0,
+            width: 40,
+            height: 40,
+            color: '#FF69B4',
+            traits: [],
+            jumpPower: -12,
+            gravity: 0.8,
+            speed: 3,
+            onGround: false,
+            // Special abilities
+            bouncy: false,
+            sticky: false,
+            wings: false,
+            jetpack: false,
+            longLegs: false,
+            giantHead: false,
+            tinyBody: false,
+            canMultiJump: false,
+            jumpsLeft: 1
+        };
+        
+        let obstacles = [];
+        let particles = [];
+        let lastMutation = 0;
+        let mutationCount = 0;
+        let evolutionHistory = [];
+        let lastObstacle = 0;
+        
+        const mutations = [
+            { 
+                name: "Wings", 
+                effect: () => { 
+                    player.wings = true; 
+                    player.canMultiJump = true;
+                    player.jumpPower = -10; 
+                    player.color = '#87CEEB';
+                }, 
+                desc: "Can flap in mid-air!" 
+            },
+            { 
+                name: "Jetpack", 
+                effect: () => { 
+                    player.jetpack = true; 
+                    player.jumpPower = -6; 
+                    player.color = '#FF4500';
+                }, 
+                desc: "Continuous thrust power!" 
+            },
+            { 
+                name: "Long Legs", 
+                effect: () => { 
+                    player.longLegs = true; 
+                    player.jumpPower = -16; 
+                    player.height = Math.max(player.height, 60);
+                    player.color = '#90EE90';
+                }, 
+                desc: "Super jump ability!" 
+            },
+            { 
+                name: "Bouncy Blob", 
+                effect: () => { 
+                    player.bouncy = true; 
+                    player.color = '#32CD32';
+                }, 
+                desc: "Bounces off everything!" 
+            },
+            { 
+                name: "Giant Head", 
+                effect: () => { 
+                    player.giantHead = true; 
+                    player.width = Math.max(player.width, 60);
+                    player.gravity += 0.3;
+                    player.color = '#DDA0DD';
+                }, 
+                desc: "Big brain, heavy head!" 
+            },
+            { 
+                name: "Tiny Body", 
+                effect: () => { 
+                    player.tinyBody = true; 
+                    player.width = Math.min(player.width, 25);
+                    player.height = Math.min(player.height, 25);
+                    player.gravity -= 0.3;
+                    player.color = '#FFB6C1';
+                }, 
+                desc: "Small and nimble!" 
+            },
+            { 
+                name: "Speed Boost", 
+                effect: () => { 
+                    player.speed += 2; 
+                    player.color = '#FFD700';
+                }, 
+                desc: "Gotta go fast!" 
+            },
+            { 
+                name: "Sticky Feet", 
+                effect: () => { 
+                    player.sticky = true;
+                    player.color = '#DEB887';
+                }, 
+                desc: "Sticks to surfaces!" 
+            },
+            { 
+                name: "Dense Blob", 
+                effect: () => { 
+                    player.gravity += 0.4; 
+                    player.color = '#8B4513';
+                    player.jumpPower -= 2;
+                }, 
+                desc: "Heavy and dense!" 
+            },
+            { 
+                name: "Floaty", 
+                effect: () => { 
+                    player.gravity = Math.max(0.1, player.gravity - 0.4);
+                    player.color = '#E6E6FA';
+                }, 
+                desc: "Light as a feather!" 
+            }
+        ];
+        
+        function startGame() {
+            console.log("Starting game...");
+            gameRunning = true;
+            gameStarted = true;
+            gameTime = 0;
+            mutationCount = 0;
+            lastMutation = 0;
+            lastObstacle = 0;
+            evolutionHistory = [];
+            
+            // Hide start screen
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('gameOver').style.display = 'none';
+            
+            // Reset player
+            player = {
+                x: 100,
+                y: 300,
+                vx: 0,
+                vy: 0,
+                width: 40,
+                height: 40,
+                color: '#FF69B4',
+                traits: [],
+                jumpPower: -12,
+                gravity: 0.8,
+                speed: 3,
+                onGround: false,
+                bouncy: false,
+                sticky: false,
+                wings: false,
+                jetpack: false,
+                longLegs: false,
+                giantHead: false,
+                tinyBody: false,
+                canMultiJump: false,
+                jumpsLeft: 1
+            };
+            
+            obstacles = [];
+            particles = [];
+            updateUI();
+            
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+            gameLoop();
+        }
+        
+        function jump() {
+            if (!gameRunning) return;
+            
+            if (player.jetpack) {
+                // Jetpack provides continuous thrust
+                player.vy += player.jumpPower * 0.4;
+                // Add jetpack particles
+                for (let i = 0; i < 3; i++) {
+                    particles.push({
+                        x: player.x + player.width/2 + (Math.random() - 0.5) * 10,
+                        y: player.y + player.height,
+                        vx: (Math.random() - 0.5) * 4,
+                        vy: Math.random() * 3 + 2,
+                        life: 20,
+                        color: '#FFD700'
+                    });
+                }
+            } else if (player.wings || player.canMultiJump) {
+                // Wings allow multiple jumps
+                if (player.vy > -3 || player.onGround) {
+                    player.vy = player.jumpPower;
+                    player.onGround = false;
+                }
+            } else if (player.onGround || player.sticky) {
+                // Normal jump (only when on ground or sticky)
+                player.vy = player.jumpPower;
+                player.onGround = false;
+            }
+        }
+        
+        function mutate() {
+            if (mutations.length === 0) return;
+            
+            const mutation = mutations[Math.floor(Math.random() * mutations.length)];
+            player.traits.push(mutation.name);
+            mutation.effect();
+            mutationCount++;
+            
+            evolutionHistory.push({
+                time: gameTime.toFixed(1),
+                mutation: mutation.name,
+                description: mutation.desc
+            });
+            
+            // Show mutation alert
+            const alert = document.getElementById('mutationAlert');
+            alert.textContent = `EVOLVED: ${mutation.name}!`;
+            alert.style.display = 'block';
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 2000);
+            
+            updateUI();
+            console.log(`Mutation: ${mutation.name}`);
+        }
+        
+        function spawnObstacle() {
+            const types = ['pillar', 'gap', 'spike'];
+            const type = types[Math.floor(Math.random() * types.length)];
+            
+            if (type === 'pillar') {
+                const height = 80 + Math.random() * 150;
+                obstacles.push({
+                    x: canvas.width,
+                    y: canvas.height - 50 - height,
+                    width: 40,
+                    height: height,
+                    type: 'pillar'
+                });
+            } else if (type === 'gap') {
+                obstacles.push({
+                    x: canvas.width,
+                    y: canvas.height - 50,
+                    width: 60 + Math.random() * 40,
+                    height: 50,
+                    type: 'gap'
+                });
+            } else if (type === 'spike') {
+                obstacles.push({
+                    x: canvas.width,
+                    y: canvas.height - 50 - 25,
+                    width: 25,
+                    height: 25,
+                    type: 'spike'
+                });
+            }
+        }
+        
+        function updatePhysics() {
+            // Apply gravity
+            player.vy += player.gravity;
+            
+            // Move player
+            player.y += player.vy;
+            
+            // Ground collision
+            const groundY = canvas.height - 50;
+            if (player.y + player.height >= groundY) {
+                player.y = groundY - player.height;
+                player.onGround = true;
+                
+                if (player.bouncy && player.vy > 2) {
+                    player.vy = -player.vy * 0.6;
+                    player.onGround = false;
+                } else if (!player.bouncy) {
+                    player.vy = 0;
+                }
+            } else {
+                player.onGround = false;
+            }
+            
+            // Ceiling collision
+            if (player.y <= 0) {
+                player.y = 0;
+                if (player.bouncy) {
+                    player.vy = -player.vy * 0.6;
+                } else {
+                    player.vy = Math.max(0, player.vy);
+                }
+            }
+            
+            // Keep player on screen
+            if (player.x < 0) player.x = 0;
+            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+            
+            // Move obstacles
+            obstacles.forEach(obstacle => {
+                obstacle.x -= player.speed;
+            });
+            
+            // Remove off-screen obstacles
+            obstacles = obstacles.filter(obstacle => obstacle.x + obstacle.width > 0);
+            
+            // Update particles
+            particles.forEach(particle => {
+                particle.x += particle.vx;
+                particle.y += particle.vy;
+                particle.life--;
+                particle.vy += 0.1; // gravity on particles
+            });
+            particles = particles.filter(particle => particle.life > 0);
+            
+            // Check collisions
+            obstacles.forEach(obstacle => {
+                if (player.x < obstacle.x + obstacle.width &&
+                    player.x + player.width > obstacle.x &&
+                    player.y < obstacle.y + obstacle.height &&
+                    player.y + player.height > obstacle.y) {
+                    gameOver();
+                }
+            });
+        }
+        
+        function draw() {
+            // Clear canvas with gradient background
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#87CEEB');
+            gradient.addColorStop(0.7, '#90EE90');
+            gradient.addColorStop(1, '#8B4513');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw ground
+            ctx.fillStyle = '#654321';
+            ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
+            
+            // Draw ground texture
+            ctx.fillStyle = '#8B4513';
+            for (let i = 0; i < canvas.width; i += 20) {
+                ctx.fillRect(i, canvas.height - 50, 10, 50);
+            }
+            
+            // Draw obstacles
+            obstacles.forEach(obstacle => {
+                if (obstacle.type === 'pillar') {
+                    ctx.fillStyle = '#654321';
+                    ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+                    ctx.strokeStyle = '#8B4513';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+                } else if (obstacle.type === 'gap') {
+                    ctx.fillStyle = '#191970';
+                    ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+                } else if (obstacle.type === 'spike') {
+                    ctx.fillStyle = '#DC143C';
+                    ctx.beginPath();
+                    ctx.moveTo(obstacle.x, obstacle.y + obstacle.height);
+                    ctx.lineTo(obstacle.x + obstacle.width/2, obstacle.y);
+                    ctx.lineTo(obstacle.x + obstacle.width, obstacle.y + obstacle.height);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.strokeStyle = '#8B0000';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+            });
+            
+            // Draw particles
+            particles.forEach(particle => {
+                ctx.fillStyle = particle.color;
+                ctx.globalAlpha = particle.life / 20;
+                ctx.fillRect(particle.x, particle.y, 3, 3);
+                ctx.globalAlpha = 1;
+            });
+            
+            // Draw player
+            ctx.fillStyle = player.color;
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+            
+            // Draw player border
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(player.x, player.y, player.width, player.height);
+            
+            // Draw special features
+            if (player.wings) {
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(player.x - 8, player.y + 10, 12, 20);
+                ctx.fillRect(player.x + player.width - 4, player.y + 10, 12, 20);
+                ctx.strokeStyle = '#000';
+                ctx.strokeRect(player.x - 8, player.y + 10, 12, 20);
+                ctx.strokeRect(player.x + player.width - 4, player.y + 10, 12, 20);
+            }
+            
+            if (player.jetpack) {
+                ctx.fillStyle = '#FF4500';
+                ctx.fillRect(player.x + player.width/2 - 6, player.y + player.height - 8, 12, 15);
+                ctx.strokeStyle = '#000';
+                ctx.strokeRect(player.x + player.width/2 - 6, player.y + player.height - 8, 12, 15);
+            }
+            
+            if (player.longLegs) {
+                ctx.fillStyle = player.color;
+                ctx.fillRect(player.x + 8, player.y + player.height, 8, 15);
+                ctx.fillRect(player.x + player.width - 16, player.y + player.height, 8, 15);
+                ctx.strokeStyle = '#000';
+                ctx.strokeRect(player.x + 8, player.y + player.height, 8, 15);
+                ctx.strokeRect(player.x + player.width - 16, player.y + player.height, 8, 15);
+            }
+            
+            // Draw simple face
+            ctx.fillStyle = '#000';
+            ctx.fillRect(player.x + player.width * 0.25, player.y + player.height * 0.25, 4, 4);
+            ctx.fillRect(player.x + player.width * 0.75 - 4, player.y + player.height * 0.25, 4, 4);
+            ctx.fillRect(player.x + player.width * 0.5 - 6, player.y + player.height * 0.6, 12, 3);
+        }
+        
+        function updateUI() {
+            document.getElementById('timeDisplay').textContent = gameTime.toFixed(1);
+            document.getElementById('mutationCount').textContent = mutationCount;
+            
+            const traitsList = document.getElementById('traitsList');
+            if (player.traits.length === 0) {
+                traitsList.textContent = 'Base Blob';
+            } else {
+                traitsList.textContent = player.traits.join(', ');
+            }
+        }
+        
+        function gameOver() {
+            console.log("Game over!");
+            gameRunning = false;
+            
+            document.getElementById('finalTime').textContent = gameTime.toFixed(1);
+            document.getElementById('finalMutations').textContent = mutationCount;
+            
+            const historyDiv = document.getElementById('evolutionHistory');
+            historyDiv.innerHTML = '<strong>Evolution Timeline:</strong><br>';
+            
+            if (evolutionHistory.length === 0) {
+                historyDiv.innerHTML += '<div class="mutation-entry">No mutations occurred - try to survive longer!</div>';
+            } else {
+                evolutionHistory.forEach(entry => {
+                    historyDiv.innerHTML += `<div class="mutation-entry">${entry.time}s: <strong>${entry.mutation}</strong> - ${entry.description}</div>`;
+                });
+            }
+            
+            document.getElementById('gameOver').style.display = 'block';
+        }
+        
+        function restartGame() {
+            startGame();
+        }
+        
+        function gameLoop() {
+            if (!gameRunning) return;
+            
+            gameTime += 1/60; // 60 FPS
+            
+            // Spawn obstacles
+            if (gameTime - lastObstacle > 2 + Math.random() * 2) {
+                spawnObstacle();
+                lastObstacle = gameTime;
+            }
+            
+            // Check for mutation (every 8-15 seconds)
+            if (gameTime - lastMutation > 8 + Math.random() * 7) {
+                mutate();
+                lastMutation = gameTime;
+            }
+            
+            updatePhysics();
+            draw();
+            updateUI();
+            
+            animationId = requestAnimationFrame(gameLoop);
+        }
+        
+        // Event listeners
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                if (!gameStarted) {
+                    startGame();
+                } else {
+                    jump();
+                }
+            }
+        });
+        
+        canvas.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (!gameStarted) {
+                startGame();
+            } else {
+                jump();
+            }
+        });
+        
+        // Prevent context menu on right click
+        canvas.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        });
+        
+        // Initial setup
+        console.log("Game initialized!");
+        updateUI();
+        
+        // Draw initial screen
+        function drawStartScreen() {
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#87CEEB');
+            gradient.addColorStop(0.7, '#90EE90');
+            gradient.addColorStop(1, '#8B4513');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw ground
+            ctx.fillStyle = '#654321';
+            ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
+            
+            // Draw sample blob
+            ctx.fillStyle = '#FF69B4';
+            ctx.fillRect(350, 250, 40, 40);
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(350, 250, 40, 40);
+            
+            // Draw face
+            ctx.fillStyle = '#000';
+            ctx.fillRect(360, 265, 4, 4);
+            ctx.fillRect(376, 265, 4, 4);
+            ctx.fillRect(364, 275, 12, 3);
+        }
+        
+        drawStartScreen();
+    </script>
+</body>
+</html>
