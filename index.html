@@ -3,752 +3,585 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>One Button Evolution</title>
+    <title>Math Practice Portal</title>
     <style>
-        body {
+        * {
             margin: 0;
             padding: 0;
-            background: linear-gradient(180deg, #87CEEB 0%, #98FB98 100%);
-            font-family: 'Arial', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
             min-height: 100vh;
+            padding: 20px;
             overflow: hidden;
         }
-
-        #gameContainer {
-            position: relative;
-            margin-top: 20px;
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 40px 20px;
         }
-
-        #gameCanvas {
-            border: 3px solid #333;
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .progress-container {
+            background: rgba(255,255,255,0.1);
             border-radius: 10px;
-            background: linear-gradient(180deg, #87CEEB 0%, #90EE90 70%, #8B4513 100%);
-            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            padding: 20px;
+            margin: 30px 0;
+            backdrop-filter: blur(10px);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff00, #00cc00);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .button {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            border-radius: 25px;
             cursor: pointer;
+            margin: 10px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
-
-        #ui {
-            position: absolute;
-            top: 10px;
-            left: 10px;
+        
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        .button.danger {
+            background: #ff4444;
             color: white;
-            font-size: 18px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-            z-index: 10;
         }
-
-        #mutationDisplay {
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+        
+        .stat-box {
+            background: rgba(255,255,255,0.15);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px;
+            min-width: 120px;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .warning {
+            background: rgba(255,0,0,0.2);
+            border: 1px solid rgba(255,0,0,0.5);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 0.9rem;
+        }
+        
+        .hidden-frame {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            color: white;
-            font-size: 14px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-            z-index: 10;
-            text-align: right;
-            max-width: 200px;
+            top: -9999px;
+            left: -9999px;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
         }
-
-        #controls {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: white;
-            font-size: 16px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-            text-align: center;
-        }
-
-        #gameOver {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.9);
-            color: white;
-            padding: 30px;
-            border-radius: 15px;
-            text-align: center;
-            display: none;
-            z-index: 20;
-            max-width: 400px;
-        }
-
-        #evolutionHistory {
-            margin-top: 15px;
+        
+        #overloadStatus {
+            font-family: monospace;
+            background: rgba(0,0,0,0.5);
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            text-align: left;
             max-height: 200px;
             overflow-y: auto;
-            text-align: left;
-            background: rgba(255,255,255,0.1);
-            padding: 10px;
-            border-radius: 5px;
-        }
-
-        .mutation-entry {
-            margin: 5px 0;
-            padding: 5px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 3px;
-            font-size: 12px;
-        }
-
-        #mutationAlert {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: linear-gradient(45deg, #FF6B35, #F7931E);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            font-size: 24px;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-            display: none;
-            z-index: 15;
-            animation: pulse 0.5s ease-in-out;
-        }
-
-        @keyframes pulse {
-            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
-            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
-            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-        }
-
-        .restart-btn {
-            background: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 15px;
-            transition: background 0.3s;
-        }
-
-        .restart-btn:hover {
-            background: #45a049;
-        }
-
-        #startScreen {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-            z-index: 10;
-        }
-
-        #startScreen h1 {
-            font-size: 48px;
-            margin-bottom: 20px;
-            color: #FFD700;
-        }
-
-        #startScreen p {
-            font-size: 18px;
-            margin: 10px 0;
+            font-size: 0.8rem;
         }
     </style>
 </head>
 <body>
-    <div id="gameContainer">
-        <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <div class="container">
+        <h1>📚 Educational Resource Loader</h1>
+        <p>Loading multiple educational resources simultaneously...</p>
         
-        <div id="ui">
-            <div>Time: <span id="timeDisplay">0.0</span>s</div>
-            <div>Mutations: <span id="mutationCount">0</span></div>
+        <div class="progress-container">
+            <h3>Resource Loading Progress</h3>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <p id="progressText">0% - Preparing resources...</p>
         </div>
-
-        <div id="mutationDisplay">
-            <div><strong>Current Traits:</strong></div>
-            <div id="traitsList">Base Blob</div>
+        
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-value" id="windowsOpened">0</div>
+                <div>Windows Opened</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="windowsClosed">0</div>
+                <div>Windows Closed</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="requestsMade">0</div>
+                <div>Requests Made</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="memoryUsage">0MB</div>
+                <div>Memory Usage</div>
+            </div>
         </div>
-
-        <div id="controls">
-            <div><strong>SPACE or CLICK</strong> to jump/flap</div>
-            <div>Survive as long as possible while your blob evolves!</div>
+        
+        <button class="button" id="startBtn">🚀 START OVERLOAD SEQUENCE</button>
+        <button class="button danger" id="stopBtn" disabled>⏹️ STOP ATTACK</button>
+        <button class="button" id="targetBtn" style="background:#00cc00;">🎯 LOAD TARGET SITE</button>
+        
+        <div class="warning">
+            ⚠️ Warning: This may cause browser lag. Educational use only.
         </div>
-
-        <div id="startScreen">
-            <h1>🧬 One Button Evolution</h1>
-            <p>Your blob evolves every 10-20 seconds!</p>
-            <p>Adapt to new traits and survive obstacles</p>
-            <p><strong>Click anywhere or press SPACE to start!</strong></p>
-        </div>
-
-        <div id="mutationAlert"></div>
-
-        <div id="gameOver">
-            <h2>🧬 Evolution Complete!</h2>
-            <p>Survival Time: <span id="finalTime">0</span> seconds</p>
-            <p>Total Mutations: <span id="finalMutations">0</span></p>
-            <div id="evolutionHistory"></div>
-            <button class="restart-btn" onclick="restartGame()">🧬 Evolve Again</button>
+        
+        <div id="overloadStatus">
+            Status: Ready<br>
+            Waiting for activation...
         </div>
     </div>
 
+    <!-- Hidden iframes for requests -->
+    <div id="iframeContainer"></div>
+
     <script>
-        console.log("Game loading...");
-        
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        
-        // Game state
-        let gameRunning = false;
-        let gameStarted = false;
-        let gameTime = 0;
-        let animationId = null;
-        
-        // Player object
-        let player = {
-            x: 100,
-            y: 300,
-            vx: 0,
-            vy: 0,
-            width: 40,
-            height: 40,
-            color: '#FF69B4',
-            traits: [],
-            jumpPower: -12,
-            gravity: 0.8,
-            speed: 3,
-            onGround: false,
-            // Special abilities
-            bouncy: false,
-            sticky: false,
-            wings: false,
-            jetpack: false,
-            longLegs: false,
-            giantHead: false,
-            tinyBody: false,
-            canMultiJump: false,
-            jumpsLeft: 1
+        // ============ CONFIGURATION ============
+        const CONFIG = {
+            // WHITELISTED SITES (allowed - will spam these)
+            allowedSites: [
+                'https://www.wikipedia.org',
+                'https://www.khanacademy.org',
+                'https://www.wikihow.com',
+                'https://www.britannica.com',
+                'https://www.nasa.gov',
+                'https://www.nationalgeographic.com',
+                'https://www.howstuffworks.com',
+                'https://www.smithsonianmag.com',
+                'https://www.history.com',
+                'https://www.sciencemag.org',
+                'https://www.mathsisfun.com',
+                'https://www.ducksters.com',
+                'https://www.factmonster.com',
+                'https://www.enchantedlearning.com',
+                'https://www.education.com',
+                'https://www.pbslearningmedia.org',
+                'https://www.ck12.org',
+                'https://www.openstax.org',
+                'https://www.coursera.org',
+                'https://www.edx.org'
+            ],
+            
+            // RESTRICTED SITES (targets - mixed in)
+            restrictedSites: [
+                'https://www.coolmathgames.com',
+                'https://www.poki.com',
+                'https://www.youtube.com',
+                'https://www.twitch.tv',
+                'https://www.netflix.com',
+                'https://www.hulu.com',
+                'https://www.spotify.com',
+                'https://www.discord.com',
+                'https://www.reddit.com',
+                'https://www.twitter.com',
+                'https://www.instagram.com'
+            ],
+            
+            // PROXY SITES (confusion layers)
+            proxySites: [
+                'https://translate.google.com',
+                'https://docs.google.com',
+                'https://drive.google.com',
+                'https://classroom.google.com',
+                'https://sites.google.com',
+                'https://mail.google.com'
+            ],
+            
+            // ATTACK PARAMETERS
+            attackSpeed: 10,      // Windows per second
+            maxWindows: 1000,     // Maximum windows to open
+            memoryTarget: 2048,   // Target memory usage in MB
+            duration: 30000,      // Attack duration in ms (30 seconds)
+            
+            // TARGET SITE (what we actually want to load)
+            targetSite: 'https://www.coolmathgames.com'
         };
-        
-        let obstacles = [];
-        let particles = [];
-        let lastMutation = 0;
-        let mutationCount = 0;
-        let evolutionHistory = [];
-        let lastObstacle = 0;
-        
-        const mutations = [
-            { 
-                name: "Wings", 
-                effect: () => { 
-                    player.wings = true; 
-                    player.canMultiJump = true;
-                    player.jumpPower = -10; 
-                    player.color = '#87CEEB';
-                }, 
-                desc: "Can flap in mid-air!" 
-            },
-            { 
-                name: "Jetpack", 
-                effect: () => { 
-                    player.jetpack = true; 
-                    player.jumpPower = -6; 
-                    player.color = '#FF4500';
-                }, 
-                desc: "Continuous thrust power!" 
-            },
-            { 
-                name: "Long Legs", 
-                effect: () => { 
-                    player.longLegs = true; 
-                    player.jumpPower = -16; 
-                    player.height = Math.max(player.height, 60);
-                    player.color = '#90EE90';
-                }, 
-                desc: "Super jump ability!" 
-            },
-            { 
-                name: "Bouncy Blob", 
-                effect: () => { 
-                    player.bouncy = true; 
-                    player.color = '#32CD32';
-                }, 
-                desc: "Bounces off everything!" 
-            },
-            { 
-                name: "Giant Head", 
-                effect: () => { 
-                    player.giantHead = true; 
-                    player.width = Math.max(player.width, 60);
-                    player.gravity += 0.3;
-                    player.color = '#DDA0DD';
-                }, 
-                desc: "Big brain, heavy head!" 
-            },
-            { 
-                name: "Tiny Body", 
-                effect: () => { 
-                    player.tinyBody = true; 
-                    player.width = Math.min(player.width, 25);
-                    player.height = Math.min(player.height, 25);
-                    player.gravity -= 0.3;
-                    player.color = '#FFB6C1';
-                }, 
-                desc: "Small and nimble!" 
-            },
-            { 
-                name: "Speed Boost", 
-                effect: () => { 
-                    player.speed += 2; 
-                    player.color = '#FFD700';
-                }, 
-                desc: "Gotta go fast!" 
-            },
-            { 
-                name: "Sticky Feet", 
-                effect: () => { 
-                    player.sticky = true;
-                    player.color = '#DEB887';
-                }, 
-                desc: "Sticks to surfaces!" 
-            },
-            { 
-                name: "Dense Blob", 
-                effect: () => { 
-                    player.gravity += 0.4; 
-                    player.color = '#8B4513';
-                    player.jumpPower -= 2;
-                }, 
-                desc: "Heavy and dense!" 
-            },
-            { 
-                name: "Floaty", 
-                effect: () => { 
-                    player.gravity = Math.max(0.1, player.gravity - 0.4);
-                    player.color = '#E6E6FA';
-                }, 
-                desc: "Light as a feather!" 
-            }
-        ];
-        
-        function startGame() {
-            console.log("Starting game...");
-            gameRunning = true;
-            gameStarted = true;
-            gameTime = 0;
-            mutationCount = 0;
-            lastMutation = 0;
-            lastObstacle = 0;
-            evolutionHistory = [];
+
+        // ============ GLOBAL STATE ============
+        let attackActive = false;
+        let windows = [];
+        let intervalId = null;
+        let startTime = 0;
+        let stats = {
+            windowsOpened: 0,
+            windowsClosed: 0,
+            requestsMade: 0,
+            memoryUsage: 0
+        };
+
+        // ============ DOM ELEMENTS ============
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const targetBtn = document.getElementById('targetBtn');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        const statusDiv = document.getElementById('overloadStatus');
+        const iframeContainer = document.getElementById('iframeContainer');
+
+        // ============ STATS DISPLAY ============
+        function updateStats() {
+            document.getElementById('windowsOpened').textContent = stats.windowsOpened;
+            document.getElementById('windowsClosed').textContent = stats.windowsClosed;
+            document.getElementById('requestsMade').textContent = stats.requestsMade;
+            document.getElementById('memoryUsage').textContent = stats.memoryUsage + 'MB';
             
-            // Hide start screen
-            document.getElementById('startScreen').style.display = 'none';
-            document.getElementById('gameOver').style.display = 'none';
-            
-            // Reset player
-            player = {
-                x: 100,
-                y: 300,
-                vx: 0,
-                vy: 0,
-                width: 40,
-                height: 40,
-                color: '#FF69B4',
-                traits: [],
-                jumpPower: -12,
-                gravity: 0.8,
-                speed: 3,
-                onGround: false,
-                bouncy: false,
-                sticky: false,
-                wings: false,
-                jetpack: false,
-                longLegs: false,
-                giantHead: false,
-                tinyBody: false,
-                canMultiJump: false,
-                jumpsLeft: 1
-            };
-            
-            obstacles = [];
-            particles = [];
-            updateUI();
-            
-            if (animationId) {
-                cancelAnimationFrame(animationId);
-            }
-            gameLoop();
+            const elapsed = attackActive ? Date.now() - startTime : 0;
+            const progress = Math.min((elapsed / CONFIG.duration) * 100, 100);
+            progressFill.style.width = progress + '%';
+            progressText.textContent = Math.round(progress) + '% - Overload in progress...';
         }
-        
-        function jump() {
-            if (!gameRunning) return;
-            
-            if (player.jetpack) {
-                // Jetpack provides continuous thrust
-                player.vy += player.jumpPower * 0.4;
-                // Add jetpack particles
-                for (let i = 0; i < 3; i++) {
-                    particles.push({
-                        x: player.x + player.width/2 + (Math.random() - 0.5) * 10,
-                        y: player.y + player.height,
-                        vx: (Math.random() - 0.5) * 4,
-                        vy: Math.random() * 3 + 2,
-                        life: 20,
-                        color: '#FFD700'
+
+        // ============ LOGGING ============
+        function log(message) {
+            const now = new Date().toLocaleTimeString();
+            statusDiv.innerHTML = `[${now}] ${message}<br>` + statusDiv.innerHTML;
+            if (statusDiv.children.length > 20) {
+                statusDiv.removeChild(statusDiv.lastChild);
+            }
+        }
+
+        // ============ MEMORY OVERLOAD ============
+        function createMemoryLoad() {
+            try {
+                // Create massive arrays to consume memory
+                const bigArray = [];
+                for (let i = 0; i < 1000000; i++) {
+                    bigArray.push({
+                        id: i,
+                        data: 'x'.repeat(100),
+                        timestamp: Date.now()
                     });
                 }
-            } else if (player.wings || player.canMultiJump) {
-                // Wings allow multiple jumps
-                if (player.vy > -3 || player.onGround) {
-                    player.vy = player.jumpPower;
-                    player.onGround = false;
-                }
-            } else if (player.onGround || player.sticky) {
-                // Normal jump (only when on ground or sticky)
-                player.vy = player.jumpPower;
-                player.onGround = false;
-            }
-        }
-        
-        function mutate() {
-            if (mutations.length === 0) return;
-            
-            const mutation = mutations[Math.floor(Math.random() * mutations.length)];
-            player.traits.push(mutation.name);
-            mutation.effect();
-            mutationCount++;
-            
-            evolutionHistory.push({
-                time: gameTime.toFixed(1),
-                mutation: mutation.name,
-                description: mutation.desc
-            });
-            
-            // Show mutation alert
-            const alert = document.getElementById('mutationAlert');
-            alert.textContent = `EVOLVED: ${mutation.name}!`;
-            alert.style.display = 'block';
-            setTimeout(() => {
-                alert.style.display = 'none';
-            }, 2000);
-            
-            updateUI();
-            console.log(`Mutation: ${mutation.name}`);
-        }
-        
-        function spawnObstacle() {
-            const types = ['pillar', 'gap', 'spike'];
-            const type = types[Math.floor(Math.random() * types.length)];
-            
-            if (type === 'pillar') {
-                const height = 80 + Math.random() * 150;
-                obstacles.push({
-                    x: canvas.width,
-                    y: canvas.height - 50 - height,
-                    width: 40,
-                    height: height,
-                    type: 'pillar'
-                });
-            } else if (type === 'gap') {
-                obstacles.push({
-                    x: canvas.width,
-                    y: canvas.height - 50,
-                    width: 60 + Math.random() * 40,
-                    height: 50,
-                    type: 'gap'
-                });
-            } else if (type === 'spike') {
-                obstacles.push({
-                    x: canvas.width,
-                    y: canvas.height - 50 - 25,
-                    width: 25,
-                    height: 25,
-                    type: 'spike'
-                });
-            }
-        }
-        
-        function updatePhysics() {
-            // Apply gravity
-            player.vy += player.gravity;
-            
-            // Move player
-            player.y += player.vy;
-            
-            // Ground collision
-            const groundY = canvas.height - 50;
-            if (player.y + player.height >= groundY) {
-                player.y = groundY - player.height;
-                player.onGround = true;
+                stats.memoryUsage = Math.round((bigArray.length * 100) / 1000000);
                 
-                if (player.bouncy && player.vy > 2) {
-                    player.vy = -player.vy * 0.6;
-                    player.onGround = false;
-                } else if (!player.bouncy) {
-                    player.vy = 0;
+                // Create canvas elements for GPU load
+                for (let i = 0; i < 10; i++) {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 2000;
+                    canvas.height = 2000;
+                    const ctx = canvas.getContext('2d');
+                    // Draw complex patterns
+                    for (let j = 0; j < 1000; j++) {
+                        ctx.fillStyle = `rgb(${Math.random()*255},${Math.random()*255},${Math.random()*255})`;
+                        ctx.fillRect(Math.random()*2000, Math.random()*2000, 50, 50);
+                    }
+                    document.body.appendChild(canvas);
+                    setTimeout(() => canvas.remove(), 1000);
                 }
-            } else {
-                player.onGround = false;
+                
+                log(`Memory load created: ${stats.memoryUsage}MB`);
+            } catch (e) {
+                log(`Memory error: ${e.message}`);
             }
+        }
+
+        // ============ WINDOW SPAMMING ============
+        function spamWindows() {
+            if (!attackActive) return;
             
-            // Ceiling collision
-            if (player.y <= 0) {
-                player.y = 0;
-                if (player.bouncy) {
-                    player.vy = -player.vy * 0.6;
-                } else {
-                    player.vy = Math.max(0, player.vy);
+            // Open multiple windows at once
+            for (let i = 0; i < CONFIG.attackSpeed; i++) {
+                if (stats.windowsOpened >= CONFIG.maxWindows) {
+                    stopAttack();
+                    return;
+                }
+                
+                try {
+                    // Mix allowed and restricted sites
+                    let url;
+                    const rand = Math.random();
+                    
+                    if (rand < 0.6) {
+                        // 60% allowed sites
+                        url = CONFIG.allowedSites[Math.floor(Math.random() * CONFIG.allowedSites.length)];
+                    } else if (rand < 0.9) {
+                        // 30% proxy sites
+                        url = CONFIG.proxySites[Math.floor(Math.random() * CONFIG.proxySites.length)];
+                    } else {
+                        // 10% restricted sites
+                        url = CONFIG.restrictedSites[Math.floor(Math.random() * CONFIG.restrictedSites.length)];
+                    }
+                    
+                    // Open window with random features
+                    const features = [
+                        'width=' + (100 + Math.random() * 900),
+                        'height=' + (100 + Math.random() * 700),
+                        'left=' + Math.random() * screen.width,
+                        'top=' + Math.random() * screen.height,
+                        'resizable=yes',
+                        'scrollbars=yes',
+                        'toolbar=yes'
+                    ].join(',');
+                    
+                    const win = window.open(url, '_blank' + stats.windowsOpened, features);
+                    
+                    if (win) {
+                        windows.push({
+                            window: win,
+                            openedAt: Date.now(),
+                            url: url
+                        });
+                        stats.windowsOpened++;
+                        stats.requestsMade++;
+                        
+                        // Schedule closing
+                        setTimeout(() => {
+                            try {
+                                if (win && !win.closed) {
+                                    win.close();
+                                    stats.windowsClosed++;
+                                }
+                            } catch (e) {}
+                        }, 100 + Math.random() * 400);
+                        
+                        log(`Opened: ${new URL(url).hostname}`);
+                    }
+                } catch (e) {
+                    log(`Failed to open window: ${e.message}`);
                 }
             }
             
-            // Keep player on screen
-            if (player.x < 0) player.x = 0;
-            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+            updateStats();
+        }
+
+        // ============ IFRAME SPAMMING ============
+        function spamIframes() {
+            if (!attackActive) return;
             
-            // Move obstacles
-            obstacles.forEach(obstacle => {
-                obstacle.x -= player.speed;
+            // Create hidden iframes
+            for (let i = 0; i < 5; i++) {
+                const iframe = document.createElement('iframe');
+                iframe.className = 'hidden-frame';
+                
+                const siteList = [...CONFIG.allowedSites, ...CONFIG.restrictedSites, ...CONFIG.proxySites];
+                const url = siteList[Math.floor(Math.random() * siteList.length)];
+                
+                iframe.src = url;
+                iframe.onload = () => {
+                    stats.requestsMade++;
+                    setTimeout(() => iframe.remove(), 500);
+                };
+                
+                iframeContainer.appendChild(iframe);
+                stats.requestsMade++;
+            }
+        }
+
+        // ============ NETWORK REQUESTS SPAM ============
+        function spamRequests() {
+            if (!attackActive) return;
+            
+            // Make AJAX requests to random URLs
+            for (let i = 0; i < 3; i++) {
+                const siteList = [...CONFIG.allowedSites, ...CONFIG.restrictedSites];
+                const url = siteList[Math.floor(Math.random() * siteList.length)];
+                
+                fetch(url, {
+                    mode: 'no-cors',
+                    cache: 'no-cache'
+                }).catch(() => {}); // Ignore errors
+                
+                stats.requestsMade++;
+            }
+        }
+
+        // ============ CPU OVERLOAD ============
+        function cpuLoad() {
+            if (!attackActive) return;
+            
+            // Create computational load
+            let result = 0;
+            for (let i = 0; i < 1000000; i++) {
+                result += Math.sqrt(Math.random()) * Math.tan(Math.random());
+            }
+            
+            // Recursive timeout to keep CPU busy
+            setTimeout(cpuLoad, 10);
+        }
+
+        // ============ ATTACK CONTROL ============
+        function startAttack() {
+            if (attackActive) return;
+            
+            log("🚀 STARTING OVERLOAD ATTACK");
+            attackActive = true;
+            startTime = Date.now();
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            
+            // Clear existing windows
+            windows.forEach(w => {
+                try { w.window.close(); } catch(e) {}
             });
+            windows = [];
             
-            // Remove off-screen obstacles
-            obstacles = obstacles.filter(obstacle => obstacle.x + obstacle.width > 0);
+            // Start all attack methods
+            intervalId = setInterval(() => {
+                spamWindows();
+                spamIframes();
+                spamRequests();
+                createMemoryLoad();
+            }, 100);
             
-            // Update particles
-            particles.forEach(particle => {
-                particle.x += particle.vx;
-                particle.y += particle.vy;
-                particle.life--;
-                particle.vy += 0.1; // gravity on particles
-            });
-            particles = particles.filter(particle => particle.life > 0);
+            // Start CPU load
+            cpuLoad();
             
-            // Check collisions
-            obstacles.forEach(obstacle => {
-                if (player.x < obstacle.x + obstacle.width &&
-                    player.x + player.width > obstacle.x &&
-                    player.y < obstacle.y + obstacle.height &&
-                    player.y + player.height > obstacle.y) {
-                    gameOver();
+            // Auto-stop after duration
+            setTimeout(() => {
+                if (attackActive) {
+                    log("⏰ Time limit reached - stopping attack");
+                    stopAttack();
+                    loadTargetSite();
                 }
+            }, CONFIG.duration);
+        }
+
+        function stopAttack() {
+            log("⏹️ STOPPING ATTACK");
+            attackActive = false;
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            
+            if (intervalId) {
+                clearInterval(intervalId);
+                intervalId = null;
+            }
+            
+            // Close all windows
+            windows.forEach(w => {
+                try { w.window.close(); } catch(e) {}
             });
+            windows = [];
+            
+            // Clear iframes
+            iframeContainer.innerHTML = '';
+            
+            log("Attack stopped. System may still be lagging.");
         }
-        
-        function draw() {
-            // Clear canvas with gradient background
-            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            gradient.addColorStop(0, '#87CEEB');
-            gradient.addColorStop(0.7, '#90EE90');
-            gradient.addColorStop(1, '#8B4513');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        function loadTargetSite() {
+            log("🎯 LOADING TARGET SITE: " + CONFIG.targetSite);
             
-            // Draw ground
-            ctx.fillStyle = '#654321';
-            ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
+            // Try multiple methods
+            setTimeout(() => {
+                // Method 1: Direct open
+                window.open(CONFIG.targetSite, '_target');
+            }, 100);
             
-            // Draw ground texture
-            ctx.fillStyle = '#8B4513';
-            for (let i = 0; i < canvas.width; i += 20) {
-                ctx.fillRect(i, canvas.height - 50, 10, 50);
-            }
+            setTimeout(() => {
+                // Method 2: Iframe
+                const iframe = document.createElement('iframe');
+                iframe.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999;border:none;background:white;';
+                iframe.src = CONFIG.targetSite;
+                document.body.appendChild(iframe);
+            }, 200);
             
-            // Draw obstacles
-            obstacles.forEach(obstacle => {
-                if (obstacle.type === 'pillar') {
-                    ctx.fillStyle = '#654321';
-                    ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-                    ctx.strokeStyle = '#8B4513';
-                    ctx.lineWidth = 2;
-                    ctx.strokeRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-                } else if (obstacle.type === 'gap') {
-                    ctx.fillStyle = '#191970';
-                    ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-                } else if (obstacle.type === 'spike') {
-                    ctx.fillStyle = '#DC143C';
-                    ctx.beginPath();
-                    ctx.moveTo(obstacle.x, obstacle.y + obstacle.height);
-                    ctx.lineTo(obstacle.x + obstacle.width/2, obstacle.y);
-                    ctx.lineTo(obstacle.x + obstacle.width, obstacle.y + obstacle.height);
-                    ctx.closePath();
-                    ctx.fill();
-                    ctx.strokeStyle = '#8B0000';
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-                }
-            });
+            setTimeout(() => {
+                // Method 3: Location change
+                window.location.href = CONFIG.targetSite;
+            }, 300);
             
-            // Draw particles
-            particles.forEach(particle => {
-                ctx.fillStyle = particle.color;
-                ctx.globalAlpha = particle.life / 20;
-                ctx.fillRect(particle.x, particle.y, 3, 3);
-                ctx.globalAlpha = 1;
-            });
-            
-            // Draw player
-            ctx.fillStyle = player.color;
-            ctx.fillRect(player.x, player.y, player.width, player.height);
-            
-            // Draw player border
-            ctx.strokeStyle = '#000';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(player.x, player.y, player.width, player.height);
-            
-            // Draw special features
-            if (player.wings) {
-                ctx.fillStyle = '#FFFFFF';
-                ctx.fillRect(player.x - 8, player.y + 10, 12, 20);
-                ctx.fillRect(player.x + player.width - 4, player.y + 10, 12, 20);
-                ctx.strokeStyle = '#000';
-                ctx.strokeRect(player.x - 8, player.y + 10, 12, 20);
-                ctx.strokeRect(player.x + player.width - 4, player.y + 10, 12, 20);
-            }
-            
-            if (player.jetpack) {
-                ctx.fillStyle = '#FF4500';
-                ctx.fillRect(player.x + player.width/2 - 6, player.y + player.height - 8, 12, 15);
-                ctx.strokeStyle = '#000';
-                ctx.strokeRect(player.x + player.width/2 - 6, player.y + player.height - 8, 12, 15);
-            }
-            
-            if (player.longLegs) {
-                ctx.fillStyle = player.color;
-                ctx.fillRect(player.x + 8, player.y + player.height, 8, 15);
-                ctx.fillRect(player.x + player.width - 16, player.y + player.height, 8, 15);
-                ctx.strokeStyle = '#000';
-                ctx.strokeRect(player.x + 8, player.y + player.height, 8, 15);
-                ctx.strokeRect(player.x + player.width - 16, player.y + player.height, 8, 15);
-            }
-            
-            // Draw simple face
-            ctx.fillStyle = '#000';
-            ctx.fillRect(player.x + player.width * 0.25, player.y + player.height * 0.25, 4, 4);
-            ctx.fillRect(player.x + player.width * 0.75 - 4, player.y + player.height * 0.25, 4, 4);
-            ctx.fillRect(player.x + player.width * 0.5 - 6, player.y + player.height * 0.6, 12, 3);
+            setTimeout(() => {
+                // Method 4: Form submit
+                const form = document.createElement('form');
+                form.method = 'GET';
+                form.action = CONFIG.targetSite;
+                form.target = '_blank';
+                document.body.appendChild(form);
+                form.submit();
+            }, 400);
         }
+
+        // ============ EVENT LISTENERS ============
+        startBtn.addEventListener('click', startAttack);
+        stopBtn.addEventListener('click', stopAttack);
+        targetBtn.addEventListener('click', loadTargetSite);
+
+        // ============ INITIALIZATION ============
+        log("System ready. Click START to begin overload sequence.");
+        log("This will create extreme browser lag to confuse filters.");
         
-        function updateUI() {
-            document.getElementById('timeDisplay').textContent = gameTime.toFixed(1);
-            document.getElementById('mutationCount').textContent = mutationCount;
-            
-            const traitsList = document.getElementById('traitsList');
-            if (player.traits.length === 0) {
-                traitsList.textContent = 'Base Blob';
-            } else {
-                traitsList.textContent = player.traits.join(', ');
+        // Start with minimal load to look legit
+        setTimeout(() => {
+            // Open a few legit windows
+            for (let i = 0; i < 3; i++) {
+                setTimeout(() => {
+                    window.open(CONFIG.allowedSites[i], '_edu' + i, 'width=400,height=300');
+                }, i * 1000);
             }
-        }
-        
-        function gameOver() {
-            console.log("Game over!");
-            gameRunning = false;
-            
-            document.getElementById('finalTime').textContent = gameTime.toFixed(1);
-            document.getElementById('finalMutations').textContent = mutationCount;
-            
-            const historyDiv = document.getElementById('evolutionHistory');
-            historyDiv.innerHTML = '<strong>Evolution Timeline:</strong><br>';
-            
-            if (evolutionHistory.length === 0) {
-                historyDiv.innerHTML += '<div class="mutation-entry">No mutations occurred - try to survive longer!</div>';
-            } else {
-                evolutionHistory.forEach(entry => {
-                    historyDiv.innerHTML += `<div class="mutation-entry">${entry.time}s: <strong>${entry.mutation}</strong> - ${entry.description}</div>`;
-                });
-            }
-            
-            document.getElementById('gameOver').style.display = 'block';
-        }
-        
-        function restartGame() {
-            startGame();
-        }
-        
-        function gameLoop() {
-            if (!gameRunning) return;
-            
-            gameTime += 1/60; // 60 FPS
-            
-            // Spawn obstacles
-            if (gameTime - lastObstacle > 2 + Math.random() * 2) {
-                spawnObstacle();
-                lastObstacle = gameTime;
-            }
-            
-            // Check for mutation (every 8-15 seconds)
-            if (gameTime - lastMutation > 8 + Math.random() * 7) {
-                mutate();
-                lastMutation = gameTime;
-            }
-            
-            updatePhysics();
-            draw();
-            updateUI();
-            
-            animationId = requestAnimationFrame(gameLoop);
-        }
-        
-        // Event listeners
+        }, 2000);
+
+        // Update stats periodically
+        setInterval(updateStats, 500);
+
+        // ============ KEYBOARD SHORTCUTS ============
         document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') {
+            if (e.ctrlKey && e.key === ' ') {
                 e.preventDefault();
-                if (!gameStarted) {
-                    startGame();
+                if (attackActive) {
+                    stopAttack();
                 } else {
-                    jump();
+                    startAttack();
                 }
             }
-        });
-        
-        canvas.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (!gameStarted) {
-                startGame();
-            } else {
-                jump();
+            
+            if (e.ctrlKey && e.key === 't') {
+                e.preventDefault();
+                loadTargetSite();
+            }
+            
+            // Emergency stop
+            if (e.key === 'Escape') {
+                stopAttack();
             }
         });
-        
-        // Prevent context menu on right click
-        canvas.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-        });
-        
-        // Initial setup
-        console.log("Game initialized!");
-        updateUI();
-        
-        // Draw initial screen
-        function drawStartScreen() {
-            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            gradient.addColorStop(0, '#87CEEB');
-            gradient.addColorStop(0.7, '#90EE90');
-            gradient.addColorStop(1, '#8B4513');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // Draw ground
-            ctx.fillStyle = '#654321';
-            ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
-            
-            // Draw sample blob
-            ctx.fillStyle = '#FF69B4';
-            ctx.fillRect(350, 250, 40, 40);
-            ctx.strokeStyle = '#000';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(350, 250, 40, 40);
-            
-            // Draw face
-            ctx.fillStyle = '#000';
-            ctx.fillRect(360, 265, 4, 4);
-            ctx.fillRect(376, 265, 4, 4);
-            ctx.fillRect(364, 275, 12, 3);
-        }
-        
-        drawStartScreen();
     </script>
 </body>
 </html>
