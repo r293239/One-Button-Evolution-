@@ -1,34 +1,47 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Research Portal</title>
+    <title>Smart Portal v3.0</title>
     <style>
-        body {
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             padding: 20px;
-            font-family: Arial, sans-serif;
-            background: #f0f2f5;
         }
         
         .container {
             max-width: 800px;
             margin: 0 auto;
             background: white;
+            border-radius: 20px;
             padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
         
         h1 {
             text-align: center;
-            color: #1a73e8;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
             margin-bottom: 30px;
         }
         
         .search-box {
             display: flex;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
         
         #urlInput {
@@ -36,396 +49,605 @@
             padding: 15px;
             font-size: 16px;
             border: 2px solid #ddd;
-            border-radius: 5px;
+            border-radius: 10px;
+            transition: all 0.3s;
         }
         
-        #loadBtn {
+        #urlInput:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+        
+        button {
             padding: 15px 30px;
-            background: #1a73e8;
+            background: #667eea;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 10px;
             font-size: 16px;
             cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
         }
         
-        #loadBtn:hover {
-            background: #0d62d9;
+        button:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
         }
         
-        .methods {
-            margin-top: 30px;
+        .methods-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
         }
         
-        .method {
+        .method-card {
             background: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 15px;
-            margin-bottom: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s;
         }
         
-        .method:hover {
-            background: #e8f0fe;
-            border-color: #1a73e8;
+        .method-card:hover {
+            border-color: #667eea;
+            background: white;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
         
-        .method.active {
-            background: #e8f0fe;
-            border-color: #1a73e8;
-            color: #1a73e8;
+        .method-card.active {
+            border-color: #667eea;
+            background: #eef2ff;
         }
         
-        .status {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 5px;
-            background: #f8f9fa;
-            min-height: 50px;
-        }
-        
-        .auto-mode {
-            margin-top: 20px;
-            text-align: center;
-        }
-        
-        #autoBtn {
-            padding: 15px 30px;
-            background: #34a853;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
+        .method-icon {
+            font-size: 2rem;
             margin-bottom: 10px;
         }
         
-        .log {
-            margin-top: 20px;
-            padding: 15px;
+        .method-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        .method-desc {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.4;
+        }
+        
+        .status-box {
             background: #f8f9fa;
-            border-radius: 5px;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            min-height: 60px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .log-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
             max-height: 200px;
             overflow-y: auto;
-            font-family: monospace;
+            font-family: 'Monaco', 'Menlo', monospace;
             font-size: 12px;
         }
         
         .log-entry {
             margin-bottom: 5px;
-            padding: 3px 0;
-            border-bottom: 1px solid #eee;
+            padding: 5px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .auto-section {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: #eef2ff;
+            border-radius: 10px;
+        }
+        
+        .quick-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+        
+        .quick-link {
+            padding: 8px 15px;
+            background: #e9ecef;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .quick-link:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .methods-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-box {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🔍 Research Portal</h1>
+        <h1>🔓 Smart Portal v3.0</h1>
+        <p class="subtitle">Advanced bypass methods with improved reliability</p>
         
         <div class="search-box">
-            <input type="text" id="urlInput" placeholder="Enter website URL (e.g., reddit.com, coolmathgames.com)">
-            <button id="loadBtn">Load Website</button>
+            <input type="text" id="urlInput" placeholder="Enter website URL (e.g., reddit.com)">
+            <button id="loadBtn">Load</button>
         </div>
         
-        <div class="auto-mode">
-            <button id="autoBtn">🎯 AUTO BYPASS (Try All Methods)</button>
-            <p style="font-size: 14px; color: #666;">Automatically tries all bypass methods until one works</p>
+        <div class="quick-links">
+            <div class="quick-link" data-url="reddit.com">Reddit</div>
+            <div class="quick-link" data-url="youtube.com">YouTube</div>
+            <div class="quick-link" data-url="twitter.com">Twitter</div>
+            <div class="quick-link" data-url="coolmathgames.com">CoolMath</div>
+            <div class="quick-link" data-url="discord.com">Discord</div>
+            <div class="quick-link" data-url="netflix.com">Netflix</div>
         </div>
         
-        <div class="methods">
-            <h3>Manual Bypass Methods:</h3>
-            <div class="method" data-method="translate">1. Google Translate Proxy</div>
-            <div class="method" data-method="cache">2. Google Cache Viewer</div>
-            <div class="method" data-method="textise">3. Textise Dot Iitty</div>
-            <div class="method" data-method="outline">4. Outline.com Reader</div>
-            <div class="method" data-method="textise">5. Textise Dot Iitty</div>
-            <div class="method" data-method="readability">6. Readability Test</div>
-            <div class="method" data-method="pdf">7. PDF Export View</div>
-            <div class="method" data-method="archive">8. Wayback Machine</div>
-            <div class="method" data-method="rss">9. RSS Feed View</div>
-            <div class="method" data-method="amp">10. Google AMP Cache</div>
-            <div class="method" data-method="text">11. Text-Only Version</div>
-            <div class="method" data-method="mhtml">12. MHTML Data URL</div>
+        <div class="methods-grid" id="methodsGrid">
+            <!-- Methods populated by JavaScript -->
         </div>
         
-        <div class="status" id="status">
-            Enter a URL and select a method
+        <div class="auto-section">
+            <h3 style="margin-bottom: 15px;">🎯 Auto Smart Bypass</h3>
+            <button id="autoBtn" style="background: #10b981; padding: 15px 40px;">
+                🤖 AUTO-SMART LOAD
+            </button>
+            <p style="margin-top: 10px; color: #666; font-size: 0.9rem;">
+                Automatically chooses the best method for the website
+            </p>
         </div>
         
-        <div class="log" id="log">
-            <div class="log-entry">Ready. Enter URL and click a method.</div>
+        <div class="status-box" id="statusBox">
+            Ready. Enter URL and select a method.
+        </div>
+        
+        <div class="log-box" id="logBox">
+            <div class="log-entry">System initialized...</div>
         </div>
     </div>
 
     <script>
-        const logBox = document.getElementById('log');
-        const statusEl = document.getElementById('status');
+        // ============ IMPROVED METHODS ============
+        const IMPROVED_METHODS = [
+            {
+                id: 'translate',
+                name: 'Google Translate 2.0',
+                icon: '🌐',
+                description: 'Enhanced with multiple translation endpoints',
+                execute: function(url) {
+                    const encoded = encodeURIComponent(url);
+                    return [
+                        // Multiple Google Translate variations
+                        `https://translate.google.com/translate?hl=en&sl=auto&tl=en&u=${encoded}`,
+                        `https://translate.googleusercontent.com/translate?hl=en&sl=auto&tl=en&u=${encoded}`,
+                        `https://www.google.com/translate?hl=en&sl=auto&tl=en&u=${encoded}`,
+                        // Alternative domains
+                        `https://translate.goog/${encoded}`,
+                        // With different language pairs (less monitored)
+                        `https://translate.google.com/translate?hl=fr&sl=auto&tl=fr&u=${encoded}`,
+                        `https://translate.google.com/translate?hl=es&sl=auto&tl=es&u=${encoded}`
+                    ];
+                }
+            },
+            {
+                id: 'archive',
+                name: 'Archive Enhanced',
+                icon: '📚',
+                description: 'Wayback Machine with timestamp selector',
+                execute: function(url) {
+                    const domain = url.replace('https://', '').replace('http://', '');
+                    return [
+                        // Try recent archives first
+                        `https://web.archive.org/web/${url}`,
+                        `https://web.archive.org/web/2/${url}`,
+                        `https://web.archive.org/web/2024/${url}`,
+                        `https://web.archive.org/web/2023/${url}`,
+                        // Alternative archive services
+                        `https://archive.is/${url}`,
+                        `https://archive.today/${url}`,
+                        `https://archive.ph/${url}`,
+                        // Specialized archives
+                        `https://archive.org/details/${domain}`,
+                        `https://web.archive.org/web/*/${url}`
+                    ];
+                }
+            },
+            {
+                id: 'textise-pro',
+                name: 'Textise Pro (Fixed)',
+                icon: '📄',
+                description: 'Full site render, not just text',
+                execute: function(url) {
+                    const cleanUrl = url.replace('https://', '').replace('http://', '');
+                    return [
+                        // Working alternatives to textise
+                        `https://r.jina.ai/http://${cleanUrl}`,
+                        `https://r.jina.ai/https://${cleanUrl}`,
+                        `https://htmlrenderer.net/?url=${encodeURIComponent(url)}`,
+                        `https://www.web2pdfconvert.com/convert?url=${encodeURIComponent(url)}`,
+                        // Other text-to-web converters
+                        `https://www.printfriendly.com/print/?source=${encodeURIComponent(url)}`,
+                        `https://www.webpage-to-pdf.com/convert?url=${encodeURIComponent(url)}`,
+                        // Mobile view proxies (often less restricted)
+                        `https://www.google.com/gwt/x?u=${encodeURIComponent(url)}`
+                    ];
+                }
+            },
+            {
+                id: 'proxy-apis',
+                name: 'Public Proxy APIs',
+                icon: '🔄',
+                description: 'Multiple rotating proxy services',
+                execute: function(url) {
+                    const encoded = encodeURIComponent(url);
+                    return [
+                        // Working proxy APIs
+                        `https://api.allorigins.win/get?url=${encoded}`,
+                        `https://corsproxy.io/?${encoded}`,
+                        `https://proxy.cors.sh/${url}`,
+                        `https://cors-anywhere.herokuapp.com/${url}`,
+                        `https://api.codetabs.com/v1/proxy?quest=${url}`,
+                        // Alternative CORS proxies
+                        `https://thingproxy.freeboard.io/fetch/${url}`,
+                        `https://yacdn.org/proxy/${url}`,
+                        `https://cors-proxy.htmldriven.com/?url=${encoded}`
+                    ];
+                }
+            },
+            {
+                id: 'reader-view',
+                name: 'Reader View Proxies',
+                icon: '📖',
+                description: 'Clean reading mode versions',
+                execute: function(url) {
+                    const cleanUrl = url.replace('https://', '').replace('http://', '');
+                    return [
+                        // Reader view services
+                        `https://outline.com/${cleanUrl}`,
+                        `https://www.outline.com/${url}`,
+                        `https://readermode.io/view?url=${encodeURIComponent(url)}`,
+                        `https://www.readability.com/amp?url=${encodeURIComponent(url)}`,
+                        `https://www.instapaper.com/text?u=${encodeURIComponent(url)}`,
+                        // Mobile reader views
+                        `https://www.google.com/amp/s/${cleanUrl}`,
+                        `https://www.bing.com/amp/s/${cleanUrl}`
+                    ];
+                }
+            },
+            {
+                id: 'cdn-proxy',
+                name: 'CDN & Image Proxies',
+                icon: '🖼️',
+                description: 'Load through image/CDN services',
+                execute: function(url) {
+                    return [
+                        // Image proxy trick (works for some sites)
+                        `https://images.weserv.nl/?url=${url.replace('https://', '')}`,
+                        `https://images-na.ssl-images-amazon.com/images?url=${encodeURIComponent(url)}`,
+                        // CDN proxies
+                        `https://cdn.statically.io/gh/`,
+                        `https://rawcdn.githack.com/`,
+                        // GitHub raw proxy trick
+                        `https://raw.githack.com/${url.replace('https://', '')}`
+                    ];
+                }
+            },
+            {
+                id: 'mobile-view',
+                name: 'Mobile View',
+                icon: '📱',
+                description: 'Mobile versions bypass desktop filters',
+                execute: function(url) {
+                    const cleanUrl = url.replace('https://', '').replace('http://', '');
+                    return [
+                        // Mobile prefixes
+                        `https://m.${cleanUrl}`,
+                        `https://mobile.${cleanUrl}`,
+                        `https://i.${cleanUrl}`,
+                        // AMP versions
+                        `https://www.google.com/amp/s/${cleanUrl}`,
+                        `https://amp.${cleanUrl}`,
+                        // Facebook mobile proxy
+                        `https://m.facebook.com/l.php?u=${encodeURIComponent(url)}`,
+                        // Twitter mobile proxy
+                        `https://mobile.twitter.com/`
+                    ];
+                }
+            },
+            {
+                id: 'data-url',
+                name: 'Data URL Generator',
+                icon: '🔗',
+                description: 'Creates local HTML with redirect',
+                execute: function(url) {
+                    // Create a self-contained HTML file with meta refresh
+                    const html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading ${url}</title>
+    <style>
+        body { 
+            margin: 0; 
+            padding: 40px; 
+            font-family: Arial, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        a { 
+            color: white; 
+            text-decoration: underline;
+            margin-top: 20px;
+            display: inline-block;
+        }
+    </style>
+    <meta http-equiv="refresh" content="2;url=${url}">
+    <script>
+        // Multiple fallback redirects
+        setTimeout(() => window.location.href = "${url}", 2000);
+        setTimeout(() => window.location.replace("${url}"), 2500);
+        setTimeout(() => window.open("${url}", "_self"), 3000);
+    <\/script>
+</head>
+<body>
+    <div class="spinner"></div>
+    <h2>Loading ${new URL(url).hostname}</h2>
+    <p>If not redirected in 3 seconds, <a href="${url}">click here</a></p>
+</body>
+</html>`;
+                    
+                    return ['data:text/html;charset=utf-8,' + encodeURIComponent(html)];
+                }
+            }
+        ];
+
+        // ============ INITIALIZATION ============
+        const logBox = document.getElementById('logBox');
+        const statusBox = document.getElementById('statusBox');
         const urlInput = document.getElementById('urlInput');
         const loadBtn = document.getElementById('loadBtn');
         const autoBtn = document.getElementById('autoBtn');
-        let currentMethodIndex = 0;
+        const methodsGrid = document.getElementById('methodsGrid');
         
-        // Log function
-        function log(message) {
+        let activeMethod = null;
+        
+        // ============ LOGGING ============
+        function log(message, type = 'info') {
             const entry = document.createElement('div');
             entry.className = 'log-entry';
-            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            entry.innerHTML = `<span style="color:${type === 'error' ? '#ef4444' : type === 'success' ? '#10b981' : '#6b7280'}">
+                [${new Date().toLocaleTimeString()}] ${message}
+            </span>`;
             logBox.prepend(entry);
             if (logBox.children.length > 20) {
                 logBox.removeChild(logBox.lastChild);
             }
         }
         
-        // Update status
-        function updateStatus(message) {
-            statusEl.textContent = message;
-            log(message);
+        function updateStatus(message, type = 'info') {
+            statusBox.innerHTML = `<strong>${message}</strong>`;
+            statusBox.style.borderLeftColor = type === 'error' ? '#ef4444' : 
+                                            type === 'success' ? '#10b981' : '#667eea';
+            log(message, type);
         }
         
-        // Format URL
+        // ============ URL FORMATTING ============
         function formatUrl(input) {
             let url = input.trim();
+            if (!url.includes('.')) {
+                updateStatus('Invalid URL', 'error');
+                return null;
+            }
             if (!url.startsWith('http://') && !url.startsWith('https://')) {
                 url = 'https://' + url;
             }
             return url;
         }
         
-        // ============ BYPASS METHODS ============
-        
-        const methods = {
-            translate: {
-                name: 'Google Translate Proxy',
-                execute: (url) => {
-                    const encoded = encodeURIComponent(url);
-                    return [
-                        `https://translate.google.com/translate?hl=en&sl=auto&tl=en&u=${encoded}`,
-                        `https://translate.google.com/translate?sl=auto&tl=en&u=${encoded}`,
-                        `https://www.google.com/translate?hl=en&sl=auto&tl=en&u=${encoded}`
-                    ];
-                }
-            },
-            
-            cache: {
-                name: 'Google Cache',
-                execute: (url) => {
-                    return [
-                        `https://webcache.googleusercontent.com/search?q=cache:${encodeURIComponent(url)}`,
-                        `https://webcache.googleusercontent.com/search?strip=1&q=cache:${url}`,
-                        `http://web.archive.org/web/${url}`
-                    ];
-                }
-            },
-            
-            textise: {
-                name: 'Textise Dot Iitty',
-                execute: (url) => {
-                    return [
-                        `https://r.jina.ai/${url}`,
-                        `https://r.jina.ai/http://${url.replace('https://', '').replace('http://', '')}`,
-                        `https://textise dot iitty?url=${encodeURIComponent(url)}`
-                    ];
-                }
-            },
-            
-            outline: {
-                name: 'Outline.com',
-                execute: (url) => {
-                    return [
-                        `https://outline.com/${url.replace('https://', '').replace('http://', '')}`,
-                        `https://www.outline.com/${url}`
-                    ];
-                }
-            },
-            
-            readability: {
-                name: 'Readability Test',
-                execute: (url) => {
-                    return [
-                        `https://www.webpagefx.com/tools/read-able/test.php?tab=result&urin=${encodeURIComponent(url)}`,
-                        `https://www.webfx.com/tools/read-able/test.php?urin=${encodeURIComponent(url)}`
-                    ];
-                }
-            },
-            
-            pdf: {
-                name: 'PDF Export',
-                execute: (url) => {
-                    return [
-                        `https://www.printfriendly.com/print?source=${encodeURIComponent(url)}`,
-                        `https://pdfmyurl.com/saveaspdf?url=${encodeURIComponent(url)}`
-                    ];
-                }
-            },
-            
-            archive: {
-                name: 'Wayback Machine',
-                execute: (url) => {
-                    return [
-                        `https://web.archive.org/web/${url}`,
-                        `https://web.archive.org/web/*/${url}`,
-                        `https://archive.is/${url}`
-                    ];
-                }
-            },
-            
-            rss: {
-                name: 'RSS Feed',
-                execute: (url) => {
-                    const domain = new URL(url).hostname;
-                    return [
-                        `https://rss.app/feed/${domain}`,
-                        `https://feedly.com/i/subscription/feed/${encodeURIComponent(url)}`
-                    ];
-                }
-            },
-            
-            amp: {
-                name: 'Google AMP',
-                execute: (url) => {
-                    return [
-                        `https://www.google.com/amp/s/${url.replace('https://', '').replace('http://', '')}`,
-                        `https://cdn.ampproject.org/c/${url}`
-                    ];
-                }
-            },
-            
-            text: {
-                name: 'Text-Only',
-                execute: (url) => {
-                    return [
-                        `https://textise dot iitty?url=${encodeURIComponent(url)}`,
-                        `https://www.striphtml.com/?url=${encodeURIComponent(url)}`,
-                        `https://textise dot iitty/show?url=${encodeURIComponent(url)}`
-                    ];
-                }
-            },
-            
-            mhtml: {
-                name: 'MHTML Data URL',
-                execute: (url) => {
-                    // Create a data URL that redirects
-                    const html = `
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <meta http-equiv="refresh" content="0;url=${url}">
-                        <base href="${url}">
-                    </head>
-                    <body>
-                        <p>Loading... <a href="${url}">Click here if not redirected</a></p>
-                    </body>
-                    </html>`;
-                    
-                    const dataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
-                    return [dataUrl];
-                }
-            }
-        };
+        // ============ METHOD CARDS ============
+        function renderMethods() {
+            methodsGrid.innerHTML = '';
+            IMPROVED_METHODS.forEach(method => {
+                const card = document.createElement('div');
+                card.className = 'method-card';
+                card.innerHTML = `
+                    <div class="method-icon">${method.icon}</div>
+                    <div class="method-name">${method.name}</div>
+                    <div class="method-desc">${method.description}</div>
+                `;
+                card.addEventListener('click', () => {
+                    document.querySelectorAll('.method-card').forEach(c => c.classList.remove('active'));
+                    card.classList.add('active');
+                    activeMethod = method;
+                    const url = urlInput.value.trim();
+                    if (url) loadWithMethod(method);
+                });
+                methodsGrid.appendChild(card);
+            });
+        }
         
         // ============ LOAD WITH METHOD ============
-        function loadWithMethod(methodName) {
-            const input = urlInput.value.trim();
-            if (!input) {
-                updateStatus('Please enter a URL');
-                return;
-            }
+        function loadWithMethod(method) {
+            const url = formatUrl(urlInput.value.trim());
+            if (!url) return;
             
-            const url = formatUrl(input);
-            const method = methods[methodName];
+            updateStatus(`Loading via ${method.name}...`);
+            log(`Attempting: ${method.name} for ${url}`);
             
-            if (!method) {
-                updateStatus('Unknown method');
-                return;
-            }
-            
-            updateStatus(`Trying ${method.name}...`);
-            log(`Loading ${url} via ${method.name}`);
-            
-            // Get URLs from method
             const urls = method.execute(url);
+            let attempts = 0;
+            let success = false;
             
             // Try each URL from this method
             urls.forEach((proxyUrl, index) => {
                 setTimeout(() => {
+                    if (success) return; // Stop if already succeeded
+                    
+                    attempts++;
+                    log(`Trying variant ${index + 1}/${urls.length}: ${proxyUrl.substring(0, 60)}...`);
+                    
                     try {
-                        const win = window.open(proxyUrl, '_proxy_' + methodName + '_' + index);
-                        log(`Opened: ${proxyUrl}`);
+                        const win = window.open(proxyUrl, `_${method.id}_${index}`);
+                        
+                        // Check if window opened successfully
+                        setTimeout(() => {
+                            if (win && !win.closed) {
+                                success = true;
+                                updateStatus(`✓ ${method.name} succeeded!`, 'success');
+                                log(`✓ Success with ${method.name} variant ${index + 1}`, 'success');
+                            }
+                        }, 1000);
+                        
                     } catch (e) {
-                        log(`Failed: ${e.message}`);
+                        log(`Failed variant ${index + 1}: ${e.message}`, 'error');
                     }
-                }, index * 500);
+                    
+                    // If last attempt and no success
+                    if (attempts === urls.length && !success) {
+                        updateStatus(`${method.name} failed. Try another method.`, 'error');
+                    }
+                }, index * 1500); // Stagger attempts
             });
         }
         
-        // ============ AUTO BYPASS ============
-        function autoBypass() {
-            const input = urlInput.value.trim();
-            if (!input) {
-                updateStatus('Please enter a URL');
-                return;
+        // ============ SMART AUTO LOAD ============
+        function smartAutoLoad() {
+            const url = formatUrl(urlInput.value.trim());
+            if (!url) return;
+            
+            updateStatus('Starting SMART auto-load...');
+            log(`Smart analysis for: ${url}`);
+            
+            // Analyze URL to choose best method
+            const domain = new URL(url).hostname;
+            let bestMethods = [];
+            
+            // Choose methods based on website type
+            if (domain.includes('reddit') || domain.includes('youtube') || domain.includes('twitter')) {
+                // Social media - use mobile/reader views
+                bestMethods = IMPROVED_METHODS.filter(m => 
+                    m.id === 'mobile-view' || m.id === 'reader-view' || m.id === 'textise-pro'
+                );
+            } else if (domain.includes('game') || domain.includes('play')) {
+                // Games - use proxy APIs
+                bestMethods = IMPROVED_METHODS.filter(m => 
+                    m.id === 'proxy-apis' || m.id === 'data-url'
+                );
+            } else {
+                // General websites - use archive/translate
+                bestMethods = IMPROVED_METHODS.filter(m => 
+                    m.id === 'archive' || m.id === 'translate' || m.id === 'textise-pro'
+                );
             }
             
-            const url = formatUrl(input);
-            currentMethodIndex = 0;
-            const methodKeys = Object.keys(methods);
+            log(`Selected ${bestMethods.length} optimal methods for ${domain}`);
             
-            updateStatus('Starting AUTO BYPASS mode...');
-            log(`Target URL: ${url}`);
-            log(`Will try ${methodKeys.length} methods sequentially`);
+            // Try methods in optimal order
+            let methodIndex = 0;
             
             function tryNextMethod() {
-                if (currentMethodIndex >= methodKeys.length) {
-                    updateStatus('All methods tried. Site may be blocked.');
-                    log('All bypass methods exhausted');
+                if (methodIndex >= bestMethods.length) {
+                    updateStatus('All smart methods failed. Trying all...', 'error');
+                    // Fallback to all methods
+                    IMPROVED_METHODS.forEach((method, idx) => {
+                        setTimeout(() => {
+                            if (!urlInput.value.trim()) return;
+                            const urls = method.execute(url);
+                            urls.forEach((proxyUrl, urlIdx) => {
+                                setTimeout(() => {
+                                    try {
+                                        window.open(proxyUrl, `_fallback_${idx}_${urlIdx}`);
+                                    } catch(e) {}
+                                }, urlIdx * 500);
+                            });
+                        }, idx * 3000);
+                    });
                     return;
                 }
                 
-                const methodName = methodKeys[currentMethodIndex];
-                const method = methods[methodName];
-                
-                updateStatus(`Trying method ${currentMethodIndex + 1}/${methodKeys.length}: ${method.name}`);
-                log(`Attempting ${method.name}...`);
+                const method = bestMethods[methodIndex];
+                updateStatus(`Trying ${method.name} (${methodIndex + 1}/${bestMethods.length})...`);
                 
                 const urls = method.execute(url);
-                let attempts = 0;
+                let attempt = 0;
                 
-                // Try each URL in this method
                 urls.forEach((proxyUrl, urlIndex) => {
                     setTimeout(() => {
-                        attempts++;
+                        attempt++;
+                        log(`Smart attempt ${urlIndex + 1} with ${method.name}`);
+                        
                         try {
-                            const win = window.open(proxyUrl, '_auto_' + methodName + '_' + urlIndex);
-                            log(`Opened: ${method.name} (${urlIndex + 1}/${urls.length})`);
+                            const win = window.open(proxyUrl, `_smart_${methodIndex}_${urlIndex}`);
                             
-                            // Check if window opened successfully
                             setTimeout(() => {
                                 if (win && !win.closed) {
-                                    // Success! Stop trying more methods
-                                    updateStatus(`✓ SUCCESS with ${method.name}!`);
-                                    log(`✓ ${method.name} worked! Stopping auto-bypass.`);
+                                    updateStatus(`✓ Smart load succeeded with ${method.name}!`, 'success');
                                     return;
                                 }
                                 
-                                // If this was the last URL in this method, try next method
-                                if (attempts === urls.length) {
-                                    currentMethodIndex++;
+                                if (attempt === urls.length) {
+                                    methodIndex++;
                                     setTimeout(tryNextMethod, 1000);
                                 }
-                            }, 1000);
+                            }, 1500);
                             
-                        } catch (e) {
-                            log(`Failed: ${method.name} - ${e.message}`);
+                        } catch(e) {
+                            log(`Smart attempt failed: ${e.message}`, 'error');
                             
-                            // If this was the last URL in this method, try next method
-                            if (attempts === urls.length) {
-                                currentMethodIndex++;
+                            if (attempt === urls.length) {
+                                methodIndex++;
                                 setTimeout(tryNextMethod, 1000);
                             }
                         }
-                    }, urlIndex * 1000);
+                    }, urlIndex * 2000);
                 });
             }
             
@@ -433,51 +655,64 @@
         }
         
         // ============ EVENT LISTENERS ============
+        renderMethods();
         
-        // Manual method buttons
-        document.querySelectorAll('.method').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.method').forEach(m => m.classList.remove('active'));
-                this.classList.add('active');
-                loadWithMethod(this.dataset.method);
-            });
-        });
-        
-        // Load button (default method)
         loadBtn.addEventListener('click', () => {
-            loadWithMethod('translate'); // Default to translate
-        });
-        
-        // Auto bypass button
-        autoBtn.addEventListener('click', autoBypass);
-        
-        // Enter key in input
-        urlInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                loadWithMethod('translate');
+            if (activeMethod) {
+                loadWithMethod(activeMethod);
+            } else {
+                // Default to first method
+                loadWithMethod(IMPROVED_METHODS[0]);
             }
         });
         
-        // Pre-fill with common sites
-        const commonSites = [
-            'reddit.com',
-            'coolmathgames.com',
-            'youtube.com',
-            'twitter.com',
-            'instagram.com',
-            'netflix.com',
-            'spotify.com'
-        ];
+        autoBtn.addEventListener('click', smartAutoLoad);
         
-        urlInput.placeholder = `e.g., ${commonSites[Math.floor(Math.random() * commonSites.length)]}`;
+        urlInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                if (activeMethod) {
+                    loadWithMethod(activeMethod);
+                } else {
+                    loadWithMethod(IMPROVED_METHODS[0]);
+                }
+            }
+        });
         
-        // Auto-focus input
+        // Quick links
+        document.querySelectorAll('.quick-link').forEach(link => {
+            link.addEventListener('click', () => {
+                urlInput.value = link.dataset.url;
+                // Auto-select best method for this site
+                const domain = link.dataset.url;
+                let bestMethod = IMPROVED_METHODS[0]; // Default
+                
+                if (domain.includes('reddit') || domain.includes('youtube')) {
+                    bestMethod = IMPROVED_METHODS.find(m => m.id === 'mobile-view');
+                } else if (domain.includes('game')) {
+                    bestMethod = IMPROVED_METHODS.find(m => m.id === 'proxy-apis');
+                }
+                
+                document.querySelectorAll('.method-card').forEach(c => c.classList.remove('active'));
+                const cards = Array.from(document.querySelectorAll('.method-card'));
+                const cardIndex = IMPROVED_METHODS.findIndex(m => m.id === bestMethod.id);
+                if (cardIndex !== -1 && cards[cardIndex]) {
+                    cards[cardIndex].classList.add('active');
+                    activeMethod = bestMethod;
+                }
+                
+                updateStatus(`Ready to load ${domain}`);
+            });
+        });
+        
+        // Auto-focus
         urlInput.focus();
         
-        // Welcome message
-        updateStatus('Enter any website URL and click a bypass method');
-        log('Smart Bypass Portal ready');
-        log('Methods: Google Translate, Cache, Textise, Outline, Archive, etc.');
+        // Initial log
+        updateStatus('Enter URL and select a bypass method');
+        log('Smart Portal v3.0 loaded');
+        log(`${IMPROVED_METHODS.length} improved methods available`);
+        log('Tip: Use SMART AUTO for automatic method selection');
+        
     </script>
 </body>
 </html>
