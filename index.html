@@ -1,322 +1,483 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <title>Research Portal</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #1a73e8;
+            margin-bottom: 30px;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        #urlInput {
+            flex: 1;
+            padding: 15px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        #loadBtn {
+            padding: 15px 30px;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        #loadBtn:hover {
+            background: #0d62d9;
+        }
+        
+        .methods {
+            margin-top: 30px;
+        }
+        
+        .method {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .method:hover {
+            background: #e8f0fe;
+            border-color: #1a73e8;
+        }
+        
+        .method.active {
+            background: #e8f0fe;
+            border-color: #1a73e8;
+            color: #1a73e8;
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background: #f8f9fa;
+            min-height: 50px;
+        }
+        
+        .auto-mode {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        #autoBtn {
+            padding: 15px 30px;
+            background: #34a853;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        
+        .log {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 3px 0;
+            border-bottom: 1px solid #eee;
+        }
+    </style>
+</head>
 <body>
-<button onclick="startNuclearAttack()" 
-        style="position:fixed;top:20px;left:20px;padding:20px;font-size:24px;background:red;color:white;border:none;cursor:pointer;z-index:9999;">
-    ☢️ NUKE FILTERS
-</button>
+    <div class="container">
+        <h1>🔍 Research Portal</h1>
+        
+        <div class="search-box">
+            <input type="text" id="urlInput" placeholder="Enter website URL (e.g., reddit.com, coolmathgames.com)">
+            <button id="loadBtn">Load Website</button>
+        </div>
+        
+        <div class="auto-mode">
+            <button id="autoBtn">🎯 AUTO BYPASS (Try All Methods)</button>
+            <p style="font-size: 14px; color: #666;">Automatically tries all bypass methods until one works</p>
+        </div>
+        
+        <div class="methods">
+            <h3>Manual Bypass Methods:</h3>
+            <div class="method" data-method="translate">1. Google Translate Proxy</div>
+            <div class="method" data-method="cache">2. Google Cache Viewer</div>
+            <div class="method" data-method="textise">3. Textise Dot Iitty</div>
+            <div class="method" data-method="outline">4. Outline.com Reader</div>
+            <div class="method" data-method="textise">5. Textise Dot Iitty</div>
+            <div class="method" data-method="readability">6. Readability Test</div>
+            <div class="method" data-method="pdf">7. PDF Export View</div>
+            <div class="method" data-method="archive">8. Wayback Machine</div>
+            <div class="method" data-method="rss">9. RSS Feed View</div>
+            <div class="method" data-method="amp">10. Google AMP Cache</div>
+            <div class="method" data-method="text">11. Text-Only Version</div>
+            <div class="method" data-method="mhtml">12. MHTML Data URL</div>
+        </div>
+        
+        <div class="status" id="status">
+            Enter a URL and select a method
+        </div>
+        
+        <div class="log" id="log">
+            <div class="log-entry">Ready. Enter URL and click a method.</div>
+        </div>
+    </div>
 
-<div id="status" style="position:fixed;top:80px;left:20px;color:white;background:rgba(0,0,0,0.7);padding:10px;font-family:monospace;">
-    Status: Ready
-</div>
-
-<script>
-console.log('=== ALL-IN-ONE OVERLOAD SYSTEM LOADED ===');
-console.log('Press the red button or SPACE key to start');
-
-let attackActive = false;
-let methodsRunning = [];
-
-function updateStatus(msg) {
-    document.getElementById('status').innerHTML = 'Status: ' + msg;
-    console.log(msg);
-}
-
-// ============ 1. TAB SPAM ============
-function startTabSpam() {
-    console.log('Starting TAB SPAM...');
-    const interval = setInterval(() => {
-        // Open 3-5 tabs at once
-        for (let i = 0; i < 3 + Math.floor(Math.random() * 3); i++) {
-            setTimeout(() => {
-                try {
-                    window.open('https://reddit.com', 'tab_' + Date.now() + i);
-                    window.open('https://old.reddit.com', 'old_' + Date.now() + i);
-                } catch(e) {}
-            }, i * 50);
+    <script>
+        const logBox = document.getElementById('log');
+        const statusEl = document.getElementById('status');
+        const urlInput = document.getElementById('urlInput');
+        const loadBtn = document.getElementById('loadBtn');
+        const autoBtn = document.getElementById('autoBtn');
+        let currentMethodIndex = 0;
+        
+        // Log function
+        function log(message) {
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logBox.prepend(entry);
+            if (logBox.children.length > 20) {
+                logBox.removeChild(logBox.lastChild);
+            }
         }
-    }, 300);
-    methodsRunning.push({type: 'tab', interval: interval});
-}
-
-// ============ 2. REQUEST SPAM ============
-function startRequestSpam() {
-    console.log('Starting REQUEST SPAM...');
-    const interval = setInterval(() => {
-        // Multiple request types
-        for (let i = 0; i < 10; i++) {
-            try {
-                fetch('https://reddit.com?cache=' + Date.now() + i, {mode: 'no-cors'}).catch(() => {});
-                new Image().src = 'https://reddit.com?img=' + Date.now() + i;
-                const script = document.createElement('script');
-                script.src = 'https://reddit.com?js=' + Date.now() + i;
-                document.head.appendChild(script);
-                setTimeout(() => script.remove(), 100);
-            } catch(e) {}
+        
+        // Update status
+        function updateStatus(message) {
+            statusEl.textContent = message;
+            log(message);
         }
-    }, 200);
-    methodsRunning.push({type: 'request', interval: interval});
-}
-
-// ============ 3. WEBSOCKET SPAM ============
-function startWebSocketSpam() {
-    console.log('Starting WEBSOCKET SPAM...');
-    const wsServers = ['wss://ws.postman-echo.com/raw', 'wss://echo.websocket.org'];
-    let connections = [];
-    
-    wsServers.forEach(server => {
-        try {
-            for (let i = 0; i < 3; i++) {
+        
+        // Format URL
+        function formatUrl(input) {
+            let url = input.trim();
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                url = 'https://' + url;
+            }
+            return url;
+        }
+        
+        // ============ BYPASS METHODS ============
+        
+        const methods = {
+            translate: {
+                name: 'Google Translate Proxy',
+                execute: (url) => {
+                    const encoded = encodeURIComponent(url);
+                    return [
+                        `https://translate.google.com/translate?hl=en&sl=auto&tl=en&u=${encoded}`,
+                        `https://translate.google.com/translate?sl=auto&tl=en&u=${encoded}`,
+                        `https://www.google.com/translate?hl=en&sl=auto&tl=en&u=${encoded}`
+                    ];
+                }
+            },
+            
+            cache: {
+                name: 'Google Cache',
+                execute: (url) => {
+                    return [
+                        `https://webcache.googleusercontent.com/search?q=cache:${encodeURIComponent(url)}`,
+                        `https://webcache.googleusercontent.com/search?strip=1&q=cache:${url}`,
+                        `http://web.archive.org/web/${url}`
+                    ];
+                }
+            },
+            
+            textise: {
+                name: 'Textise Dot Iitty',
+                execute: (url) => {
+                    return [
+                        `https://r.jina.ai/${url}`,
+                        `https://r.jina.ai/http://${url.replace('https://', '').replace('http://', '')}`,
+                        `https://textise dot iitty?url=${encodeURIComponent(url)}`
+                    ];
+                }
+            },
+            
+            outline: {
+                name: 'Outline.com',
+                execute: (url) => {
+                    return [
+                        `https://outline.com/${url.replace('https://', '').replace('http://', '')}`,
+                        `https://www.outline.com/${url}`
+                    ];
+                }
+            },
+            
+            readability: {
+                name: 'Readability Test',
+                execute: (url) => {
+                    return [
+                        `https://www.webpagefx.com/tools/read-able/test.php?tab=result&urin=${encodeURIComponent(url)}`,
+                        `https://www.webfx.com/tools/read-able/test.php?urin=${encodeURIComponent(url)}`
+                    ];
+                }
+            },
+            
+            pdf: {
+                name: 'PDF Export',
+                execute: (url) => {
+                    return [
+                        `https://www.printfriendly.com/print?source=${encodeURIComponent(url)}`,
+                        `https://pdfmyurl.com/saveaspdf?url=${encodeURIComponent(url)}`
+                    ];
+                }
+            },
+            
+            archive: {
+                name: 'Wayback Machine',
+                execute: (url) => {
+                    return [
+                        `https://web.archive.org/web/${url}`,
+                        `https://web.archive.org/web/*/${url}`,
+                        `https://archive.is/${url}`
+                    ];
+                }
+            },
+            
+            rss: {
+                name: 'RSS Feed',
+                execute: (url) => {
+                    const domain = new URL(url).hostname;
+                    return [
+                        `https://rss.app/feed/${domain}`,
+                        `https://feedly.com/i/subscription/feed/${encodeURIComponent(url)}`
+                    ];
+                }
+            },
+            
+            amp: {
+                name: 'Google AMP',
+                execute: (url) => {
+                    return [
+                        `https://www.google.com/amp/s/${url.replace('https://', '').replace('http://', '')}`,
+                        `https://cdn.ampproject.org/c/${url}`
+                    ];
+                }
+            },
+            
+            text: {
+                name: 'Text-Only',
+                execute: (url) => {
+                    return [
+                        `https://textise dot iitty?url=${encodeURIComponent(url)}`,
+                        `https://www.striphtml.com/?url=${encodeURIComponent(url)}`,
+                        `https://textise dot iitty/show?url=${encodeURIComponent(url)}`
+                    ];
+                }
+            },
+            
+            mhtml: {
+                name: 'MHTML Data URL',
+                execute: (url) => {
+                    // Create a data URL that redirects
+                    const html = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <meta http-equiv="refresh" content="0;url=${url}">
+                        <base href="${url}">
+                    </head>
+                    <body>
+                        <p>Loading... <a href="${url}">Click here if not redirected</a></p>
+                    </body>
+                    </html>`;
+                    
+                    const dataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
+                    return [dataUrl];
+                }
+            }
+        };
+        
+        // ============ LOAD WITH METHOD ============
+        function loadWithMethod(methodName) {
+            const input = urlInput.value.trim();
+            if (!input) {
+                updateStatus('Please enter a URL');
+                return;
+            }
+            
+            const url = formatUrl(input);
+            const method = methods[methodName];
+            
+            if (!method) {
+                updateStatus('Unknown method');
+                return;
+            }
+            
+            updateStatus(`Trying ${method.name}...`);
+            log(`Loading ${url} via ${method.name}`);
+            
+            // Get URLs from method
+            const urls = method.execute(url);
+            
+            // Try each URL from this method
+            urls.forEach((proxyUrl, index) => {
                 setTimeout(() => {
                     try {
-                        const ws = new WebSocket(server);
-                        ws.onopen = () => {
-                            setInterval(() => {
-                                if (ws.readyState === WebSocket.OPEN) {
-                                    ws.send('GET https://reddit.com HTTP/1.1');
-                                }
-                            }, 100);
-                        };
-                        connections.push(ws);
-                    } catch(e) {}
-                }, i * 100);
+                        const win = window.open(proxyUrl, '_proxy_' + methodName + '_' + index);
+                        log(`Opened: ${proxyUrl}`);
+                    } catch (e) {
+                        log(`Failed: ${e.message}`);
+                    }
+                }, index * 500);
+            });
+        }
+        
+        // ============ AUTO BYPASS ============
+        function autoBypass() {
+            const input = urlInput.value.trim();
+            if (!input) {
+                updateStatus('Please enter a URL');
+                return;
             }
-        } catch(e) {}
-    });
-    
-    methodsRunning.push({type: 'websocket', connections: connections});
-}
-
-// ============ 4. WEBRTC FLOOD ============
-function startWebRTCFlood() {
-    console.log('Starting WEBRTC FLOOD...');
-    let connections = [];
-    
-    for (let i = 0; i < 5; i++) {
-        try {
-            const pc = new RTCPeerConnection();
-            const dc = pc.createDataChannel('spam');
-            dc.onopen = () => {
-                setInterval(() => {
-                    dc.send('reddit.com');
-                }, 50);
-            };
-            pc.createOffer().then(offer => pc.setLocalDescription(offer));
-            connections.push(pc);
-        } catch(e) {}
-    }
-    
-    methodsRunning.push({type: 'webrtc', connections: connections});
-}
-
-// ============ 5. DNS PREFETCH ATTACK ============
-function startDNSAttack() {
-    console.log('Starting DNS ATTACK...');
-    for (let i = 0; i < 50; i++) {
-        const link = document.createElement('link');
-        link.rel = 'dns-prefetch';
-        link.href = `https://reddit-${i}.com`;
-        document.head.appendChild(link);
-    }
-}
-
-// ============ 6. META REFRESH CHAIN ============
-function startRefreshChain() {
-    console.log('Starting REFRESH CHAIN...');
-    const meta = document.createElement('meta');
-    meta.httpEquiv = 'refresh';
-    meta.content = '1;url=https://wikipedia.org';
-    document.head.appendChild(meta);
-    
-    let step = 0;
-    const chain = ['https://wikipedia.org', 'https://khanacademy.org', 'https://reddit.com'];
-    const interval = setInterval(() => {
-        step = (step + 1) % chain.length;
-        meta.content = `0;url=${chain[step]}`;
-    }, 1000);
-    
-    methodsRunning.push({type: 'refresh', interval: interval, meta: meta});
-}
-
-// ============ 7. IFRAME SPAM ============
-function startIframeSpam() {
-    console.log('Starting IFRAME SPAM...');
-    const interval = setInterval(() => {
-        for (let i = 0; i < 2; i++) {
-            const iframe = document.createElement('iframe');
-            iframe.sandbox = 'allow-scripts allow-same-origin';
-            iframe.src = 'https://reddit.com';
-            iframe.style.cssText = 'position:fixed;width:100px;height:100px;top:' + 
-                Math.random() * 500 + 'px;left:' + Math.random() * 500 + 'px;border:none;';
-            document.body.appendChild(iframe);
             
-            setTimeout(() => {
-                try { iframe.remove(); } catch(e) {}
-            }, 5000);
-        }
-    }, 1000);
-    
-    methodsRunning.push({type: 'iframe', interval: interval});
-}
-
-// ============ 8. STORAGE FLOOD ============
-function startStorageFlood() {
-    console.log('Starting STORAGE FLOOD...');
-    try {
-        for (let i = 0; i < 100; i++) {
-            localStorage.setItem('spam_' + i, 'reddit.com'.repeat(100));
-        }
-    } catch(e) {}
-}
-
-// ============ 9. CLIPBOARD TRICK ============
-function startClipboardTrick() {
-    console.log('Starting CLIPBOARD TRICK...');
-    const dataUrl = 'data:text/html,<meta http-equiv="refresh" content="0;url=https://reddit.com">';
-    try {
-        navigator.clipboard.writeText(dataUrl).then(() => {
-            console.log('Reddit data URL copied to clipboard');
-        });
-    } catch(e) {
-        const textarea = document.createElement('textarea');
-        textarea.value = dataUrl;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        textarea.remove();
-    }
-}
-
-// ============ 10. SERVICE WORKER PROXY ============
-function startServiceWorker() {
-    console.log('Starting SERVICE WORKER...');
-    if ('serviceWorker' in navigator) {
-        const swCode = `
-            self.addEventListener('fetch', event => {
-                if (event.request.url.includes('reddit')) {
-                    event.respondWith(fetch(event.request));
+            const url = formatUrl(input);
+            currentMethodIndex = 0;
+            const methodKeys = Object.keys(methods);
+            
+            updateStatus('Starting AUTO BYPASS mode...');
+            log(`Target URL: ${url}`);
+            log(`Will try ${methodKeys.length} methods sequentially`);
+            
+            function tryNextMethod() {
+                if (currentMethodIndex >= methodKeys.length) {
+                    updateStatus('All methods tried. Site may be blocked.');
+                    log('All bypass methods exhausted');
+                    return;
                 }
-            });
-        `;
-        const blob = new Blob([swCode], {type: 'application/javascript'});
-        const swUrl = URL.createObjectURL(blob);
-        navigator.serviceWorker.register(swUrl).catch(() => {});
-    }
-}
-
-// ============ MAIN ATTACK FUNCTION ============
-function startNuclearAttack() {
-    if (attackActive) {
-        stopAttack();
-        return;
-    }
-    
-    console.log('🚀🚀🚀 STARTING NUCLEAR OVERLOAD ATTACK 🚀🚀🚀');
-    attackActive = true;
-    updateStatus('ATTACKING - All methods active');
-    document.querySelector('button').innerHTML = '⏹️ STOP ATTACK';
-    document.querySelector('button').style.background = 'orange';
-    
-    // START ALL METHODS
-    startTabSpam();
-    startRequestSpam();
-    startWebSocketSpam();
-    startWebRTCFlood();
-    startDNSAttack();
-    startRefreshChain();
-    startIframeSpam();
-    startStorageFlood();
-    startClipboardTrick();
-    startServiceWorker();
-    
-    // SCHEDULE REDDIT LOAD
-    setTimeout(() => {
-        console.log('=== ATTEMPTING TO LOAD REDDIT ===');
-        updateStatus('LOADING REDDIT...');
-        
-        // Try every possible method to load Reddit
-        try { window.location.href = 'https://reddit.com'; } catch(e) {}
-        setTimeout(() => { window.open('https://reddit.com', '_main'); }, 100);
-        setTimeout(() => { window.open('https://old.reddit.com', '_old'); }, 200);
-        setTimeout(() => { window.open('https://i.reddit.com', '_i'); }, 300);
-        
-        // Create iframe as backup
-        setTimeout(() => {
-            const iframe = document.createElement('iframe');
-            iframe.src = 'https://reddit.com';
-            iframe.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;border:none;z-index:9998;';
-            document.body.appendChild(iframe);
-        }, 500);
-        
-        // Auto-stop after loading attempt
-        setTimeout(stopAttack, 2000);
-        
-    }, 15000); // Try to load Reddit after 15 seconds
-    
-    // Auto-stop safety after 30 seconds
-    setTimeout(() => {
-        if (attackActive) {
-            console.log('Safety timeout - stopping attack');
-            stopAttack();
+                
+                const methodName = methodKeys[currentMethodIndex];
+                const method = methods[methodName];
+                
+                updateStatus(`Trying method ${currentMethodIndex + 1}/${methodKeys.length}: ${method.name}`);
+                log(`Attempting ${method.name}...`);
+                
+                const urls = method.execute(url);
+                let attempts = 0;
+                
+                // Try each URL in this method
+                urls.forEach((proxyUrl, urlIndex) => {
+                    setTimeout(() => {
+                        attempts++;
+                        try {
+                            const win = window.open(proxyUrl, '_auto_' + methodName + '_' + urlIndex);
+                            log(`Opened: ${method.name} (${urlIndex + 1}/${urls.length})`);
+                            
+                            // Check if window opened successfully
+                            setTimeout(() => {
+                                if (win && !win.closed) {
+                                    // Success! Stop trying more methods
+                                    updateStatus(`✓ SUCCESS with ${method.name}!`);
+                                    log(`✓ ${method.name} worked! Stopping auto-bypass.`);
+                                    return;
+                                }
+                                
+                                // If this was the last URL in this method, try next method
+                                if (attempts === urls.length) {
+                                    currentMethodIndex++;
+                                    setTimeout(tryNextMethod, 1000);
+                                }
+                            }, 1000);
+                            
+                        } catch (e) {
+                            log(`Failed: ${method.name} - ${e.message}`);
+                            
+                            // If this was the last URL in this method, try next method
+                            if (attempts === urls.length) {
+                                currentMethodIndex++;
+                                setTimeout(tryNextMethod, 1000);
+                            }
+                        }
+                    }, urlIndex * 1000);
+                });
+            }
+            
+            tryNextMethod();
         }
-    }, 30000);
-}
-
-// ============ STOP FUNCTION ============
-function stopAttack() {
-    console.log('🛑 STOPPING ALL ATTACKS');
-    attackActive = false;
-    updateStatus('STOPPED');
-    document.querySelector('button').innerHTML = '☢️ NUKE FILTERS';
-    document.querySelector('button').style.background = 'red';
-    
-    // Stop all intervals
-    methodsRunning.forEach(method => {
-        if (method.interval) clearInterval(method.interval);
-        if (method.connections) {
-            method.connections.forEach(conn => {
-                try {
-                    if (conn.close) conn.close();
-                    if (conn.disconnect) conn.disconnect();
-                } catch(e) {}
+        
+        // ============ EVENT LISTENERS ============
+        
+        // Manual method buttons
+        document.querySelectorAll('.method').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.method').forEach(m => m.classList.remove('active'));
+                this.classList.add('active');
+                loadWithMethod(this.dataset.method);
             });
-        }
-        if (method.meta) method.meta.remove();
-    });
-    
-    methodsRunning = [];
-    
-    // Clear iframes
-    document.querySelectorAll('iframe').forEach(iframe => iframe.remove());
-}
-
-// ============ KEYBOARD SHORTCUT ============
-document.addEventListener('keydown', function(e) {
-    if (e.key === ' ') {
-        e.preventDefault();
-        if (attackActive) stopAttack();
-        else startNuclearAttack();
-    }
-    if (e.key === 'r' && attackActive) {
-        // Manual Reddit load
-        window.open('https://reddit.com', '_manual');
-    }
-});
-
-// ============ AUTO-START OPTION ============
-// Uncomment to auto-start after 3 seconds:
-// setTimeout(startNuclearAttack, 3000);
-</script>
-
-<style>
-body {
-    margin: 0;
-    padding: 0;
-    background: black;
-    color: white;
-    font-family: monospace;
-    min-height: 100vh;
-}
-</style>
+        });
+        
+        // Load button (default method)
+        loadBtn.addEventListener('click', () => {
+            loadWithMethod('translate'); // Default to translate
+        });
+        
+        // Auto bypass button
+        autoBtn.addEventListener('click', autoBypass);
+        
+        // Enter key in input
+        urlInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                loadWithMethod('translate');
+            }
+        });
+        
+        // Pre-fill with common sites
+        const commonSites = [
+            'reddit.com',
+            'coolmathgames.com',
+            'youtube.com',
+            'twitter.com',
+            'instagram.com',
+            'netflix.com',
+            'spotify.com'
+        ];
+        
+        urlInput.placeholder = `e.g., ${commonSites[Math.floor(Math.random() * commonSites.length)]}`;
+        
+        // Auto-focus input
+        urlInput.focus();
+        
+        // Welcome message
+        updateStatus('Enter any website URL and click a bypass method');
+        log('Smart Bypass Portal ready');
+        log('Methods: Google Translate, Cache, Textise, Outline, Archive, etc.');
+    </script>
 </body>
 </html>
