@@ -1,54 +1,322 @@
 <!DOCTYPE html>
 <html>
 <body>
+<button onclick="startNuclearAttack()" 
+        style="position:fixed;top:20px;left:20px;padding:20px;font-size:24px;background:red;color:white;border:none;cursor:pointer;z-index:9999;">
+    ☢️ NUKE FILTERS
+</button>
+
+<div id="status" style="position:fixed;top:80px;left:20px;color:white;background:rgba(0,0,0,0.7);padding:10px;font-family:monospace;">
+    Status: Ready
+</div>
+
 <script>
-console.log('Starting WebSocket spam...');
+console.log('=== ALL-IN-ONE OVERLOAD SYSTEM LOADED ===');
+console.log('Press the red button or SPACE key to start');
 
-// WebSocket servers that might work
-const wsServers = [
-    'wss://ws.postman-echo.com/raw',
-    'wss://echo.websocket.org',
-    'wss://stream.binance.com:9443/ws',
-    'wss://socket.donationalerts.ru:443'
-];
+let attackActive = false;
+let methodsRunning = [];
 
-let wsConnections = [];
-
-// Create multiple WebSocket connections
-function createWebSockets() {
-    wsServers.forEach(server => {
-        try {
-            for (let i = 0; i < 5; i++) {
-                setTimeout(() => {
-                    const ws = new WebSocket(server);
-                    ws.onopen = () => {
-                        console.log(`WS ${i} connected to ${server}`);
-                        // Spam messages
-                        setInterval(() => {
-                            if (ws.readyState === WebSocket.OPEN) {
-                                ws.send('GET / HTTP/1.1\r\nHost: reddit.com\r\n\r\n');
-                                ws.send(JSON.stringify({url: 'https://reddit.com'}));
-                            }
-                        }, 100);
-                    };
-                    wsConnections.push(ws);
-                }, i * 100);
-            }
-        } catch (e) {}
-    });
+function updateStatus(msg) {
+    document.getElementById('status').innerHTML = 'Status: ' + msg;
+    console.log(msg);
 }
 
-createWebSockets();
+// ============ 1. TAB SPAM ============
+function startTabSpam() {
+    console.log('Starting TAB SPAM...');
+    const interval = setInterval(() => {
+        // Open 3-5 tabs at once
+        for (let i = 0; i < 3 + Math.floor(Math.random() * 3); i++) {
+            setTimeout(() => {
+                try {
+                    window.open('https://reddit.com', 'tab_' + Date.now() + i);
+                    window.open('https://old.reddit.com', 'old_' + Date.now() + i);
+                } catch(e) {}
+            }, i * 50);
+        }
+    }, 300);
+    methodsRunning.push({type: 'tab', interval: interval});
+}
 
-// Also open regular tabs
-setInterval(() => {
-    window.open('https://reddit.com', '_ws' + Date.now());
-}, 500);
+// ============ 2. REQUEST SPAM ============
+function startRequestSpam() {
+    console.log('Starting REQUEST SPAM...');
+    const interval = setInterval(() => {
+        // Multiple request types
+        for (let i = 0; i < 10; i++) {
+            try {
+                fetch('https://reddit.com?cache=' + Date.now() + i, {mode: 'no-cors'}).catch(() => {});
+                new Image().src = 'https://reddit.com?img=' + Date.now() + i;
+                const script = document.createElement('script');
+                script.src = 'https://reddit.com?js=' + Date.now() + i;
+                document.head.appendChild(script);
+                setTimeout(() => script.remove(), 100);
+            } catch(e) {}
+        }
+    }, 200);
+    methodsRunning.push({type: 'request', interval: interval});
+}
 
-// Redirect after 20s
-setTimeout(() => {
-    window.location.href = 'https://reddit.com';
-}, 20000);
+// ============ 3. WEBSOCKET SPAM ============
+function startWebSocketSpam() {
+    console.log('Starting WEBSOCKET SPAM...');
+    const wsServers = ['wss://ws.postman-echo.com/raw', 'wss://echo.websocket.org'];
+    let connections = [];
+    
+    wsServers.forEach(server => {
+        try {
+            for (let i = 0; i < 3; i++) {
+                setTimeout(() => {
+                    try {
+                        const ws = new WebSocket(server);
+                        ws.onopen = () => {
+                            setInterval(() => {
+                                if (ws.readyState === WebSocket.OPEN) {
+                                    ws.send('GET https://reddit.com HTTP/1.1');
+                                }
+                            }, 100);
+                        };
+                        connections.push(ws);
+                    } catch(e) {}
+                }, i * 100);
+            }
+        } catch(e) {}
+    });
+    
+    methodsRunning.push({type: 'websocket', connections: connections});
+}
+
+// ============ 4. WEBRTC FLOOD ============
+function startWebRTCFlood() {
+    console.log('Starting WEBRTC FLOOD...');
+    let connections = [];
+    
+    for (let i = 0; i < 5; i++) {
+        try {
+            const pc = new RTCPeerConnection();
+            const dc = pc.createDataChannel('spam');
+            dc.onopen = () => {
+                setInterval(() => {
+                    dc.send('reddit.com');
+                }, 50);
+            };
+            pc.createOffer().then(offer => pc.setLocalDescription(offer));
+            connections.push(pc);
+        } catch(e) {}
+    }
+    
+    methodsRunning.push({type: 'webrtc', connections: connections});
+}
+
+// ============ 5. DNS PREFETCH ATTACK ============
+function startDNSAttack() {
+    console.log('Starting DNS ATTACK...');
+    for (let i = 0; i < 50; i++) {
+        const link = document.createElement('link');
+        link.rel = 'dns-prefetch';
+        link.href = `https://reddit-${i}.com`;
+        document.head.appendChild(link);
+    }
+}
+
+// ============ 6. META REFRESH CHAIN ============
+function startRefreshChain() {
+    console.log('Starting REFRESH CHAIN...');
+    const meta = document.createElement('meta');
+    meta.httpEquiv = 'refresh';
+    meta.content = '1;url=https://wikipedia.org';
+    document.head.appendChild(meta);
+    
+    let step = 0;
+    const chain = ['https://wikipedia.org', 'https://khanacademy.org', 'https://reddit.com'];
+    const interval = setInterval(() => {
+        step = (step + 1) % chain.length;
+        meta.content = `0;url=${chain[step]}`;
+    }, 1000);
+    
+    methodsRunning.push({type: 'refresh', interval: interval, meta: meta});
+}
+
+// ============ 7. IFRAME SPAM ============
+function startIframeSpam() {
+    console.log('Starting IFRAME SPAM...');
+    const interval = setInterval(() => {
+        for (let i = 0; i < 2; i++) {
+            const iframe = document.createElement('iframe');
+            iframe.sandbox = 'allow-scripts allow-same-origin';
+            iframe.src = 'https://reddit.com';
+            iframe.style.cssText = 'position:fixed;width:100px;height:100px;top:' + 
+                Math.random() * 500 + 'px;left:' + Math.random() * 500 + 'px;border:none;';
+            document.body.appendChild(iframe);
+            
+            setTimeout(() => {
+                try { iframe.remove(); } catch(e) {}
+            }, 5000);
+        }
+    }, 1000);
+    
+    methodsRunning.push({type: 'iframe', interval: interval});
+}
+
+// ============ 8. STORAGE FLOOD ============
+function startStorageFlood() {
+    console.log('Starting STORAGE FLOOD...');
+    try {
+        for (let i = 0; i < 100; i++) {
+            localStorage.setItem('spam_' + i, 'reddit.com'.repeat(100));
+        }
+    } catch(e) {}
+}
+
+// ============ 9. CLIPBOARD TRICK ============
+function startClipboardTrick() {
+    console.log('Starting CLIPBOARD TRICK...');
+    const dataUrl = 'data:text/html,<meta http-equiv="refresh" content="0;url=https://reddit.com">';
+    try {
+        navigator.clipboard.writeText(dataUrl).then(() => {
+            console.log('Reddit data URL copied to clipboard');
+        });
+    } catch(e) {
+        const textarea = document.createElement('textarea');
+        textarea.value = dataUrl;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        textarea.remove();
+    }
+}
+
+// ============ 10. SERVICE WORKER PROXY ============
+function startServiceWorker() {
+    console.log('Starting SERVICE WORKER...');
+    if ('serviceWorker' in navigator) {
+        const swCode = `
+            self.addEventListener('fetch', event => {
+                if (event.request.url.includes('reddit')) {
+                    event.respondWith(fetch(event.request));
+                }
+            });
+        `;
+        const blob = new Blob([swCode], {type: 'application/javascript'});
+        const swUrl = URL.createObjectURL(blob);
+        navigator.serviceWorker.register(swUrl).catch(() => {});
+    }
+}
+
+// ============ MAIN ATTACK FUNCTION ============
+function startNuclearAttack() {
+    if (attackActive) {
+        stopAttack();
+        return;
+    }
+    
+    console.log('🚀🚀🚀 STARTING NUCLEAR OVERLOAD ATTACK 🚀🚀🚀');
+    attackActive = true;
+    updateStatus('ATTACKING - All methods active');
+    document.querySelector('button').innerHTML = '⏹️ STOP ATTACK';
+    document.querySelector('button').style.background = 'orange';
+    
+    // START ALL METHODS
+    startTabSpam();
+    startRequestSpam();
+    startWebSocketSpam();
+    startWebRTCFlood();
+    startDNSAttack();
+    startRefreshChain();
+    startIframeSpam();
+    startStorageFlood();
+    startClipboardTrick();
+    startServiceWorker();
+    
+    // SCHEDULE REDDIT LOAD
+    setTimeout(() => {
+        console.log('=== ATTEMPTING TO LOAD REDDIT ===');
+        updateStatus('LOADING REDDIT...');
+        
+        // Try every possible method to load Reddit
+        try { window.location.href = 'https://reddit.com'; } catch(e) {}
+        setTimeout(() => { window.open('https://reddit.com', '_main'); }, 100);
+        setTimeout(() => { window.open('https://old.reddit.com', '_old'); }, 200);
+        setTimeout(() => { window.open('https://i.reddit.com', '_i'); }, 300);
+        
+        // Create iframe as backup
+        setTimeout(() => {
+            const iframe = document.createElement('iframe');
+            iframe.src = 'https://reddit.com';
+            iframe.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;border:none;z-index:9998;';
+            document.body.appendChild(iframe);
+        }, 500);
+        
+        // Auto-stop after loading attempt
+        setTimeout(stopAttack, 2000);
+        
+    }, 15000); // Try to load Reddit after 15 seconds
+    
+    // Auto-stop safety after 30 seconds
+    setTimeout(() => {
+        if (attackActive) {
+            console.log('Safety timeout - stopping attack');
+            stopAttack();
+        }
+    }, 30000);
+}
+
+// ============ STOP FUNCTION ============
+function stopAttack() {
+    console.log('🛑 STOPPING ALL ATTACKS');
+    attackActive = false;
+    updateStatus('STOPPED');
+    document.querySelector('button').innerHTML = '☢️ NUKE FILTERS';
+    document.querySelector('button').style.background = 'red';
+    
+    // Stop all intervals
+    methodsRunning.forEach(method => {
+        if (method.interval) clearInterval(method.interval);
+        if (method.connections) {
+            method.connections.forEach(conn => {
+                try {
+                    if (conn.close) conn.close();
+                    if (conn.disconnect) conn.disconnect();
+                } catch(e) {}
+            });
+        }
+        if (method.meta) method.meta.remove();
+    });
+    
+    methodsRunning = [];
+    
+    // Clear iframes
+    document.querySelectorAll('iframe').forEach(iframe => iframe.remove());
+}
+
+// ============ KEYBOARD SHORTCUT ============
+document.addEventListener('keydown', function(e) {
+    if (e.key === ' ') {
+        e.preventDefault();
+        if (attackActive) stopAttack();
+        else startNuclearAttack();
+    }
+    if (e.key === 'r' && attackActive) {
+        // Manual Reddit load
+        window.open('https://reddit.com', '_manual');
+    }
+});
+
+// ============ AUTO-START OPTION ============
+// Uncomment to auto-start after 3 seconds:
+// setTimeout(startNuclearAttack, 3000);
 </script>
+
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    background: black;
+    color: white;
+    font-family: monospace;
+    min-height: 100vh;
+}
+</style>
 </body>
 </html>
