@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>🔓 Ultimate Portal</title>
+    <title>Smart Auto Scan v2.0</title>
     <style>
         * {
             margin: 0;
@@ -11,250 +11,248 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #000;
-            color: #fff;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
             min-height: 100vh;
             padding: 20px;
         }
         
         .container {
-            max-width: 1000px;
+            max-width: 800px;
             margin: 0 auto;
         }
         
         header {
             text-align: center;
             margin-bottom: 30px;
-            padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px;
+            background: rgba(30, 41, 59, 0.8);
             border-radius: 15px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
         }
         
         h1 {
             font-size: 2.5rem;
+            color: #60a5fa;
             margin-bottom: 10px;
-            color: white;
         }
         
         .subtitle {
-            color: rgba(255,255,255,0.9);
-        }
-        
-        .search-section {
-            background: #111;
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            border: 1px solid #333;
+            color: #94a3b8;
         }
         
         .search-box {
             display: flex;
             gap: 10px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         
         #urlInput {
             flex: 1;
             padding: 15px;
             font-size: 16px;
-            border: 2px solid #444;
+            border: 2px solid #475569;
             border-radius: 10px;
-            background: #222;
-            color: white;
+            background: #1e293b;
+            color: #e2e8f0;
         }
         
         #urlInput:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #60a5fa;
         }
         
-        .main-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .main-btn {
-            padding: 15px 25px;
-            background: #3b82f6;
+        .scan-btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #10b981, #059669);
             color: white;
             border: none;
             border-radius: 10px;
-            font-size: 16px;
-            cursor: pointer;
-            flex: 1;
-            min-width: 200px;
+            font-size: 18px;
             font-weight: bold;
-        }
-        
-        .main-btn.auto {
-            background: linear-gradient(135deg, #10b981, #059669);
-        }
-        
-        .main-btn.direct {
-            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-        }
-        
-        .main-btn.vpn {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-        }
-        
-        .main-btn:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-        }
-        
-        .quick-links {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        
-        .quick-btn {
-            padding: 8px 15px;
-            background: #333;
-            color: #ccc;
-            border: 1px solid #444;
-            border-radius: 20px;
             cursor: pointer;
-            font-size: 14px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
         }
         
-        .quick-btn:hover {
-            background: #444;
-            color: white;
+        .scan-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
         }
         
-        .method-sections {
+        .scan-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        .scan-btn.stop {
+            background: linear-gradient(135deg, #ef4444, #b91c1c);
+        }
+        
+        .results {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+        
+        .results h2 {
+            color: #60a5fa;
+            margin-bottom: 20px;
+        }
+        
+        .result-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
             margin-top: 20px;
         }
         
-        .method-section {
-            background: #111;
-            border: 1px solid #333;
-            border-radius: 15px;
+        .result-card {
+            background: rgba(15, 23, 42, 0.8);
+            border: 2px solid #475569;
+            border-radius: 10px;
             padding: 20px;
+            transition: all 0.3s;
         }
         
-        .section-title {
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-            color: #60a5fa;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #333;
+        .result-card.working {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
         }
         
-        .method-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+        .result-card.failed {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+            opacity: 0.7;
         }
         
-        .method-item {
-            padding: 12px 15px;
-            background: #222;
-            border: 1px solid #333;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
+        .result-card.testing {
+            border-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.1);
+        }
+        
+        .result-status {
             display: flex;
             align-items: center;
             gap: 10px;
+            margin-bottom: 10px;
+            font-weight: bold;
         }
         
-        .method-item:hover {
-            background: #2a2a2a;
-            border-color: #667eea;
-            transform: translateX(5px);
+        .result-name {
+            font-size: 1.1rem;
+            color: #e2e8f0;
         }
         
-        .method-icon {
-            font-size: 1.2rem;
+        .result-desc {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-top: 5px;
         }
         
-        .status-area {
-            background: #111;
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 20px;
-            border: 1px solid #333;
-            min-height: 100px;
+        .use-btn {
+            width: 100%;
+            padding: 10px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-top: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .use-btn:hover {
+            background: #2563eb;
+        }
+        
+        .progress-container {
+            margin: 20px 0;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #475569;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #3b82f6);
+            width: 0%;
+            transition: width 0.3s;
         }
         
         .log-box {
-            background: #000;
-            border: 1px solid #333;
+            background: rgba(15, 23, 42, 0.8);
             border-radius: 10px;
-            padding: 15px;
-            margin-top: 15px;
-            max-height: 200px;
+            padding: 20px;
+            margin-top: 20px;
+            max-height: 300px;
             overflow-y: auto;
             font-family: monospace;
             font-size: 12px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
         }
         
         .log-entry {
             margin-bottom: 5px;
             padding: 5px 0;
-            border-bottom: 1px solid #222;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
         }
         
-        .success {
-            color: #10b981;
+        .success { color: #10b981; }
+        .error { color: #ef4444; }
+        .info { color: #60a5fa; }
+        .warning { color: #f59e0b; }
+        
+        .stats {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
         }
         
-        .error {
-            color: #ef4444;
+        .stat {
+            background: rgba(30, 41, 59, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
         }
         
-        .info {
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
             color: #60a5fa;
         }
         
-        .warning {
-            color: #f59e0b;
+        .stat-label {
+            font-size: 0.9rem;
+            color: #94a3b8;
         }
         
-        .working-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 20px;
+        .direct-result {
+            background: rgba(139, 92, 246, 0.2);
+            border: 2px solid #8b5cf6;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
         }
         
-        .work-btn {
-            padding: 10px 20px;
-            background: #10b981;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .work-btn.vpn {
-            background: #8b5cf6;
-        }
-        
-        @media (max-width: 768px) {
-            .method-sections {
-                grid-template-columns: 1fr;
-            }
-            
-            .main-buttons {
+        @media (max-width: 600px) {
+            .search-box {
                 flex-direction: column;
             }
             
-            .main-btn {
-                min-width: auto;
+            .result-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -262,673 +260,690 @@
 <body>
     <div class="container">
         <header>
-            <h1>🔓 Ultimate Portal</h1>
-            <p class="subtitle">All Methods • Auto Scan • Direct Access</p>
+            <h1>🤖 Smart Auto Scan v2.0</h1>
+            <p class="subtitle">Tests DIRECT first, then all proxy methods</p>
         </header>
         
-        <div class="search-section">
-            <div class="search-box">
-                <input type="text" id="urlInput" placeholder="Enter website URL (e.g., youtube.com)">
-                <button class="main-btn auto" id="autoBtn">🤖 AUTO SCAN ALL</button>
+        <div class="search-box">
+            <input type="text" id="urlInput" placeholder="Enter website URL (e.g., youtube.com)" value="youtube.com">
+        </div>
+        
+        <button class="scan-btn" id="scanBtn">🚀 START SMART SCAN</button>
+        
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value" id="totalMethods">0</div>
+                <div class="stat-label">Total Methods</div>
             </div>
-            
-            <div class="main-buttons">
-                <button class="main-btn direct" id="directBtn">🎯 DIRECT ACCESS</button>
-                <button class="main-btn vpn" id="fastBtn">⚡ FAST BYPASS</button>
+            <div class="stat">
+                <div class="stat-value" id="testedMethods">0</div>
+                <div class="stat-label">Tested</div>
             </div>
-            
-            <div class="quick-links">
-                <button class="quick-btn" data-url="youtube.com">YouTube</button>
-                <button class="quick-btn" data-url="reddit.com">Reddit</button>
-                <button class="quick-btn" data-url="twitter.com">Twitter</button>
-                <button class="quick-btn" data-url="coolmathgames.com">CoolMath</button>
-                <button class="quick-btn" data-url="discord.com">Discord</button>
-                <button class="quick-btn" data-url="netflix.com">Netflix</button>
-                <button class="quick-btn" data-url="instagram.com">Instagram</button>
-                <button class="quick-btn" data-url="spotify.com">Spotify</button>
+            <div class="stat">
+                <div class="stat-value" id="workingMethods">0</div>
+                <div class="stat-label">Working</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="directResult">❓</div>
+                <div class="stat-label">Direct Test</div>
             </div>
         </div>
         
-        <div class="method-sections">
-            <!-- Proxy Methods -->
-            <div class="method-section">
-                <div class="section-title">🌐 Proxy Methods</div>
-                <div class="method-list">
-                    <div class="method-item" data-method="translate">
-                        <span class="method-icon">🌐</span>
-                        Google Translate
-                    </div>
-                    <div class="method-item" data-method="archive">
-                        <span class="method-icon">📚</span>
-                        Wayback Machine
-                    </div>
-                    <div class="method-item" data-method="reader">
-                        <span class="method-icon">📖</span>
-                        Reader View
-                    </div>
-                    <div class="method-item" data-method="mobile">
-                        <span class="method-icon">📱</span>
-                        Mobile View
-                    </div>
-                </div>
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
             </div>
-            
-            <!-- VPN Methods -->
-            <div class="method-section">
-                <div class="section-title">🛡️ VPN Methods</div>
-                <div class="method-list">
-                    <div class="method-item" data-method="websocket">
-                        <span class="method-icon">🔌</span>
-                        WebSocket Tunnel
-                    </div>
-                    <div class="method-item" data-method="ssh">
-                        <span class="method-icon">🔒</span>
-                        SSH Tunnel
-                    </div>
-                    <div class="method-item" data-method="dns">
-                        <span class="method-icon">📡</span>
-                        DNS Tunnel
-                    </div>
-                    <div class="method-item" data-method="public">
-                        <span class="method-icon">🔄</span>
-                        Public Proxies
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Advanced Methods -->
-            <div class="method-section">
-                <div class="section-title">⚡ Advanced Methods</div>
-                <div class="method-list">
-                    <div class="method-item" data-method="textise">
-                        <span class="method-icon">📄</span>
-                        Textise Pro
-                    </div>
-                    <div class="method-item" data-method="pdf">
-                        <span class="method-icon">📑</span>
-                        PDF View
-                    </div>
-                    <div class="method-item" data-method="dataurl">
-                        <span class="method-icon">🔗</span>
-                        Data URL
-                    </div>
-                    <div class="method-item" data-method="amp">
-                        <span class="method-icon">⚡</span>
-                        AMP Cache
-                    </div>
-                </div>
+            <div id="progressText" style="text-align:center;margin-top:5px;color:#94a3b8;">
+                Ready to scan...
             </div>
         </div>
         
-        <div class="status-area">
-            <div id="statusText">Ready. Enter URL and select method.</div>
-            
-            <div class="working-buttons" id="workingButtons">
-                <!-- Working methods appear here -->
+        <div class="results" id="resultsSection" style="display:none;">
+            <h2>📊 Scan Results</h2>
+            <div id="directResultSection"></div>
+            <div class="result-grid" id="resultsGrid">
+                <!-- Results appear here -->
             </div>
-            
-            <div class="log-box" id="logBox">
-                <div class="log-entry info">System ready. Enter URL to begin.</div>
-            </div>
+        </div>
+        
+        <div class="log-box" id="logBox">
+            <div class="log-entry info">System ready. Enter URL and click START SMART SCAN.</div>
         </div>
     </div>
 
     <script>
-        // ============ ALL METHODS IN ONE LIBRARY ============
-        const ALL_METHODS = {
-            // Proxy Methods
-            translate: {
+        // ============ SMART METHOD LIBRARY ============
+        const SMART_METHODS = [
+            // PHASE 1: Direct Methods (Tested First)
+            {
+                id: 'direct',
+                name: 'Direct Connection',
+                icon: '🎯',
+                category: 'direct',
+                description: 'No proxy, connects directly',
+                phase: 1,
+                execute: function(url) {
+                    return [url]; // Just the direct URL
+                }
+            },
+            {
+                id: 'direct-window',
+                name: 'Direct Window',
+                icon: '🪟',
+                category: 'direct',
+                description: 'Direct window.open()',
+                phase: 1,
+                execute: function(url) {
+                    return [url];
+                }
+            },
+            
+            // PHASE 2: Reliable Proxies (Tested if direct fails)
+            {
+                id: 'translate',
                 name: 'Google Translate',
                 icon: '🌐',
-                execute: (url) => [
-                    `https://translate.google.com/translate?hl=en&sl=auto&tl=en&u=${encodeURIComponent(url)}`,
-                    `https://translate.googleusercontent.com/translate?hl=en&sl=auto&tl=en&u=${encodeURIComponent(url)}`
-                ]
-            },
-            archive: {
-                name: 'Wayback Machine',
-                icon: '📚',
-                execute: (url) => [
-                    `https://web.archive.org/web/${url}`,
-                    `https://web.archive.org/web/2024/${url}`,
-                    `https://archive.is/${url}`
-                ]
-            },
-            reader: {
-                name: 'Reader View',
-                icon: '📖',
-                execute: (url) => {
-                    const clean = url.replace('https://', '').replace('http://', '');
+                category: 'proxy',
+                description: 'Google Translate proxy',
+                phase: 2,
+                execute: function(url) {
                     return [
-                        `https://outline.com/${clean}`,
-                        `https://readermode.io/view?url=${encodeURIComponent(url)}`
+                        `https://translate.google.com/translate?hl=en&sl=auto&tl=en&u=${encodeURIComponent(url)}`
                     ];
                 }
             },
-            mobile: {
+            {
+                id: 'archive',
+                name: 'Wayback Machine',
+                icon: '📚',
+                category: 'archive',
+                description: 'Cached versions',
+                phase: 2,
+                execute: function(url) {
+                    return [
+                        `https://web.archive.org/web/${url}`,
+                        `https://archive.is/${url}`
+                    ];
+                }
+            },
+            
+            // PHASE 3: Alternative Proxies
+            {
+                id: 'mobile',
                 name: 'Mobile View',
                 icon: '📱',
-                execute: (url) => {
+                category: 'mobile',
+                description: 'Mobile version',
+                phase: 3,
+                execute: function(url) {
                     const clean = url.replace('https://', '').replace('http://', '');
                     return [
                         `https://m.${clean}`,
-                        `https://mobile.${clean}`,
-                        `https://www.google.com/amp/s/${clean}`
+                        `https://mobile.${clean}`
                     ];
                 }
             },
-            
-            // VPN Methods
-            websocket: {
-                name: 'WebSocket Tunnel',
-                icon: '🔌',
-                category: 'vpn',
-                execute: (url) => [
-                    `https://corsproxy.io/?${encodeURIComponent(url)}`,
-                    `https://proxy.cors.sh/${url}`,
-                    `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`
-                ]
-            },
-            ssh: {
-                name: 'SSH Tunnel',
-                icon: '🔒',
-                category: 'vpn',
-                execute: (url) => [
-                    `https://thingproxy.freeboard.io/fetch/${url}`,
-                    `https://yacdn.org/proxy/${url}`,
-                    `https://cors-anywhere.herokuapp.com/${url}`
-                ]
-            },
-            dns: {
-                name: 'DNS Tunnel',
-                icon: '📡',
-                category: 'vpn',
-                execute: (url) => [
-                    `https://api.codetabs.com/v1/proxy?quest=${url}`,
-                    `https://cors-proxy.htmldriven.com/?url=${encodeURIComponent(url)}`
-                ]
-            },
-            public: {
-                name: 'Public Proxies',
-                icon: '🔄',
-                category: 'vpn',
-                execute: (url) => {
-                    const encoded = encodeURIComponent(url);
+            {
+                id: 'reader',
+                name: 'Reader View',
+                icon: '📖',
+                category: 'reader',
+                description: 'Clean reading mode',
+                phase: 3,
+                execute: function(url) {
+                    const clean = url.replace('https://', '').replace('http://', '');
                     return [
-                        `https://corsproxy.io/?${encoded}`,
-                        `https://proxy.cors.sh/${url}`,
-                        `https://api.allorigins.win/get?url=${encoded}`,
-                        `https://cors-anywhere.herokuapp.com/${url}`,
-                        `https://thingproxy.freeboard.io/fetch/${url}`
+                        `https://outline.com/${clean}`
                     ];
                 }
             },
             
-            // Advanced Methods
-            textise: {
+            // PHASE 4: Advanced Methods
+            {
+                id: 'public-proxy',
+                name: 'Public Proxy',
+                icon: '🔄',
+                category: 'proxy',
+                description: 'Public proxy API',
+                phase: 4,
+                execute: function(url) {
+                    return [
+                        `https://corsproxy.io/?${encodeURIComponent(url)}`,
+                        `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`
+                    ];
+                }
+            },
+            {
+                id: 'textise',
                 name: 'Textise Pro',
                 icon: '📄',
-                execute: (url) => {
+                category: 'text',
+                description: 'Text-only render',
+                phase: 4,
+                execute: function(url) {
                     const clean = url.replace('https://', '').replace('http://', '');
                     return [
-                        `https://r.jina.ai/http://${clean}`,
-                        `https://r.jina.ai/https://${clean}`
-                    ];
-                }
-            },
-            pdf: {
-                name: 'PDF View',
-                icon: '📑',
-                execute: (url) => [
-                    `https://www.printfriendly.com/print/?source=${encodeURIComponent(url)}`,
-                    `https://pdfmyurl.com/saveaspdf?url=${encodeURIComponent(url)}`
-                ]
-            },
-            dataurl: {
-                name: 'Data URL',
-                icon: '🔗',
-                execute: (url) => {
-                    const html = `
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0;url=${url}">
-    <style>
-        body { 
-            margin: 0; padding: 40px; 
-            background: #000; 
-            color: #fff;
-            text-align: center;
-            font-family: Arial;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #333;
-            border-top-color: #3b82f6;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-    </style>
-</head>
-<body>
-    <div>
-        <div class="spinner"></div>
-        <h3>Loading ${new URL(url).hostname}</h3>
-        <p>If not redirected, <a href="${url}" style="color:#3b82f6;">click here</a></p>
-    </div>
-</body>
-</html>`;
-                    return ['data:text/html;charset=utf-8,' + encodeURIComponent(html)];
-                }
-            },
-            amp: {
-                name: 'AMP Cache',
-                icon: '⚡',
-                execute: (url) => {
-                    const clean = url.replace('https://', '').replace('http://', '');
-                    return [
-                        `https://www.google.com/amp/s/${clean}`,
-                        `https://cdn.ampproject.org/c/${url}`
+                        `https://r.jina.ai/http://${clean}`
                     ];
                 }
             }
-        };
+        ];
 
         // ============ STATE ============
-        let currentUrl = '';
-        let workingMethods = [];
-        let autoScanRunning = false;
+        let scanActive = false;
+        let scanResults = {};
+        let currentPhase = 1;
+        let directTestResult = null;
+        let stats = {
+            total: SMART_METHODS.length,
+            tested: 0,
+            working: 0
+        };
 
         // ============ DOM ELEMENTS ============
         const elements = {
             urlInput: document.getElementById('urlInput'),
-            autoBtn: document.getElementById('autoBtn'),
-            directBtn: document.getElementById('directBtn'),
-            fastBtn: document.getElementById('fastBtn'),
-            statusText: document.getElementById('statusText'),
+            scanBtn: document.getElementById('scanBtn'),
+            resultsSection: document.getElementById('resultsSection'),
+            resultsGrid: document.getElementById('resultsGrid'),
             logBox: document.getElementById('logBox'),
-            workingButtons: document.getElementById('workingButtons')
+            progressFill: document.getElementById('progressFill'),
+            progressText: document.getElementById('progressText'),
+            directResultSection: document.getElementById('directResultSection')
         };
 
-        // ============ UTILITIES ============
+        // ============ LOGGING ============
         function log(message, type = 'info') {
             const entry = document.createElement('div');
             entry.className = `log-entry ${type}`;
             entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
             elements.logBox.prepend(entry);
-            if (elements.logBox.children.length > 30) {
+            if (elements.logBox.children.length > 50) {
                 elements.logBox.removeChild(elements.logBox.lastChild);
             }
         }
 
-        function updateStatus(message) {
-            elements.statusText.textContent = message;
-            log(message, 'info');
+        function updateProgress(phase, methodIndex, totalMethods) {
+            const phaseWeight = phase * 0.25; // Each phase is 25%
+            const methodProgress = (methodIndex / totalMethods) * 0.25;
+            const progress = ((phase - 1) * 0.25 + methodProgress) * 100;
+            
+            elements.progressFill.style.width = progress + '%';
+            
+            let phaseText = '';
+            switch(phase) {
+                case 1: phaseText = 'Testing Direct Connection...'; break;
+                case 2: phaseText = 'Testing Reliable Proxies...'; break;
+                case 3: phaseText = 'Testing Alternative Methods...'; break;
+                case 4: phaseText = 'Testing Advanced Methods...'; break;
+            }
+            
+            elements.progressText.textContent = `${Math.round(progress)}% - ${phaseText}`;
         }
 
-        function formatUrl(input) {
-            let url = input.trim();
-            if (!url.includes('.')) return null;
-            if (!url.startsWith('http://') && !url.startsWith('https://')) {
-                url = 'https://' + url;
-            }
-            return url;
-        }
-
-        // ============ DIRECT ACCESS (No Proxy) ============
-        function directAccess() {
-            const input = elements.urlInput.value.trim();
-            if (!input) {
-                updateStatus('Please enter a URL');
-                return;
-            }
+        function updateStats() {
+            document.getElementById('totalMethods').textContent = stats.total;
+            document.getElementById('testedMethods').textContent = stats.tested;
+            document.getElementById('workingMethods').textContent = stats.working;
             
-            const url = formatUrl(input);
-            if (!url) {
-                updateStatus('Invalid URL');
-                return;
-            }
-            
-            updateStatus(`Trying DIRECT access to ${url}`);
-            log(`Attempting direct connection...`, 'info');
-            
-            // Try multiple direct methods
-            try {
-                // Method 1: Direct window
-                window.open(url, '_direct');
-                log('Opened direct window', 'success');
-                
-                // Method 2: Iframe (if window blocked)
-                setTimeout(() => {
-                    const iframe = document.createElement('iframe');
-                    iframe.src = url;
-                    iframe.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;border:none;';
-                    document.body.appendChild(iframe);
-                    log('Created direct iframe', 'info');
-                }, 500);
-                
-                // Method 3: Form submit
-                setTimeout(() => {
-                    const form = document.createElement('form');
-                    form.method = 'GET';
-                    form.action = url;
-                    form.target = '_blank';
-                    form.style.display = 'none';
-                    document.body.appendChild(form);
-                    form.submit();
-                    form.remove();
-                    log('Form submission attempted', 'info');
-                }, 1000);
-                
-            } catch (e) {
-                log(`Direct access failed: ${e.message}`, 'error');
-                updateStatus('Direct access blocked. Try proxy methods.');
+            if (directTestResult !== null) {
+                const directEl = document.getElementById('directResult');
+                directEl.textContent = directTestResult ? '✅' : '❌';
+                directEl.style.color = directTestResult ? '#10b981' : '#ef4444';
             }
         }
 
-        // ============ FAST BYPASS (Smart Selection) ============
-        function fastBypass() {
-            const input = elements.urlInput.value.trim();
-            if (!input) {
-                updateStatus('Please enter a URL');
-                return;
-            }
-            
-            const url = formatUrl(input);
-            if (!url) {
-                updateStatus('Invalid URL');
-                return;
-            }
-            
-            updateStatus(`FAST bypass for ${url}`);
-            log(`Starting fast bypass sequence...`, 'info');
-            
-            const domain = new URL(url).hostname;
-            
-            // Smart selection based on domain
-            let methodsToTry = [];
-            
-            if (domain.includes('youtube') || domain.includes('google')) {
-                // Google services often work with translate
-                methodsToTry = ['translate', 'mobile', 'amp'];
-            } else if (domain.includes('reddit') || domain.includes('twitter')) {
-                // Social media works with reader/mobile
-                methodsToTry = ['reader', 'mobile', 'textise'];
-            } else if (domain.includes('game') || domain.includes('play')) {
-                // Games need VPN/proxy
-                methodsToTry = ['public', 'websocket', 'dataurl'];
-            } else {
-                // General sites
-                methodsToTry = ['translate', 'archive', 'reader', 'public'];
-            }
-            
-            log(`Selected methods for ${domain}: ${methodsToTry.join(', ')}`, 'info');
-            
-            // Try selected methods quickly
-            methodsToTry.forEach((methodId, index) => {
-                setTimeout(() => {
-                    const method = ALL_METHODS[methodId];
-                    if (!method) return;
-                    
-                    log(`Trying ${method.name}...`, 'info');
-                    const urls = method.execute(url);
-                    
-                    // Just open first variant (fast mode)
-                    if (urls[0]) {
-                        try {
-                            window.open(urls[0], `fast_${methodId}`);
-                            log(`Opened ${method.name}`, 'success');
-                        } catch (e) {
-                            log(`${method.name} failed`, 'error');
-                        }
-                    }
-                }, index * 1000);
-            });
-            
-            updateStatus(`Fast bypass: Trying ${methodsToTry.length} smart methods`);
-        }
-
-        // ============ AUTO SCAN ALL ============
-        async function autoScanAll() {
-            if (autoScanRunning) {
-                updateStatus('Auto scan already running');
-                return;
-            }
-            
-            const input = elements.urlInput.value.trim();
-            if (!input) {
-                updateStatus('Please enter a URL');
-                return;
-            }
-            
-            const url = formatUrl(input);
-            if (!url) {
-                updateStatus('Invalid URL');
-                return;
-            }
-            
-            currentUrl = url;
-            autoScanRunning = true;
-            workingMethods = [];
-            elements.workingButtons.innerHTML = '';
-            
-            updateStatus(`🚀 AUTO SCANNING ALL METHODS...`);
-            log(`Starting auto scan for ${url}`, 'info');
-            log(`Testing ${Object.keys(ALL_METHODS).length} methods`, 'info');
-            
-            elements.autoBtn.disabled = true;
-            elements.autoBtn.textContent = '⏳ SCANNING...';
-            
-            const methodIds = Object.keys(ALL_METHODS);
-            let completed = 0;
-            
-            for (const methodId of methodIds) {
-                if (!autoScanRunning) break;
-                
-                const method = ALL_METHODS[methodId];
-                const progress = Math.round((completed / methodIds.length) * 100);
-                updateStatus(`Scanning: ${method.name} (${progress}%)`);
-                
-                try {
-                    const result = await testMethod(method, url);
-                    if (result.working) {
-                        workingMethods.push(result);
-                        addWorkingMethodButton(result);
-                        log(`✅ ${method.name} WORKS!`, 'success');
-                    } else {
-                        log(`❌ ${method.name} failed`, 'error');
-                    }
-                } catch (e) {
-                    log(`Error testing ${method.name}: ${e.message}`, 'error');
-                }
-                
-                completed++;
-            }
-            
-            // Complete
-            autoScanRunning = false;
-            updateStatus(`✅ SCAN COMPLETE: ${workingMethods.length} methods working`);
-            log(`Auto scan complete. ${workingMethods.length} working methods found.`, 'success');
-            
-            elements.autoBtn.disabled = false;
-            elements.autoBtn.textContent = '🤖 AUTO SCAN ALL';
-            
-            if (workingMethods.length === 0) {
-                log('No methods worked. Try DIRECT ACCESS or different URL.', 'warning');
-            }
-        }
-
-        // ============ METHOD TESTING ============
-        function testMethod(method, url) {
+        // ============ SMART TEST FUNCTION ============
+        async function smartTestMethod(method, url) {
             return new Promise((resolve) => {
-                const testId = `${method.name}_${Date.now()}`;
+                log(`Testing ${method.name}...`, 'info');
+                
+                const testId = `${method.id}_${Date.now()}`;
                 const urls = method.execute(url);
                 let tested = 0;
                 let success = false;
+                let workingUrl = null;
                 
                 urls.forEach((testUrl, index) => {
-                    setTimeout(() => {
+                    setTimeout(async () => {
                         if (success) return;
                         
                         tested++;
-                        log(`  → ${method.name} variant ${index + 1}`, 'info');
+                        log(`  → ${method.name} attempt ${index + 1}`, 'info');
                         
                         try {
-                            const win = window.open(testUrl, `test_${testId}_${index}`, 'width=400,height=300,left=100,top=100');
-                            
-                            setTimeout(() => {
-                                if (win && !win.closed) {
+                            // Special handling for direct methods
+                            if (method.category === 'direct') {
+                                // Test if we can directly access
+                                const canAccess = await testDirectAccess(testUrl);
+                                
+                                if (canAccess) {
                                     success = true;
-                                    win.close();
+                                    workingUrl = testUrl;
+                                    log(`  ✅ ${method.name} WORKS DIRECTLY!`, 'success');
                                     resolve({
                                         method: method,
                                         working: true,
-                                        url: testUrl,
-                                        variant: index + 1
+                                        url: workingUrl,
+                                        direct: true
                                     });
-                                } else if (tested === urls.length && !success) {
-                                    resolve({
-                                        method: method,
-                                        working: false,
-                                        url: null
-                                    });
+                                } else {
+                                    log(`  ❌ ${method.name} blocked`, 'error');
+                                    if (tested === urls.length && !success) {
+                                        resolve({
+                                            method: method,
+                                            working: false,
+                                            direct: true
+                                        });
+                                    }
                                 }
-                            }, 2000);
+                                
+                            } else {
+                                // Proxy methods - test window opening
+                                const win = window.open(testUrl, `test_${testId}_${index}`, 'width=500,height=400,left=100,top=100');
+                                
+                                setTimeout(() => {
+                                    if (win && !win.closed) {
+                                        success = true;
+                                        workingUrl = testUrl;
+                                        win.close();
+                                        log(`  ✅ ${method.name} WORKS via proxy!`, 'success');
+                                        resolve({
+                                            method: method,
+                                            working: true,
+                                            url: workingUrl,
+                                            direct: false
+                                        });
+                                    } else if (tested === urls.length && !success) {
+                                        log(`  ❌ ${method.name} failed`, 'error');
+                                        resolve({
+                                            method: method,
+                                            working: false,
+                                            direct: false
+                                        });
+                                    }
+                                }, 3000); // Longer timeout for proxies
+                            }
                             
-                        } catch (e) {
-                            log(`  → ${method.name} error: ${e.message}`, 'error');
+                        } catch (error) {
+                            log(`  ❌ ${method.name} error: ${error.message}`, 'error');
                             if (tested === urls.length && !success) {
                                 resolve({
                                     method: method,
                                     working: false,
-                                    url: null
+                                    direct: method.category === 'direct'
                                 });
                             }
                         }
-                    }, index * 3000);
+                    }, index * 4000); // 4 seconds between attempts
                 });
             });
         }
 
-        // ============ WORKING METHOD BUTTONS ============
-        function addWorkingMethodButton(result) {
-            const button = document.createElement('button');
-            button.className = `work-btn ${result.method.category === 'vpn' ? 'vpn' : ''}`;
-            button.innerHTML = `${result.method.icon} ${result.method.name}`;
-            
-            button.addEventListener('click', () => {
-                log(`Opening via ${result.method.name}...`, 'info');
-                window.open(result.url, `use_${result.method.name}`);
-            });
-            
-            elements.workingButtons.appendChild(button);
-            
-            // Add "OPEN ALL" button if first working method
-            if (workingMethods.length === 1) {
-                const openAllBtn = document.createElement('button');
-                openAllBtn.className = 'work-btn';
-                openAllBtn.innerHTML = '🚀 OPEN ALL WORKING';
-                openAllBtn.addEventListener('click', () => {
-                    log('Opening ALL working methods...', 'info');
-                    workingMethods.forEach((r, i) => {
-                        setTimeout(() => {
-                            window.open(r.url, `all_${i}`);
-                        }, i * 500);
-                    });
+        // ============ DIRECT ACCESS TEST ============
+        async function testDirectAccess(url) {
+            return new Promise((resolve) => {
+                log('Testing direct access...', 'info');
+                
+                // Try multiple direct access methods
+                let testsCompleted = 0;
+                let success = false;
+                
+                // Method 1: Fetch test (lightweight)
+                fetch(url, { 
+                    method: 'HEAD',
+                    mode: 'no-cors',
+                    cache: 'no-store'
+                }).then(() => {
+                    log('  → Fetch test passed', 'success');
+                    success = true;
+                    resolve(true);
+                }).catch(() => {
+                    testsCompleted++;
+                    log('  → Fetch test failed', 'error');
                 });
-                elements.workingButtons.appendChild(openAllBtn);
+                
+                // Method 2: Image load test
+                const img = new Image();
+                img.onload = () => {
+                    log('  → Image load test passed', 'success');
+                    success = true;
+                    resolve(true);
+                };
+                img.onerror = () => {
+                    testsCompleted++;
+                    log('  → Image load test failed', 'error');
+                };
+                img.src = url + '?test=' + Date.now();
+                
+                // Method 3: Script test
+                const script = document.createElement('script');
+                script.onload = () => {
+                    log('  → Script load test passed', 'success');
+                    success = true;
+                    resolve(true);
+                };
+                script.onerror = () => {
+                    testsCompleted++;
+                    log('  → Script load test failed', 'error');
+                };
+                script.src = url + '?js=' + Date.now();
+                document.head.appendChild(script);
+                setTimeout(() => script.remove(), 1000);
+                
+                // Timeout if all tests fail
+                setTimeout(() => {
+                    if (!success) {
+                        log('All direct tests failed', 'error');
+                        resolve(false);
+                    }
+                }, 5000);
+            });
+        }
+
+        // ============ DISPLAY RESULTS ============
+        function displayResult(result) {
+            const card = document.createElement('div');
+            card.className = `result-card ${result.working ? 'working' : 'failed'}`;
+            card.id = `result-${result.method.id}`;
+            
+            const statusIcon = result.working ? '✅' : '❌';
+            const statusText = result.working ? 'WORKS' : 'FAILED';
+            const statusColor = result.working ? '#10b981' : '#ef4444';
+            
+            card.innerHTML = `
+                <div class="result-status">
+                    <span style="font-size:1.5rem">${result.method.icon}</span>
+                    <span class="result-name">${result.method.name}</span>
+                    <span style="color:${statusColor};font-weight:bold">${statusIcon} ${statusText}</span>
+                </div>
+                <div class="result-desc">${result.method.description}</div>
+                ${result.working ? `<button class="use-btn" data-url="${result.url}">USE THIS METHOD</button>` : ''}
+            `;
+            
+            elements.resultsGrid.appendChild(card);
+            
+            // Add click handler for use button
+            if (result.working) {
+                setTimeout(() => {
+                    const useBtn = card.querySelector('.use-btn');
+                    if (useBtn) {
+                        useBtn.addEventListener('click', () => {
+                            log(`Opening with ${result.method.name}...`, 'info');
+                            window.open(result.url, `use_${result.method.id}`);
+                        });
+                    }
+                }, 100);
             }
         }
 
-        // ============ MANUAL METHOD CLICKS ============
-        function setupManualMethods() {
-            document.querySelectorAll('.method-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    const methodId = item.dataset.method;
-                    const method = ALL_METHODS[methodId];
-                    if (!method) return;
-                    
-                    const input = elements.urlInput.value.trim();
-                    if (!input) {
-                        updateStatus('Enter URL first');
-                        return;
-                    }
-                    
-                    const url = formatUrl(input);
-                    if (!url) {
-                        updateStatus('Invalid URL');
-                        return;
-                    }
-                    
-                    updateStatus(`Using ${method.name}...`);
-                    log(`Manual: ${method.name} for ${url}`, 'info');
-                    
-                    const urls = method.execute(url);
-                    urls.forEach((proxyUrl, index) => {
-                        setTimeout(() => {
-                            try {
-                                window.open(proxyUrl, `manual_${methodId}_${index}`);
-                                log(`Opened ${method.name} variant ${index + 1}`, 'success');
-                            } catch (e) {
-                                log(`${method.name} failed: ${e.message}`, 'error');
-                            }
-                        }, index * 500);
-                    });
+        function displayDirectResult(result) {
+            elements.directResultSection.innerHTML = '';
+            
+            const div = document.createElement('div');
+            div.className = 'direct-result';
+            
+            if (result.working) {
+                div.innerHTML = `
+                    <div style="display:flex;align-items:center;gap:15px;margin-bottom:10px;">
+                        <span style="font-size:2rem">🎯</span>
+                        <div>
+                            <h3 style="color:#10b981;margin:0;">DIRECT ACCESS WORKS!</h3>
+                            <p style="color:#94a3b8;margin:5px 0;">Site is not blocked. Use direct connection.</p>
+                        </div>
+                    </div>
+                    <button class="use-btn" style="background:#8b5cf6;" id="directUseBtn">
+                        🚀 OPEN DIRECTLY
+                    </button>
+                `;
+                
+                document.getElementById('directUseBtn').addEventListener('click', () => {
+                    window.open(result.url, '_direct');
                 });
-            });
+                
+                log('✅ DIRECT ACCESS AVAILABLE - Site is not blocked!', 'success');
+                
+            } else {
+                div.innerHTML = `
+                    <div style="display:flex;align-items:center;gap:15px;">
+                        <span style="font-size:2rem">🚫</span>
+                        <div>
+                            <h3 style="color:#ef4444;margin:0;">DIRECT ACCESS BLOCKED</h3>
+                            <p style="color:#94a3b8;margin:5px 0;">Site is blocked. Testing proxy methods...</p>
+                        </div>
+                    </div>
+                `;
+                
+                log('❌ Direct access blocked. Testing proxy methods...', 'warning');
+            }
+            
+            elements.directResultSection.appendChild(div);
+        }
+
+        // ============ MAIN SCAN FUNCTION ============
+        async function startSmartScan() {
+            if (scanActive) {
+                stopScan();
+                return;
+            }
+            
+            const input = elements.urlInput.value.trim();
+            if (!input || !input.includes('.')) {
+                log('Please enter a valid URL', 'error');
+                return;
+            }
+            
+            // Format URL
+            let url = input;
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                url = 'https://' + url;
+            }
+            
+            // Reset state
+            scanActive = true;
+            scanResults = {};
+            directTestResult = null;
+            stats.tested = 0;
+            stats.working = 0;
+            currentPhase = 1;
+            
+            // Clear UI
+            elements.resultsGrid.innerHTML = '';
+            elements.directResultSection.innerHTML = '';
+            elements.resultsSection.style.display = 'block';
+            
+            // Update button
+            elements.scanBtn.textContent = '⏹️ STOP SCAN';
+            elements.scanBtn.className = 'scan-btn stop';
+            
+            log(`🚀 Starting SMART SCAN for: ${url}`, 'info');
+            log('PHASE 1: Testing direct connection...', 'info');
+            
+            updateStats();
+            updateProgress(1, 0, 1);
+            
+            // ============ PHASE 1: DIRECT TEST ============
+            const directMethods = SMART_METHODS.filter(m => m.phase === 1);
+            
+            for (let i = 0; i < directMethods.length; i++) {
+                if (!scanActive) break;
+                
+                const method = directMethods[i];
+                updateProgress(1, i + 1, directMethods.length);
+                
+                try {
+                    const result = await smartTestMethod(method, url);
+                    scanResults[method.id] = result;
+                    stats.tested++;
+                    
+                    if (result.working) {
+                        stats.working++;
+                        directTestResult = true;
+                        displayDirectResult(result);
+                        displayResult(result);
+                        
+                        // If direct works, we can optionally skip proxy tests
+                        log('Direct access works! You can stop scan or continue testing proxies.', 'success');
+                        
+                        // Ask user if they want to continue with proxies
+                        setTimeout(() => {
+                            if (scanActive && confirm('Direct access works! Continue testing proxy methods?')) {
+                                // Continue with proxies
+                                log('Continuing with proxy tests...', 'info');
+                            } else {
+                                stopScan();
+                            }
+                        }, 1000);
+                        
+                        break; // Stop direct tests after first success
+                    }
+                    
+                } catch (error) {
+                    log(`Error testing ${method.name}: ${error.message}`, 'error');
+                }
+            }
+            
+            // If no direct method worked, set directTestResult to false
+            if (directTestResult === null) {
+                directTestResult = false;
+                displayDirectResult({ working: false, method: { name: 'Direct Access' } });
+                log('Direct access blocked. Starting proxy tests...', 'warning');
+            }
+            
+            updateStats();
+            
+            // ============ PHASE 2-4: PROXY TESTS (if direct failed or user wants) ============
+            if (scanActive && (!directTestResult || confirm('Test proxy methods anyway?'))) {
+                
+                // Get proxy methods by phase
+                for (let phase = 2; phase <= 4; phase++) {
+                    if (!scanActive) break;
+                    
+                    const phaseMethods = SMART_METHODS.filter(m => m.phase === phase);
+                    
+                    log(`\nPHASE ${phase}: Testing ${phaseMethods.length} methods...`, 'info');
+                    
+                    for (let i = 0; i < phaseMethods.length; i++) {
+                        if (!scanActive) break;
+                        
+                        const method = phaseMethods[i];
+                        updateProgress(phase, i + 1, phaseMethods.length);
+                        
+                        try {
+                            const result = await smartTestMethod(method, url);
+                            scanResults[method.id] = result;
+                            stats.tested++;
+                            
+                            if (result.working) {
+                                stats.working++;
+                                displayResult(result);
+                            }
+                            
+                        } catch (error) {
+                            log(`Error: ${error.message}`, 'error');
+                        }
+                        
+                        updateStats();
+                    }
+                }
+            }
+            
+            // ============ SCAN COMPLETE ============
+            if (scanActive) {
+                scanComplete();
+            }
+        }
+
+        function scanComplete() {
+            scanActive = false;
+            
+            const totalWorked = stats.working;
+            const directWorked = directTestResult === true;
+            
+            if (directWorked) {
+                elements.progressText.textContent = `✅ Scan complete: DIRECT ACCESS WORKS!`;
+                log('🎉 SCAN COMPLETE: Site is accessible directly!', 'success');
+            } else if (totalWorked > 0) {
+                elements.progressText.textContent = `✅ Scan complete: ${totalWorked} proxy methods work`;
+                log(`🎉 SCAN COMPLETE: ${totalWorked} methods work!`, 'success');
+            } else {
+                elements.progressText.textContent = `❌ Scan complete: No methods work`;
+                log('😞 SCAN COMPLETE: No methods work for this site.', 'error');
+            }
+            
+            elements.scanBtn.textContent = '🚀 START SMART SCAN';
+            elements.scanBtn.className = 'scan-btn';
+            
+            // Add summary
+            setTimeout(() => {
+                if (directWorked) {
+                    log('💡 TIP: Use DIRECT ACCESS for best performance', 'info');
+                } else if (totalWorked > 0) {
+                    log('💡 TIP: Click "USE THIS METHOD" on working cards', 'info');
+                } else {
+                    log('💡 TIP: Try a different URL or check your connection', 'info');
+                }
+            }, 500);
+        }
+
+        function stopScan() {
+            scanActive = false;
+            elements.scanBtn.textContent = '🚀 START SMART SCAN';
+            elements.scanBtn.className = 'scan-btn';
+            elements.progressText.textContent = 'Scan stopped';
+            log('Scan stopped by user', 'warning');
         }
 
         // ============ INITIALIZATION ============
         function init() {
-            // Event listeners
-            elements.autoBtn.addEventListener('click', autoScanAll);
-            elements.directBtn.addEventListener('click', directAccess);
-            elements.fastBtn.addEventListener('click', fastBypass);
+            // Start scan button
+            elements.scanBtn.addEventListener('click', startSmartScan);
             
-            // Quick links
-            document.querySelectorAll('.quick-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    elements.urlInput.value = btn.dataset.url;
-                    updateStatus(`Ready: ${btn.dataset.url}`);
-                });
-            });
-            
-            // Manual methods
-            setupManualMethods();
-            
-            // URL input
+            // Enter key in input
             elements.urlInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
-                    autoScanAll();
+                    startSmartScan();
                 }
             });
             
-            // Escape to stop scan
+            // Escape to stop
             document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && autoScanRunning) {
-                    autoScanRunning = false;
-                    updateStatus('Scan stopped');
-                    elements.autoBtn.disabled = false;
-                    elements.autoBtn.textContent = '🤖 AUTO SCAN ALL';
-                    log('Auto scan stopped by user', 'warning');
+                if (e.key === 'Escape' && scanActive) {
+                    stopScan();
                 }
             });
+            
+            // Quick test links
+            const testUrls = [
+                {name: 'YouTube', url: 'youtube.com'},
+                {name: 'Reddit', url: 'reddit.com'},
+                {name: 'Google', url: 'google.com'},
+                {name: 'Twitter', url: 'twitter.com'}
+            ];
+            
+            testUrls.forEach(test => {
+                const btn = document.createElement('button');
+                btn.className = 'quick-btn';
+                btn.style.cssText = 'margin:5px;padding:5px 10px;background:#475569;border:none;border-radius:5px;color:#e2e8f0;cursor:pointer;';
+                btn.textContent = test.name;
+                btn.addEventListener('click', () => {
+                    elements.urlInput.value = test.url;
+                    log(`Loaded: ${test.url}`, 'info');
+                });
+                document.querySelector('.search-box').appendChild(btn);
+            });
+            
+            // Initial stats
+            updateStats();
             
             // Welcome
-            updateStatus('Ready. Enter URL and choose method.');
-            log('Ultimate Portal loaded. All methods available.', 'info');
-            log('Tip: Use DIRECT ACCESS for unblocked sites like YouTube', 'info');
+            log('Smart Auto Scan v2.0 loaded', 'info');
+            log('Tests DIRECT first, then proxy methods', 'info');
+            log('Enter URL and click START SMART SCAN', 'info');
             
             // Auto-focus
             elements.urlInput.focus();
+            elements.urlInput.select();
         }
 
         // Start
