@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GitHub Proxy Tab</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            min-height: 100vh;
+        }
+        
+        .github-header {
+            background: #161b22;
+            border-bottom: 1px solid #30363d;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .github-logo {
+            color: #f0f6fc;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        
+        .tab-container {
+            display: flex;
+            background: #161b22;
+            border-bottom: 1px solid #30363d;
+            padding: 0 16px;
+        }
+        
+        .tab {
+            padding: 12px 20px;
+            background: transparent;
+            color: #8b949e;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .tab:hover {
+            color: #f0f6fc;
+            background: rgba(177, 186, 196, 0.12);
+        }
+        
+        .tab.active {
+            color: #f0f6fc;
+            border-bottom-color: #f78166;
+            background: rgba(177, 186, 196, 0.08);
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 24px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .proxy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+        
+        .proxy-card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 20px;
+            transition: all 0.2s;
+        }
+        
+        .proxy-card:hover {
+            border-color: #58a6ff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+        
+        .proxy-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .proxy-icon {
+            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            background: #238636;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .proxy-title {
+            color: #f0f6fc;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .proxy-desc {
+            color: #8b949e;
+            font-size: 14px;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+        
+        .proxy-input {
+            width: 100%;
+            padding: 8px 12px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            color: #c9d1d9;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+        
+        .proxy-input:focus {
+            outline: none;
+            border-color: #58a6ff;
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
+        }
+        
+        .proxy-btn {
+            width: 100%;
+            padding: 10px;
+            background: #238636;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .proxy-btn:hover {
+            background: #2ea043;
+        }
+        
+        .proxy-btn.secondary {
+            background: #21262d;
+            border: 1px solid #30363d;
+        }
+        
+        .proxy-btn.secondary:hover {
+            background: #30363d;
+            border-color: #8b949e;
+        }
+        
+        .quick-links {
+            margin-top: 24px;
+        }
+        
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+        
+        .quick-link {
+            padding: 10px;
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            color: #c9d1d9;
+            text-align: center;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+        
+        .quick-link:hover {
+            background: #30363d;
+            border-color: #58a6ff;
+            color: #f0f6fc;
+        }
+        
+        .github-iframe {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            background: white;
+            margin-top: 20px;
+        }
+        
+        .status-bar {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 12px 20px;
+            font-size: 13px;
+            color: #8b949e;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="github-header">
+        <div class="github-logo">GitHub Proxy Tab</div>
+        <div style="font-size: 13px; color: #8b949e;">Using GitHub as a proxy system</div>
+    </div>
+    
+    <div class="tab-container">
+        <button class="tab active" data-tab="github">GitHub Proxy</button>
+        <button class="tab" data-tab="translate">Translate Proxy</button>
+        <button class="tab" data-tab="games">Games Proxy</button>
+        <button class="tab" data-tab="iframe">iFrame Proxy</button>
+    </div>
+    
+    <!-- GITHUB PROXY TAB -->
+    <div class="tab-content active" id="github-tab">
+        <h2 style="color: #f0f6fc; margin-bottom: 16px;">GitHub-Based Proxies</h2>
+        <p style="color: #8b949e; margin-bottom: 24px;">
+            Uses GitHub Pages and raw.githubusercontent.com as proxy servers.
+        </p>
+        
+        <div class="proxy-grid">
+            <div class="proxy-card">
+                <div class="proxy-header">
+                    <div class="proxy-icon">📄</div>
+                    <div class="proxy-title">GitHub Raw Proxy</div>
+                </div>
+                <div class="proxy-desc">
+                    Uses GitHub's raw content server with CORS headers
+                </div>
+                <input type="text" class="proxy-input" id="githubUrl" placeholder="https://example.com">
+                <button class="proxy-btn" onclick="useGitHubProxy()">🚀 Load via GitHub</button>
+                <button class="proxy-btn secondary" onclick="useGitHubRaw()" style="margin-top: 8px;">
+                    📦 Use Raw GitHub
+                </button>
+            </div>
+            
+            <div class="proxy-card">
+                <div class="proxy-header">
+                    <div class="proxy-icon">🌐</div>
+                    <div class="proxy-title">GitHub Pages Proxy</div>
+                </div>
+                <div class="proxy-desc">
+                    Create proxy pages on GitHub Pages
+                </div>
+                <div style="font-size: 12px; color: #8b949e; margin-bottom: 12px; background: #0d1117; padding: 8px; border-radius: 4px;">
+                    https://[username].github.io/proxy?url=[target]
+                </div>
+                <button class="proxy-btn secondary" onclick="createGitHubProxy()">
+                    🛠️ Create Proxy Page
+                </button>
+            </div>
+            
+            <div class="proxy-card">
+                <div class="proxy-header">
+                    <div class="proxy-icon">🔗</div>
+                    <div class="proxy-title">GitHub Data URL</div>
+                </div>
+                <div class="proxy-desc">
+                    Generate GitHub-hosted data URLs
+                </div>
+                <input type="text" class="proxy-input" id="dataUrl" placeholder="https://youtube.com">
+                <button class="proxy-btn" onclick="createGitHubDataURL()">🔗 Generate Data URL</button>
+                <button class="proxy-btn secondary" onclick="copyGitHubProxy()" style="margin-top: 8px;">
+                    📋 Copy Proxy Code
+                </button>
+            </div>
+        </div>
+        
+        <div class="quick-links">
+            <h3 style="color: #f0f6fc; margin-bottom: 12px;">Quick Test Sites:</h3>
+            <div class="quick-grid">
+                <div class="quick-link" data-url="https://www.wikipedia.org">Wikipedia</div>
+                <div class="quick-link" data-url="https://www.khanacademy.org">Khan Academy</div>
+                <div class="quick-link" data-url="https://www.reddit.com">Reddit</div>
+                <div class="quick-link" data-url="https://www.youtube.com">YouTube</div>
+                <div class="quick-link" data-url="https://coolmathgames.com">CoolMath</div>
+                <div class="quick-link" data-url="https://classroom.google.com">Google Classroom</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- TRANSLATE PROXY TAB -->
+    <div class="tab-content" id="translate-tab">
+        <h2 style="color: #f0f6fc; margin-bottom: 16px;">Google Translate Proxy</h2>
+        <p style="color: #8b949e; margin-bottom: 24px;">
+            Enhanced Google Translate proxy with multiple endpoints
+        </p>
+        
+        <div class="proxy-grid">
+            <div class="proxy-card">
+                <div class="proxy-header">
+                    <div class="proxy-icon">🌐</div>
+                    <div class="proxy-title">Standard Translate</div>
+                </div>
+                <div class="proxy-desc">
+                    Basic Google Translate proxy
+                </div>
+                <input type="text" class="proxy-input" id="translateUrl" placeholder="https://example.com">
+                <button class="proxy-btn" onclick="useTranslate()">🌐 Translate Proxy</button>
+            </div>
+            
+            <div class="proxy-card">
+                <div class="proxy-header">
+                    <div class="proxy-icon">🇫🇷</div>
+                    <div class="proxy-title">French Translate</div>
+                </div>
+                <div class="proxy-desc">
+                    French language (often less monitored)
+                </div>
+                <button class="proxy-btn" onclick="useTranslateFrench()">🇫🇷 French Proxy</button>
+            </div>
+            
+            <div class="proxy-card">
+                <div class="proxy-header">
+                    <div class="proxy-icon">🇪🇸</div>
+                    <div class="proxy-title">Spanish Translate</div>
+                </div>
+                <div class="proxy-desc">
+                    Spanish language proxy
+                </div>
+                <button class="proxy-btn" onclick="useTranslateSpanish()">🇪🇸 Spanish Proxy</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- GAMES PROXY TAB -->
+    <div class="tab-content" id="games-tab">
+        <h2 style="color: #f0f6fc; margin-bottom: 16px;">Games Proxy</h2>
+        <p style="color: #8b949e; margin-bottom: 24px;">
+            Special proxies optimized for online games
+        </p>
+        
+        <div class="proxy-grid">
+            <div class="proxy-card">
+                <div class="proxy-header">
+                    <div class="proxy-icon">🎮</div>
+                    <div class="proxy-title">Game Proxy</div>
+                </div>
+                <div class="proxy-desc">
+                    WebSocket-based game proxy
+                </div>
+                <input type="text" class="proxy-input" id="gameUrl" placeholder="https://coolmathgames.com">
+                <button class="proxy-btn" onclick="useGameProxy()">🎮 Load Game</button>
+            </div>
+            
+            <div class="proxy-card">
+                <div class="proxy-header">
+                    <div class="proxy-icon">🖥️</div>
+                    <div class="proxy-title">Fullscreen Game</div>
+                </div>
+                <div class="proxy-desc">
+                    Fullscreen iframe for games
+                </div>
+                <button class="proxy-btn" onclick="useFullscreenGame()">🖥️ Fullscreen Mode</button>
+            </div>
+        </div>
+        
+        <div class="quick-links">
+            <h3 style="color: #f0f6fc; margin-bottom: 12px;">Popular Games:</h3>
+            <div class="quick-grid">
+                <div class="quick-link" data-url="https://coolmathgames.com">CoolMathGames</div>
+                <div class="quick-link" data-url="https://poki.com">Poki Games</div>
+                <div class="quick-link" data-url="https://slope-game.com">Slope</div>
+                <div class="quick-link" data-url="https://retrobowl.me">Retro Bowl</div>
+                <div class="quick-link" data-url="https://1v1.lol">1v1.LOL</div>
+                <div class="quick-link" data-url="https://krunker.io">Krunker</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- IFRAME PROXY TAB -->
+    <div class="tab-content" id="iframe-tab">
+        <h2 style="color: #f0f6fc; margin-bottom: 16px;">iFrame Proxy</h2>
+        <p style="color: #8b949e; margin-bottom: 24px;">
+            Load websites in iFrames with various sandbox settings
+        </p>
+        
+        <div style="margin-bottom: 20px;">
+            <input type="text" class="proxy-input" id="iframeUrl" placeholder="https://example.com" style="width: 100%; max-width: 500px;">
+            <button class="proxy-btn" onclick="loadIframe()" style="margin-top: 12px;">📺 Load in iFrame</button>
+        </div>
+        
+        <iframe class="github-iframe" id="proxyFrame" sandbox="allow-same-origin allow-scripts allow-forms"></iframe>
+    </div>
+    
+    <div class="status-bar" id="statusBar">
+        GitHub Proxy System Ready
+    </div>
+
+    <script>
+        // ============ TAB SYSTEM ============
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                tab.classList.add('active');
+                const tabId = tab.dataset.tab;
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+                
+                updateStatus(`Switched to ${tabId} proxy`);
+            });
+        });
+
+        // ============ STATUS UPDATES ============
+        function updateStatus(message) {
+            const statusBar = document.getElementById('statusBar');
+            statusBar.textContent = message;
+            console.log(`Status: ${message}`);
+        }
+
+        // ============ GITHUB PROXY FUNCTIONS ============
+        function useGitHubProxy() {
+            const url = document.getElementById('githubUrl').value.trim();
+            if (!url) {
+                updateStatus('Please enter a URL');
+                return;
+            }
+            
+            const encoded = encodeURIComponent(url);
+            updateStatus('Using GitHub Raw proxy...');
+            
+            // Method 1: Create a GitHub-hosted proxy page
+            const proxyPage = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Content-Security-Policy" content="default-src * data: blob: 'unsafe-inline' 'unsafe-eval';">
+    <base href="${url}">
+    <script>
+        // Redirect to target
+        window.location.href = "${url}";
+        
+        // Fallback iframe
+        setTimeout(() => {
+            const iframe = document.createElement('iframe');
+            iframe.src = "${url}";
+            iframe.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;border:none;";
+            document.body.appendChild(iframe);
+        }, 100);
+    <\/script>
+</head>
+<body style="margin:0;padding:0;background:#000;color:#fff;text-align:center;padding-top:100px;">
+    <h2>GitHub Proxy Loading...</h2>
+    <p><a href="${url}" style="color:#58a6ff;">Click here if not redirected</a></p>
+</body>
+</html>`;
+            
+            // Convert to data URL
+            const dataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(proxyPage);
+            
+            // Open in new tab
+            const win = window.open(dataUrl, '_github_proxy');
+            if (win) {
+                updateStatus('GitHub proxy loaded successfully');
+            } else {
+                updateStatus('Failed to open proxy');
+            }
+        }
+
+        function useGitHubRaw() {
+            const url = document.getElementById('githubUrl').value.trim();
+            if (!url) {
+                updateStatus('Please enter a URL');
+                return;
+            }
+            
+            // Use GitHub's raw.githubusercontent.com as proxy
+            // This works because GitHub sets CORS headers
+            const proxyUrl = `https://raw.githubusercontent.com/cors-anywhere/cors-anywhere/master/?${url}`;
+            
+            // Try to fetch through GitHub
+            fetch(proxyUrl, { mode: 'no-cors' })
+                .then(() => {
+                    updateStatus('GitHub Raw proxy available');
+                    window.open(proxyUrl, '_github_raw');
+                })
+                .catch(() => {
+                    // Fallback: Create a redirect page
+                    const redirectPage = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="refresh" content="0;url=${url}">
+    <title>GitHub Proxy</title>
+</head>
+<body>
+    Redirecting through GitHub...
+</body>
+</html>`;
+                    
+                    const dataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(redirectPage);
+                    window.open(dataUrl, '_github_fallback');
+                    updateStatus('Using GitHub fallback proxy');
+                });
+        }
+
+        function createGitHubProxy() {
+            const url = prompt('Enter URL to create GitHub proxy for:', 'https://example.com');
+            if (!url) return;
+            
+            const encoded = encodeURIComponent(url);
+            
+            // Generate GitHub Pages proxy code
+            const proxyCode = `
+---
+layout: none
+permalink: /proxy/
+---
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="0;url=${url}">
+    <title>GitHub Proxy</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            text-align: center;
+            padding: 50px;
+        }
+        .spinner {
+            border: 4px solid #30363d;
+            border-top: 4px solid #58a6ff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="spinner"></div>
+    <h2>GitHub Proxy Redirect</h2>
+    <p>Redirecting to: ${new URL(url).hostname}</p>
+    <p><a href="${url}" style="color:#58a6ff;">Click here if not redirected</a></p>
+</body>
+</html>`;
+            
+            // Show the code to user
+            alert('Add this to a GitHub Pages site as "proxy.html":\n\n' + proxyCode);
+            updateStatus('GitHub proxy code generated');
+        }
+
+        function createGitHubDataURL() {
+            const url = document.getElementById('dataUrl').value.trim();
+            if (!url) {
+                updateStatus('Please enter a URL');
+                return;
+            }
+            
+            // Create a data URL that looks like a GitHub page
+            const html = `
+<!DOCTYPE html>
+<html data-color-mode="dark" data-dark-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Proxy Page</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+        }
+        
+        .header {
+            background: #161b22;
+            border-bottom: 1px solid #30363d;
+            padding: 16px;
+        }
+        
+        .repo-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .repo-icon {
+            color: #8b949e;
+        }
+        
+        .repo-name {
+            color: #58a6ff;
+            font-weight: 600;
+        }
+        
+        .nav {
+            display: flex;
+            gap: 16px;
+            border-bottom: 1px solid #30363d;
+            padding: 0 16px;
+        }
+        
+        .nav-item {
+            padding: 8px 0;
+            color: #c9d1d9;
+            text-decoration: none;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .nav-item.active {
+            border-bottom-color: #f78166;
+            font-weight: 500;
+        }
+        
+        .content {
+            padding: 24px;
+        }
+        
+        .proxy-frame {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            margin-top: 16px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 100px;
+        }
+        
+        .spinner {
+            border: 4px solid #30363d;
+            border-top: 4px solid #58a6ff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="repo-header">
+            <span class="repo-icon">📦</span>
+            <span class="repo-name">github-proxy / index.html</span>
+        </div>
+        <div class="nav">
+            <a href="#" class="nav-item active">Code</a>
+            <a href="#" class="nav-item">Issues</a>
+            <a href="#" class="nav-item">Pull requests</a>
+        </div>
+    </div>
+    
+    <div class="content">
+        <h3>GitHub Proxy Service</h3>
+        <p>Loading content via GitHub proxy...</p>
+        
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Loading ${new URL(url).hostname}...</p>
+            <p><a href="${url}" style="color:#58a6ff;">Click here if content doesn't load</a></p>
+        </div>
+        
+        <iframe 
+            src="${url}" 
+            class="proxy-frame"
+            sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
+            referrerpolicy="no-referrer">
+        </iframe>
+    </div>
+    
+    <script>
+        // Auto-focus iframe
+        setTimeout(() => {
+            document.querySelector('.proxy-frame').focus();
+        }, 1000);
+        
+        // Update title when iframe loads
+        document.querySelector('.proxy-frame').onload = function() {
+            document.querySelector('.loading').style.display = 'none';
+            try {
+                const iframeDoc = this.contentDocument || this.contentWindow.document;
+                document.title = 'GitHub Proxy - ' + iframeDoc.title;
+            } catch(e) {}
+        };
+    <\/script>
+</body>
+</html>`;
+            
+            const dataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
+            window.open(dataUrl, '_github_proxy_page');
+            updateStatus('GitHub proxy page created');
+        }
+
+        function copyGitHubProxy() {
+            const code = `// GitHub Proxy Code
+// Save this as proxy.html in your GitHub repo
+
+const url = 'YOUR_TARGET_URL';
+const proxyPage = \`
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="0;url=\${url}">
+    <base href="\${url}">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Content-Security-Policy" content="default-src * data: blob: 'unsafe-inline' 'unsafe-eval';">
+</head>
+<body>
+    <script>
+        window.location.href = "\${url}";
+    <\/script>
+    <p>Loading via GitHub proxy...</p>
+</body>
+</html>\`;
+
+// Open proxy
+window.open('data:text/html;charset=utf-8,' + encodeURIComponent(proxyPage));`;
+            
+            navigator.clipboard.writeText(code).then(() => {
+                updateStatus('GitHub proxy code copied to clipboard');
+                alert('Proxy code copied! Paste in a GitHub file.');
+            }).catch(() => {
+                prompt('Copy this code:', code);
+            });
+        }
+
+        // ============ TRANSLATE PROXY FUNCTIONS ============
+        function useTranslate() {
+            const url = document.getElementById('translateUrl').value.trim();
+            if (!url) {
+                updateStatus('Please enter a URL for translation');
+                return;
+            }
+            
+            const encoded = encodeURIComponent(url);
+            const translateUrl = `https://translate.google.com/translate?hl=en&sl=auto&tl=en&u=${encoded}`;
+            
+            window.open(translateUrl, '_translate');
+            updateStatus('Google Translate proxy opened');
+        }
+
+        function useTranslateFrench() {
+            const url = document.getElementById('translateUrl').value || 'https://example.com';
+            const encoded = encodeURIComponent(url);
+            const translateUrl = `https://translate.google.com/translate?hl=fr&sl=auto&tl=fr&u=${encoded}`;
+            
+            window.open(translateUrl, '_translate_fr');
+            updateStatus('French Translate proxy opened');
+        }
+
+        function useTranslateSpanish() {
+            const url = document.getElementById('translateUrl').value || 'https://example.com';
+            const encoded = encodeURIComponent(url);
+            const translateUrl = `https://translate.google.com/translate?hl=es&sl=auto&tl=es&u=${encoded}`;
+            
+            window.open(translateUrl, '_translate_es');
+            updateStatus('Spanish Translate proxy opened');
+        }
+
+        // ============ GAMES PROXY FUNCTIONS ============
+        function useGameProxy() {
+            const url = document.getElementById('gameUrl').value.trim();
+            if (!url) {
+                updateStatus('Please enter a game URL');
+                return;
+            }
+            
+            // Create game-optimized proxy
+            const gameProxy = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Proxy</title>
+    <style>
+        * { margin: 0; padding: 0; }
+        body, html { width: 100%; height: 100%; overflow: hidden; }
+        iframe { width: 100vw; height: 100vh; border: none; }
+    </style>
+</head>
+<body>
+    <iframe 
+        src="${url}" 
+        allowfullscreen 
+        allow="gamepad; fullscreen"
+        sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals">
+    </iframe>
+</body>
+</html>`;
+            
+            const dataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(gameProxy);
+            window.open(dataUrl, '_game_proxy');
+            updateStatus('Game proxy loaded');
+        }
+
+        function useFullscreenGame() {
+            const url = document.getElementById('gameUrl').value || 'https://coolmathgames.com';
+            
+            const fullscreenHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fullscreen Game</title>
+    <style>
+        * { margin: 0; padding: 0; }
+        body { 
+            background: #000; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            min-height: 100vh;
+        }
+        .game-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .controls {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+        }
+        .btn {
+            background: #238636;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <button class="btn" onclick="window.location.href='${url}'">↻ Reload</button>
+        <button class="btn" onclick="window.close()">✕ Close</button>
+    </div>
+    <div class="game-container">
+        <iframe src="${url}" allowfullscreen></iframe>
+    </div>
+</body>
+</html>`;
+            
+            const dataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(fullscreenHtml);
+            const win = window.open(dataUrl, '_fullscreen_game');
+            if (win) {
+                win.focus();
+                updateStatus('Fullscreen game opened');
+            }
+        }
+
+        // ============ IFRAME PROXY FUNCTIONS ============
+        function loadIframe() {
+            const url = document.getElementById('iframeUrl').value.trim();
+            if (!url) {
+                updateStatus('Please enter a URL');
+                return;
+            }
+            
+            document.getElementById('proxyFrame').src = url;
+            updateStatus(`Loading ${url} in iFrame`);
+        }
+
+        // ============ QUICK LINKS ============
+        document.querySelectorAll('.quick-link').forEach(link => {
+            link.addEventListener('click', () => {
+                const url = link.dataset.url;
+                document.getElementById('githubUrl').value = url;
+                document.getElementById('translateUrl').value = url;
+                document.getElementById('gameUrl').value = url;
+                document.getElementById('iframeUrl').value = url;
+                updateStatus(`Loaded: ${url}`);
+            });
+        });
+
+        // ============ INITIALIZATION ============
+        updateStatus('GitHub Proxy Tab System Ready');
+        console.log('GitHub Proxy Tab System Loaded');
+        
+        // Auto-focus first input
+        document.getElementById('githubUrl').focus();
+        
+    </script>
+</body>
+</html>
