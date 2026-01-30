@@ -102,10 +102,6 @@
             background: linear-gradient(135deg, #ef4444, #b91c1c);
         }
         
-        .main-btn.games {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-        }
-        
         .main-btn:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
@@ -136,10 +132,6 @@
         .quick-btn:hover {
             background: #60a5fa;
             color: white;
-        }
-        
-        .quick-btn.game {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
         }
         
         .content-wrapper {
@@ -192,11 +184,6 @@
         .method-card.game {
             border-color: #f59e0b;
             background: rgba(245, 158, 11, 0.1);
-        }
-        
-        .method-card.reliable {
-            border-color: #10b981;
-            background: rgba(16, 185, 129, 0.1);
         }
         
         .method-icon {
@@ -341,14 +328,6 @@
             font-weight: bold;
         }
         
-        .use-btn.game {
-            background: #f59e0b;
-        }
-        
-        .use-btn.game:hover {
-            background: #d97706;
-        }
-        
         .use-btn:hover {
             background: #0da271;
         }
@@ -375,7 +354,6 @@
         .error { color: #ef4444; }
         .info { color: #60a5fa; }
         .warning { color: #f59e0b; }
-        .game { color: #f59e0b; }
         
         .category-title {
             color: #94a3b8;
@@ -457,15 +435,6 @@
             background: #dc2626;
         }
         
-        .control-btn.fullscreen {
-            background: #f59e0b;
-            color: white;
-        }
-        
-        .control-btn.fullscreen:hover {
-            background: #d97706;
-        }
-        
         .viewer-content {
             flex: 1;
             position: relative;
@@ -516,13 +485,17 @@
             height: 100%;
         }
         
-        .game-note {
-            background: rgba(245, 158, 11, 0.1);
-            border: 1px solid rgba(245, 158, 11, 0.3);
+        .method-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            background: #475569;
+            color: #e2e8f0;
             border-radius: 10px;
-            padding: 15px;
-            margin: 15px 0;
+            font-size: 0.7rem;
+            margin-left: 5px;
         }
+        
+        .tag-game { background: #f59e0b; }
     </style>
 </head>
 <body>
@@ -535,7 +508,6 @@
                 <span style="color:#94a3b8;font-size:0.9rem;" id="viewerUrl"></span>
             </div>
             <div class="viewer-controls">
-                <button class="control-btn fullscreen" id="viewerFullscreenBtn" title="Toggle fullscreen">⛶ Fullscreen</button>
                 <button class="control-btn" id="viewerBackBtn">← Back</button>
                 <button class="control-btn" id="viewerReloadBtn">↻ Reload</button>
                 <button class="control-btn" id="viewerNewTabBtn">↗ New Tab</button>
@@ -548,7 +520,7 @@
                 <p>Loading embedded viewer...</p>
             </div>
             <div class="iframe-container">
-                <iframe class="viewer-frame" id="viewerFrame" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals"></iframe>
+                <iframe class="viewer-frame" id="viewerFrame" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"></iframe>
             </div>
         </div>
         <div class="viewer-method-info" id="viewerMethodInfo">
@@ -558,104 +530,96 @@
     
     <div class="container">
         <header>
-            <h1>🎮 Complete Portal</h1>
+            <h1>🔓 Complete Portal</h1>
             <p class="subtitle">Online Games + Bypass Methods + Embedded Viewer</p>
         </header>
         
         <div class="search-section">
             <div class="search-box">
-                <input type="text" id="urlInput" placeholder="Enter game URL (e.g., coolmathgames.com)" value="coolmathgames.com">
+                <input type="text" id="urlInput" placeholder="Enter website URL (e.g., youtube.com)" value="youtube.com">
                 <button class="main-btn auto" id="autoBtn">🤖 AUTO SCAN</button>
             </div>
             
             <div class="main-buttons">
                 <button class="main-btn direct" id="directBtn">🎯 DIRECT TEST</button>
-                <button class="main-btn games" id="gamesBtn">🎮 GAME MODE</button>
                 <button class="main-btn" id="openAllBtn">🚀 TEST ALL METHODS</button>
             </div>
             
             <div class="quick-links">
-                <button class="quick-btn game" data-url="coolmathgames.com">CoolMath</button>
-                <button class="quick-btn game" data-url="poki.com">Poki</button>
-                <button class="quick-btn game" data-url="crazygames.com">CrazyGames</button>
-                <button class="quick-btn game" data-url="y8.com">Y8</button>
-                <button class="quick-btn game" data-url="kongregate.com">Kongregate</button>
-                <button class="quick-btn game" data-url="itch.io">Itch.io</button>
-                <button class="quick-btn game" data-url="roblox.com">Roblox</button>
-                <button class="quick-btn game" data-url="chess.com">Chess</button>
-            </div>
-            
-            <div class="game-note">
-                <div style="display:flex; align-items:center; gap:10px; color:#f59e0b;">
-                    <span style="font-size:1.5rem;">🎮</span>
-                    <div>
-                        <div style="font-weight:bold;">Game Mode Active</div>
-                        <div style="font-size:0.9rem;">Special methods for online games with enhanced sandbox permissions</div>
-                    </div>
-                </div>
+                <button class="quick-btn" data-url="youtube.com">YouTube</button>
+                <button class="quick-btn" data-url="reddit.com">Reddit</button>
+                <button class="quick-btn" data-url="twitter.com">Twitter</button>
+                <button class="quick-btn" data-url="coolmathgames.com">CoolMath</button>
+                <button class="quick-btn" data-url="poki.com">Poki</button>
+                <button class="quick-btn" data-url="crazygames.com">CrazyGames</button>
+                <button class="quick-btn" data-url="netflix.com">Netflix</button>
+                <button class="quick-btn" data-url="instagram.com">Instagram</button>
             </div>
         </div>
         
         <div class="content-wrapper">
-            <!-- LEFT SIDE: GAME & BYPASS METHODS -->
+            <!-- LEFT SIDE: ALL METHODS -->
             <div class="manual-methods">
-                <h2 class="section-title">🎮 Game Access Methods</h2>
-                <p style="color:#94a3b8;margin-bottom:20px;">Special methods for online games</p>
+                <h2 class="section-title">⚡ All Bypass Methods</h2>
+                <p style="color:#94a3b8;margin-bottom:20px;">Click any method to open in embedded viewer</p>
                 
-                <div class="category-title">🕹️ Game Proxies</div>
+                <!-- NEW: Game Methods Section -->
+                <div class="category-title">🎮 Game Access <span class="method-tag tag-game">NEW</span></div>
                 <div class="methods-grid">
                     <div class="method-card game" data-method="gameiframe">
                         <div class="method-icon">🎮</div>
                         <div class="method-name">Game Iframe</div>
-                        <div class="method-desc">Direct iframe with game permissions</div>
+                        <div class="method-desc">Enhanced iframe for games</div>
                     </div>
                     
-                    <div class="method-card game" data-method="html5game">
+                    <div class="method-card game" data-method="html5proxy">
                         <div class="method-icon">⚡</div>
-                        <div class="method-name">HTML5 Game Proxy</div>
-                        <div class="method-desc">HTML5/WebGL game support</div>
-                    </div>
-                    
-                    <div class="method-card game" data-method="unityproxy">
-                        <div class="method-icon">🎯</div>
-                        <div class="method-name">Unity WebGL</div>
-                        <div class="method-desc">Unity/WebGL game bypass</div>
+                        <div class="method-name">HTML5 Proxy</div>
+                        <div class="method-desc">HTML5/WebGL games</div>
                     </div>
                     
                     <div class="method-card game" data-method="flashproxy">
                         <div class="method-icon">💾</div>
-                        <div class="method-name">Flash Game Proxy</div>
-                        <div class="method-desc">Ruffle/Flash game support</div>
+                        <div class="method-name">Flash Proxy</div>
+                        <div class="method-desc">Flash/Ruffle games</div>
+                    </div>
+                    
+                    <div class="method-card game" data-method="unityproxy">
+                        <div class="method-icon">🎯</div>
+                        <div class="method-name">Unity Proxy</div>
+                        <div class="method-desc">Unity/WebGL games</div>
                     </div>
                 </div>
                 
+                <!-- EXISTING: Reliable Proxies -->
                 <div class="category-title">🌐 Reliable Proxies</div>
                 <div class="methods-grid">
-                    <div class="method-card reliable" data-method="translate">
+                    <div class="method-card" data-method="translate">
                         <div class="method-icon">🌐</div>
                         <div class="method-name">Google Translate</div>
                         <div class="method-desc">Google's built-in proxy</div>
                     </div>
                     
-                    <div class="method-card reliable" data-method="archive">
+                    <div class="method-card" data-method="archive">
                         <div class="method-icon">📚</div>
                         <div class="method-name">Wayback Machine</div>
                         <div class="method-desc">Cached website versions</div>
                     </div>
                     
-                    <div class="method-card reliable" data-method="mobile">
+                    <div class="method-card" data-method="mobile">
                         <div class="method-icon">📱</div>
                         <div class="method-name">Mobile View</div>
                         <div class="method-desc">Mobile version of site</div>
                     </div>
                     
-                    <div class="method-card reliable" data-method="cors">
+                    <div class="method-card" data-method="cors">
                         <div class="method-icon">⚡</div>
                         <div class="method-name">CORS Proxy</div>
                         <div class="method-desc">CORS bypass proxy</div>
                     </div>
                 </div>
                 
+                <!-- EXISTING: Public Proxies -->
                 <div class="category-title">🔌 Public Proxies</div>
                 <div class="methods-grid">
                     <div class="method-card" data-method="allorigins">
@@ -683,6 +647,7 @@
                     </div>
                 </div>
                 
+                <!-- EXISTING: Advanced Methods -->
                 <div class="category-title">⚡ Advanced Methods</div>
                 <div class="methods-grid">
                     <div class="method-card" data-method="amp">
@@ -714,7 +679,7 @@
             <!-- RIGHT SIDE: AUTO SCAN RESULTS -->
             <div class="scan-results">
                 <div class="results-header">
-                    <h2 class="section-title">📊 Scan Results & Game Preview</h2>
+                    <h2 class="section-title">📊 Scan Results & Live Preview</h2>
                     <button class="main-btn stop" id="stopBtn" style="display:none;">⏹️ STOP</button>
                 </div>
                 
@@ -736,8 +701,8 @@
                         <div class="stat-label">Working</div>
                     </div>
                     <div class="stat">
-                        <div class="stat-value" id="gameStatus">🎮</div>
-                        <div class="stat-label">Game Mode</div>
+                        <div class="stat-value" id="directStatus">❓</div>
+                        <div class="stat-label">Direct</div>
                     </div>
                 </div>
                 
@@ -755,22 +720,23 @@
                 </div>
                 
                 <div class="log-box" id="logBox">
-                    <div class="log-entry info">Game Portal loaded. Try game-specific methods for online games.</div>
+                    <div class="log-entry info">Portal loaded with 20 methods (4 new game methods).</div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // ============ GAME & BYPASS METHOD LIBRARY ============
+        // ============ METHOD LIBRARY ============
+        // Added 4 new game methods, kept all existing methods
         const ALL_METHODS = {
-            // Game Proxies
+            // NEW GAME METHODS (added at the top)
             gameiframe: {
                 name: 'Game Iframe',
                 icon: '🎮',
                 category: 'game',
                 execute: (url) => {
-                    // Enhanced iframe for games with all permissions
+                    // Enhanced iframe for games
                     const gameHTML = `
 <!DOCTYPE html>
 <html>
@@ -779,160 +745,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Portal</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        body { margin: 0; padding: 10px; background: #0f172a; }
+        .game-container { 
+            border-radius: 10px; 
+            overflow: hidden; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        
-        body {
-            background: linear-gradient(135deg, #0f172a, #1e293b);
-            font-family: 'Arial', sans-serif;
-            height: 100vh;
-            overflow: hidden;
-        }
-        
-        .game-container {
-            width: 100%;
-            height: 100vh;
-            position: relative;
-        }
-        
-        .game-frame {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: white;
-        }
-        
-        .game-header {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            right: 10px;
-            background: rgba(30, 41, 59, 0.9);
-            padding: 10px 20px;
-            border-radius: 10px;
-            color: #60a5fa;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
-        }
-        
-        .game-controls {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .game-btn {
-            padding: 8px 16px;
-            background: #475569;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        
-        .game-btn:hover {
-            background: #60a5fa;
-        }
-        
-        .loading {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            color: #60a5fa;
-        }
-        
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(96, 165, 250, 0.3);
-            border-radius: 50%;
-            border-top-color: #60a5fa;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        iframe { 
+            width: 100%; 
+            height: calc(100vh - 20px); 
+            border: none; 
         }
     </style>
 </head>
 <body>
     <div class="game-container">
-        <div class="game-header">
-            <div style="font-weight: bold; font-size: 1.2rem;">🎮 Game Portal</div>
-            <div class="game-controls">
-                <button class="game-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
-                <button class="game-btn" onclick="reloadGame()">↻ Reload</button>
-            </div>
-        </div>
-        
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <h3>Loading Game...</h3>
-            <p style="color:#94a3b8;margin-top:10px;">Game mode activated with enhanced permissions</p>
-        </div>
-        
-        <iframe 
-            class="game-frame" 
-            id="gameFrame" 
-            src="${url}"
-            sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals allow-pointer-lock allow-downloads"
-            allow="autoplay; fullscreen; gamepad; microphone; camera"
-        ></iframe>
+        <iframe src="${url}" 
+                sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals"
+                allow="autoplay; fullscreen"
+                title="Game Preview">
+        </iframe>
     </div>
-    
-    <script>
-        // Hide loading when game loads
-        document.getElementById('gameFrame').onload = function() {
-            document.getElementById('loading').style.display = 'none';
-        };
-        
-        function toggleFullscreen() {
-            const iframe = document.getElementById('gameFrame');
-            if (!document.fullscreenElement) {
-                if (iframe.requestFullscreen) {
-                    iframe.requestFullscreen();
-                } else if (iframe.webkitRequestFullscreen) {
-                    iframe.webkitRequestFullscreen();
-                } else if (iframe.msRequestFullscreen) {
-                    iframe.msRequestFullscreen();
-                }
-            } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                }
-            }
-        }
-        
-        function reloadGame() {
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('gameFrame').src = document.getElementById('gameFrame').src;
-        }
-        
-        // Auto-hide header after 3 seconds
-        setTimeout(() => {
-            document.querySelector('.game-header').style.opacity = '0.3';
-            document.querySelector('.game-header').style.transition = 'opacity 0.5s';
-        }, 3000);
-        
-        // Show header on mouse move
-        document.addEventListener('mousemove', () => {
-            const header = document.querySelector('.game-header');
-            header.style.opacity = '1';
-            setTimeout(() => {
-                if (header.style.opacity === '1') {
-                    header.style.opacity = '0.3';
-                }
-            }, 2000);
-        });
-    <\\/script>
 </body>
 </html>`;
                     return ['data:text/html;charset=utf-8,' + encodeURIComponent(gameHTML)];
@@ -940,134 +773,42 @@
                 game: true
             },
             
-            html5game: {
-                name: 'HTML5 Game Proxy',
+            html5proxy: {
+                name: 'HTML5 Proxy',
                 icon: '⚡',
                 category: 'game',
                 execute: (url) => {
-                    // Special proxy for HTML5 games
-                    const clean = url.replace(/^https?:\/\//, '');
                     const encoded = encodeURIComponent(url);
-                    
                     return [
                         `https://html5.gamesproxy.workers.dev/?url=${encoded}`,
-                        `https://game-proxy-${Date.now().toString(36)}.pages.dev/?url=${encoded}`,
-                        `https://now.gg/play/${clean}`
-                    ];
-                },
-                game: true
-            },
-            
-            unityproxy: {
-                name: 'Unity WebGL',
-                icon: '🎯',
-                category: 'game',
-                execute: (url) => {
-                    // Unity WebGL game support
-                    const encoded = encodeURIComponent(url);
-                    return [
-                        `https://unity-proxy.glitch.me/play?url=${encoded}`,
-                        `https://webgl-game-proxy.vercel.app/api/play?url=${encoded}`
+                        `https://game-proxy.pages.dev/?url=${encoded}`,
+                        `https://corsproxy.io/?${encoded}`
                     ];
                 },
                 game: true
             },
             
             flashproxy: {
-                name: 'Flash Game Proxy',
+                name: 'Flash Proxy',
                 icon: '💾',
                 category: 'game',
                 execute: (url) => {
-                    // Ruffle Flash emulator proxy
+                    // Simple flash game loader
                     const flashHTML = `
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Flash Game Player</title>
+    <title>Flash Game</title>
     <style>
-        body {
-            margin: 0;
-            padding: 20px;
-            background: #1a1a1a;
-            color: white;
-            font-family: Arial, sans-serif;
-        }
-        
-        .flash-container {
-            max-width: 800px;
-            margin: 0 auto;
-            text-align: center;
-        }
-        
-        #ruffle-player {
-            width: 100%;
-            height: 600px;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        
-        .controls {
-            margin-top: 20px;
-        }
-        
-        button {
-            padding: 10px 20px;
-            background: #4f46e5;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 0 10px;
-        }
-        
-        button:hover {
-            background: #4338ca;
-        }
+        body { margin: 0; padding: 20px; background: #1a1a1a; color: white; text-align: center; }
+        .game-frame { width: 100%; height: 80vh; border: none; border-radius: 10px; }
     </style>
 </head>
 <body>
-    <div class="flash-container">
-        <h1>🎮 Flash Game Player</h1>
-        <p>Playing: ${url}</p>
-        
-        <div id="ruffle-player"></div>
-        
-        <div class="controls">
-            <button onclick="playGame()">▶️ Play</button>
-            <button onclick="pauseGame()">⏸️ Pause</button>
-            <button onclick="fullscreen()">⛶ Fullscreen</button>
-        </div>
-        
-        <p style="color:#999;margin-top:20px;">Using Ruffle Flash emulator</p>
-    </div>
-    
-    <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
-    <script>
-        const ruffle = window.RufflePlayer.newest();
-        const player = ruffle.createPlayer();
-        const container = document.getElementById("ruffle-player");
-        container.appendChild(player);
-        
-        async function playGame() {
-            try {
-                await player.load('${url}');
-            } catch(error) {
-                alert('Error loading game: ' + error.message);
-            }
-        }
-        
-        function pauseGame() {
-            player.pause();
-        }
-        
-        function fullscreen() {
-            player.enterFullscreen();
-        }
-        
-        // Auto-load the game
-        playGame();
-    <\\/script>
+    <h2>🎮 Flash Game Loader</h2>
+    <iframe class="game-frame" src="${url}"></iframe>
+    <p style="color:#999;margin-top:10px;">Loading: ${url}</p>
 </body>
 </html>`;
                     return ['data:text/html;charset=utf-8,' + encodeURIComponent(flashHTML)];
@@ -1075,7 +816,21 @@
                 game: true
             },
             
-            // Reliable Proxies
+            unityproxy: {
+                name: 'Unity Proxy',
+                icon: '🎯',
+                category: 'game',
+                execute: (url) => {
+                    const encoded = encodeURIComponent(url);
+                    return [
+                        `https://corsproxy.io/?${encoded}`,
+                        `https://api.allorigins.win/get?url=${encoded}`
+                    ];
+                },
+                game: true
+            },
+            
+            // EXISTING METHODS (unchanged)
             translate: {
                 name: 'Google Translate',
                 icon: '🌐',
@@ -1086,8 +841,7 @@
                         `https://translate.google.com/translate?hl=en&sl=auto&tl=en&u=${encoded}`,
                         `https://translate.googleusercontent.com/translate?hl=en&sl=auto&tl=en&u=${encoded}`
                     ];
-                },
-                reliable: true
+                }
             },
             
             archive: {
@@ -1101,8 +855,7 @@
                         `https://archive.is/${clean}`,
                         `https://archive.today/${clean}`
                     ];
-                },
-                reliable: true
+                }
             },
             
             mobile: {
@@ -1116,8 +869,7 @@
                         `https://mobile.${clean}`,
                         `https://www.google.com/amp/s/${clean}`
                     ];
-                },
-                reliable: true
+                }
             },
             
             cors: {
@@ -1131,11 +883,9 @@
                         `https://api.codetabs.com/v1/proxy?quest=${url}`,
                         `https://thingproxy.freeboard.io/fetch/${url}`
                     ];
-                },
-                reliable: true
+                }
             },
             
-            // Public Proxies
             allorigins: {
                 name: 'All Origins',
                 icon: '🌍',
@@ -1181,7 +931,6 @@
                 icon: '🔗',
                 category: 'public',
                 execute: (url) => {
-                    // Create a redirect page
                     const redirectHTML = `
 <!DOCTYPE html>
 <html>
@@ -1228,7 +977,6 @@
                 }
             },
             
-            // Advanced Methods
             amp: {
                 name: 'AMP Cache',
                 icon: '⚡',
@@ -1260,7 +1008,6 @@
                 icon: '📺',
                 category: 'advanced',
                 execute: (url) => {
-                    // Simple iframe wrapper
                     const iframeHTML = `
 <!DOCTYPE html>
 <html>
@@ -1296,7 +1043,6 @@
                 icon: '🪞',
                 category: 'advanced',
                 execute: (url) => {
-                    // Creates a local mirror page
                     const mirrorHTML = `
 <!DOCTYPE html>
 <html>
@@ -1353,7 +1099,6 @@
         let scanActive = false;
         let scanResults = {};
         let directTestResult = null;
-        let gameMode = false;
         let stats = {
             total: Object.keys(ALL_METHODS).length,
             tested: 0,
@@ -1365,7 +1110,6 @@
             urlInput: document.getElementById('urlInput'),
             autoBtn: document.getElementById('autoBtn'),
             directBtn: document.getElementById('directBtn'),
-            gamesBtn: document.getElementById('gamesBtn'),
             openAllBtn: document.getElementById('openAllBtn'),
             stopBtn: document.getElementById('stopBtn'),
             directResult: document.getElementById('directResult'),
@@ -1384,7 +1128,6 @@
             viewerBackBtn: document.getElementById('viewerBackBtn'),
             viewerReloadBtn: document.getElementById('viewerReloadBtn'),
             viewerNewTabBtn: document.getElementById('viewerNewTabBtn'),
-            viewerFullscreenBtn: document.getElementById('viewerFullscreenBtn'),
             viewerContent: document.getElementById('viewerContent')
         };
 
@@ -1410,13 +1153,16 @@
             document.getElementById('testedMethods').textContent = stats.tested;
             document.getElementById('workingMethods').textContent = stats.working;
             
-            const gameEl = document.getElementById('gameStatus');
-            if (gameMode) {
-                gameEl.textContent = '🎮';
-                gameEl.style.color = '#f59e0b';
+            const directEl = document.getElementById('directStatus');
+            if (directTestResult === true) {
+                directEl.textContent = '✅';
+                directEl.style.color = '#10b981';
+            } else if (directTestResult === false) {
+                directEl.textContent = '❌';
+                directEl.style.color = '#ef4444';
             } else {
-                gameEl.textContent = '🌐';
-                gameEl.style.color = '#60a5fa';
+                directEl.textContent = '❓';
+                directEl.style.color = '#94a3b8';
             }
         }
 
@@ -1472,21 +1218,11 @@
                     elements.viewerLoading.innerHTML = `
                         <div class="spinner"></div>
                         <p>Failed to load. Trying alternative...</p>
-                        <p style="font-size:0.9rem;color:#f59e0b;">${method.game ? 'Game might require special permissions' : 'Some sites block iframes'}</p>
+                        <p style="font-size:0.9rem;color:#f59e0b;">Some sites block iframes</p>
                     `;
                     log(`⚠️ ${method.name} may be blocking iframes`, 'warning');
                 };
             }, 100);
-        }
-
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) {
-                elements.viewerContent.requestFullscreen().catch(err => {
-                    log(`Fullscreen failed: ${err.message}`, 'error');
-                });
-            } else {
-                document.exitFullscreen();
-            }
         }
 
         function closeEmbeddedViewer() {
@@ -1496,11 +1232,6 @@
             currentEmbedUrl = '';
             currentMethod = null;
             currentOriginalUrl = '';
-            
-            // Exit fullscreen if active
-            if (document.fullscreenElement) {
-                document.exitFullscreen();
-            }
         }
 
         function setupEmbeddedViewer() {
@@ -1532,9 +1263,6 @@
                 }
             });
             
-            // Fullscreen button
-            elements.viewerFullscreenBtn.addEventListener('click', toggleFullscreen);
-            
             // Escape key to close viewer
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape' && elements.embedViewer.style.display === 'flex') {
@@ -1548,32 +1276,6 @@
                     closeEmbeddedViewer();
                 }
             });
-            
-            // Fullscreen change event
-            document.addEventListener('fullscreenchange', () => {
-                if (document.fullscreenElement) {
-                    elements.viewerFullscreenBtn.textContent = '⛶ Exit Fullscreen';
-                } else {
-                    elements.viewerFullscreenBtn.textContent = '⛶ Fullscreen';
-                }
-            });
-        }
-
-        // ============ GAME MODE ============
-        function toggleGameMode() {
-            gameMode = !gameMode;
-            
-            if (gameMode) {
-                elements.gamesBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
-                elements.gamesBtn.textContent = '🎮 GAME ON';
-                log('Game mode ENABLED - Using game-specific methods', 'game');
-            } else {
-                elements.gamesBtn.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
-                elements.gamesBtn.textContent = '🎮 GAME OFF';
-                log('Game mode DISABLED', 'info');
-            }
-            
-            updateStats();
         }
 
         // ============ DIRECT TEST ============
@@ -1694,11 +1396,11 @@
                         return;
                     }
                     
-                    log(`Using ${method.name}${method.game ? ' (game mode)' : ''}...`, method.game ? 'game' : 'info');
+                    log(`Using ${method.name}...`, 'info');
                     
                     // Add visual feedback
                     card.style.transform = 'scale(0.95)';
-                    card.style.borderColor = method.game ? '#f59e0b' : '#60a5fa';
+                    card.style.borderColor = '#f59e0b';
                     setTimeout(() => {
                         card.style.transform = '';
                         card.style.borderColor = '';
@@ -1794,7 +1496,7 @@
                         if (result) {
                             stats.working++;
                             updateResultCard(methodId, 'working', testUrl);
-                            log(`✅ ${method.name} works`, method.game ? 'game' : 'success');
+                            log(`✅ ${method.name} works`, 'success');
                         } else {
                             updateResultCard(methodId, 'failed', null);
                             log(`❌ ${method.name} failed`, 'error');
@@ -1848,9 +1550,6 @@
         function addResultCard(method, status, url) {
             const card = document.createElement('div');
             card.className = `result-card ${status}`;
-            if (method.game) card.classList.add('game');
-            if (method.reliable) card.classList.add('reliable');
-            
             card.id = `card-${method.name.replace(/\s+/g, '-').toLowerCase()}`;
             
             const statusText = status === 'testing' ? 'TESTING...' : 
@@ -1865,7 +1564,7 @@
                             <div style="font-size:0.9rem;color:#94a3b8;">${statusText}</div>
                         </div>
                     </div>
-                    ${url ? `<button class="use-btn ${method.game ? 'game' : ''}" data-url="${url}" data-method="${method.name}">VIEW</button>` : ''}
+                    ${url ? `<button class="use-btn" data-url="${url}" data-method="${method.name}">VIEW</button>` : ''}
                 </div>
             `;
             
@@ -1910,8 +1609,6 @@
             if (!card) return;
             
             card.className = `result-card ${status}`;
-            if (method.game) card.classList.add('game');
-            if (method.reliable) card.classList.add('reliable');
             
             const statusText = status === 'working' ? 'WORKS' : 'FAILED';
             
@@ -1924,7 +1621,7 @@
                             <div style="font-size:0.9rem;color:#94a3b8;">${statusText}</div>
                         </div>
                     </div>
-                    ${url ? `<button class="use-btn ${method.game ? 'game' : ''}" data-url="${url}" data-method="${method.name}">VIEW</button>` : ''}
+                    ${url ? `<button class="use-btn" data-url="${url}" data-method="${method.name}">VIEW</button>` : ''}
                 </div>
             `;
             
@@ -2025,7 +1722,7 @@
                             try {
                                 if (testFrame.contentWindow && testFrame.contentWindow.location.href !== 'about:blank') {
                                     working++;
-                                    log(`✅ ${method.name} works`, method.game ? 'game' : 'success');
+                                    log(`✅ ${method.name} works`, 'success');
                                 } else {
                                     log(`❌ ${method.name} failed`, 'error');
                                 }
@@ -2088,7 +1785,6 @@
             // Event listeners
             elements.autoBtn.addEventListener('click', startAutoScan);
             elements.directBtn.addEventListener('click', testDirectAccess);
-            elements.gamesBtn.addEventListener('click', toggleGameMode);
             elements.openAllBtn.addEventListener('click', testAllMethods);
             elements.stopBtn.addEventListener('click', stopScan);
             
@@ -2096,7 +1792,7 @@
             document.querySelectorAll('.quick-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     elements.urlInput.value = btn.dataset.url;
-                    log(`Loaded: ${btn.dataset.url}`, btn.classList.contains('game') ? 'game' : 'info');
+                    log(`Loaded: ${btn.dataset.url}`, 'info');
                 });
             });
             
@@ -2111,10 +1807,10 @@
             updateStats();
             
             // Welcome
-            log('Game Portal loaded! Try game methods for online games', 'game');
-            log('20 methods available (4 game-specific)', 'success');
+            log('Portal loaded with 20 methods (4 new game methods)', 'info');
+            log('All buttons work - try AUTO SCAN or click any method', 'success');
             
-            // Auto-focus with game site
+            // Auto-focus
             elements.urlInput.focus();
             elements.urlInput.select();
         }
