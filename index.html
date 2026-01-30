@@ -561,309 +561,57 @@
                     const clean = url.replace(/^https?:\/\//, '');
                     
                     // IMPROVED READER VIEW OPTIONS:
-                    // 1. Enhanced iframe-based reader with better styling
-                    const enhancedReader = `
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reader View: ${clean}</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background: #f5f5f5;
-        }
-        
-        .reader-header {
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
-            color: white;
-            padding: 2rem;
-            border-radius: 10px;
-            margin-bottom: 2rem;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        
-        .reader-header h1 {
-            font-size: 1.8rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .reader-header .url {
-            font-family: monospace;
-            font-size: 0.9rem;
-            opacity: 0.9;
-            word-break: break-all;
-        }
-        
-        .reader-controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 1rem;
-            flex-wrap: wrap;
-        }
-        
-        .control-btn {
-            padding: 8px 16px;
-            background: white;
-            border: 2px solid #4f46e5;
-            color: #4f46e5;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-        
-        .control-btn:hover {
-            background: #4f46e5;
-            color: white;
-        }
-        
-        .reader-content {
-            background: white;
-            border-radius: 10px;
-            padding: 2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            min-height: 500px;
-        }
-        
-        .loader {
-            text-align: center;
-            padding: 3rem;
-        }
-        
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #e0e0e0;
-            border-top-color: #4f46e5;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 1rem;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .error-message {
-            color: #dc2626;
-            padding: 1rem;
-            background: #fee2e2;
-            border-radius: 5px;
-            margin: 1rem 0;
-        }
-        
-        .backup-link {
-            display: inline-block;
-            margin-top: 1rem;
-            padding: 10px 20px;
-            background: #4f46e5;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-        
-        .backup-link:hover {
-            background: #3730a3;
-        }
-    </style>
-</head>
-<body>
-    <div class="reader-header">
-        <h1>📖 Reader View</h1>
-        <p class="url">${url}</p>
-    </div>
-    
-    <div class="reader-controls">
-        <button class="control-btn" onclick="loadOriginal()">Original Site</button>
-        <button class="control-btn" onclick="toggleDarkMode()">Dark Mode</button>
-        <button class="control-btn" onclick="increaseFont()">A+</button>
-        <button class="control-btn" onclick="decreaseFont()">A-</button>
-        <button class="control-btn" onclick="printPage()">Print</button>
-    </div>
-    
-    <div class="reader-content" id="contentFrame">
-        <div class="loader">
-            <div class="spinner"></div>
-            <p>Loading reader view...</p>
-            <p style="margin-top: 1rem; font-size: 0.9rem;">
-                If this takes too long, try the <a href="${url}" class="backup-link">direct link</a>
-            </p>
-        </div>
-    </div>
-
-    <script>
-        let fontSize = 16;
-        let darkMode = false;
-        
-        function loadOriginal() {
-            window.open('${url}', '_blank');
-        }
-        
-        function toggleDarkMode() {
-            darkMode = !darkMode;
-            document.body.style.backgroundColor = darkMode ? '#1e293b' : '#f5f5f5';
-            document.body.style.color = darkMode ? '#e2e8f0' : '#333';
-            document.querySelector('.reader-content').style.backgroundColor = darkMode ? '#0f172a' : 'white';
-            document.querySelector('.reader-content').style.color = darkMode ? '#cbd5e1' : '#333';
-        }
-        
-        function increaseFont() {
-            fontSize += 2;
-            document.querySelector('.reader-content').style.fontSize = fontSize + 'px';
-        }
-        
-        function decreaseFont() {
-            fontSize = Math.max(12, fontSize - 2);
-            document.querySelector('.reader-content').style.fontSize = fontSize + 'px';
-        }
-        
-        function printPage() {
-            window.print();
-        }
-        
-        // Load content using multiple methods
-        async function loadContent() {
-            const contentDiv = document.getElementById('contentFrame');
-            
-            // Method 1: Try to fetch via text proxy
-            try {
-                const response = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('${url}'));
-                const data = await response.json();
-                
-                // Simple content extractor - remove scripts and styles
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(data.contents, 'text/html');
-                
-                // Remove unwanted elements
-                ['script', 'style', 'nav', 'header', 'footer', 'iframe', 'form', 'button'].forEach(tag => {
-                    doc.querySelectorAll(tag).forEach(el => el.remove());
-                });
-                
-                // Clean up images
-                doc.querySelectorAll('img').forEach(img => {
-                    img.style.maxWidth = '100%';
-                    img.style.height = 'auto';
-                });
-                
-                // Set clean content
-                contentDiv.innerHTML = '<div style="padding: 20px;">' + doc.body.innerHTML + '</div>';
-                return;
-                
-            } catch (e) {
-                console.log('Text proxy failed:', e);
-            }
-            
-            // Method 2: Use iframe fallback
-            contentDiv.innerHTML = \`
-                <div style="padding: 10px;">
-                    <h3>Using iframe fallback...</h3>
-                    <iframe 
-                        src="https://r.jina.ai/http://${clean}" 
-                        style="width:100%; height:600px; border:none; border-radius:10px;"
-                        sandbox="allow-same-origin allow-scripts"
-                        title="Reader view"
-                    ></iframe>
-                </div>
-            \`;
-        }
-        
-        // Try to load content
-        loadContent().catch(e => {
-            document.getElementById('contentFrame').innerHTML = \`
-                <div class="error-message">
-                    <h3>Failed to load reader view</h3>
-                    <p>\${e.message}</p>
-                    <p>Try one of these alternatives:</p>
-                    <div style="margin-top: 10px;">
-                        <a href="\${url}" class="backup-link">Original Site</a>
-                        <a href="https://web.archive.org/web/\${url}" class="backup-link" style="margin-left: 10px;">Archive</a>
-                        <a href="https://translate.google.com/translate?hl=en&sl=auto&tl=en&u=\${encodeURIComponent(url)}" 
-                           class="backup-link" style="margin-left: 10px;">
-                            Google Translate
-                        </a>
-                    </div>
-                </div>
-            \`;
-        });
-    </script>
-</body>
-</html>`;
                     
-                    // 2. Alternative: Google AMP reader mode
-                    const ampReader = `https://www.google.com/amp/s/${clean}`;
-                    
-                    // 3. Alternative: Simple iframe with reader styling
-                    const simpleReader = `
+                    // Simple reader view with iframe
+                    const simpleReaderHTML = `
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <title>Reader: ${clean}</title>
     <style>
-        body {
-            margin: 0;
-            padding: 20px;
-            font-family: Georgia, 'Times New Roman', serif;
-            line-height: 1.8;
-            max-width: 700px;
-            margin: 0 auto;
-            background: #f8f9fa;
-        }
-        .container {
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
-        }
-        h1 { color: #2d3748; margin-bottom: 20px; }
-        p { margin-bottom: 1.5rem; color: #4a5568; }
-        .site-info {
-            background: #e2e8f0;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 30px;
-            font-family: monospace;
-            word-break: break-all;
-        }
+        body { margin: 0; padding: 20px; font-family: sans-serif; background: #f5f5f5; }
+        .header { background: #4f46e5; color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        .controls { display: flex; gap: 10px; margin-bottom: 20px; }
+        .btn { padding: 10px 20px; background: white; border: 2px solid #4f46e5; color: #4f46e5; border-radius: 5px; cursor: pointer; }
+        .btn:hover { background: #4f46e5; color: white; }
+        .content { background: white; padding: 20px; border-radius: 10px; height: 80vh; }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="header">
         <h1>📖 Reader View</h1>
-        <div class="site-info">Loading: ${url}</div>
-        <iframe 
-            src="https://r.jina.ai/http://${clean}"
-            style="width:100%; height:80vh; border:none;"
-            sandbox="allow-same-origin allow-scripts"
-        ></iframe>
-        <div style="margin-top:20px; text-align:center;">
-            <a href="${url}" style="color:#4f46e5; text-decoration:none;">Open Original Site</a>
-        </div>
+        <p>${url}</p>
     </div>
+    <div class="controls">
+        <button class="btn" onclick="window.open('${url}')">Original</button>
+        <button class="btn" onclick="toggleDark()">Dark Mode</button>
+    </div>
+    <div class="content">
+        <iframe src="https://r.jina.ai/http://${clean}" style="width:100%;height:100%;border:none;"></iframe>
+    </div>
+    <script>
+        function toggleDark() {
+            document.body.style.background = document.body.style.background === 'black' ? '#f5f5f5' : 'black';
+            document.body.style.color = document.body.style.color === 'white' ? 'black' : 'white';
+        }
+    <\\/script>
 </body>
 </html>`;
                     
-                    // Return all reader view options
+                    // Alternative: Google AMP reader
+                    const ampReader = `https://www.google.com/amp/s/${clean}`;
+                    
+                    // Alternative: Text-only via proxy
+                    const textReader = `https://r.jina.ai/http://${clean}`;
+                    
+                    // Return multiple options
                     return [
-                        'data:text/html;charset=utf-8,' + encodeURIComponent(enhancedReader),
+                        'data:text/html;charset=utf-8,' + encodeURIComponent(simpleReaderHTML),
                         ampReader,
-                        'data:text/html;charset=utf-8,' + encodeURIComponent(simpleReader),
-                        `https://r.jina.ai/http://${clean}`,
-                        `https://r.jina.ai/https://${clean}`
+                        textReader,
+                        `https://outline.com/${clean}`,
+                        `https://readermode.io/view?url=${encodeURIComponent(url)}`
                     ];
                 }
             },
@@ -1097,7 +845,7 @@
             elements.directResult.style.display = 'block';
             elements.directResult.innerHTML = `
                 <div style="display:flex;align-items:center;gap:15px;">
-                    <div class="spinner" style="width:30px;height:30px;border:3px solid rgba(96,165,250,0.3);border-radius:50%;border-top-color:#60a5fa;animation:spin 1s linear infinite;"></div>
+                    <div style="width:30px;height:30px;border:3px solid rgba(96,165,250,0.3);border-radius:50%;border-top-color:#60a5fa;animation:spin 1s linear infinite;"></div>
                     <div>
                         <h3 style="margin:0;color:#60a5fa;">Testing Direct Access...</h3>
                         <p style="margin:5px 0 0 0;color:#94a3b8;">Checking if site is blocked</p>
@@ -1219,16 +967,14 @@
                     
                     // Open method
                     const urls = method.execute(url);
-                    urls.forEach((proxyUrl, index) => {
-                        setTimeout(() => {
-                            try {
-                                window.open(proxyUrl, `manual_${methodId}_${index}`);
-                                log(`Opened ${method.name} (variant ${index + 1})`, 'success');
-                            } catch(e) {
-                                log(`${method.name} failed: ${e.message}`, 'error');
-                            }
-                        }, index * 500);
-                    });
+                    if (urls && urls[0]) {
+                        try {
+                            window.open(urls[0], `manual_${methodId}`);
+                            log(`Opened ${method.name}`, 'success');
+                        } catch(e) {
+                            log(`${method.name} failed: ${e.message}`, 'error');
+                        }
+                    }
                 });
             });
         }
@@ -1256,7 +1002,7 @@
                 const urls = method.execute(url);
                 
                 setTimeout(() => {
-                    if (urls[0]) {
+                    if (urls && urls[0]) {
                         try {
                             window.open(urls[0], `all_${methodId}`);
                             count++;
@@ -1378,47 +1124,45 @@
         async function testMethod(method, url) {
             return new Promise((resolve) => {
                 const urls = method.execute(url);
+                if (!urls || urls.length === 0) {
+                    resolve({ method: method, working: false, url: null });
+                    return;
+                }
+                
                 let tested = 0;
                 let success = false;
                 
-                urls.forEach((testUrl, index) => {
+                // Test first URL only for speed
+                const testUrl = urls[0];
+                
+                try {
+                    const win = window.open(testUrl, `test_${method.name}`, 'width=500,height=400,left=100,top=100');
+                    
                     setTimeout(() => {
-                        if (success) return;
-                        
-                        tested++;
-                        
-                        try {
-                            const win = window.open(testUrl, `test_${method.name}_${index}`, 'width=500,height=400,left=100,top=100');
-                            
-                            setTimeout(() => {
-                                if (win && !win.closed) {
-                                    success = true;
-                                    win.close();
-                                    resolve({
-                                        method: method,
-                                        working: true,
-                                        url: testUrl
-                                    });
-                                } else if (tested === urls.length && !success) {
-                                    resolve({
-                                        method: method,
-                                        working: false,
-                                        url: null
-                                    });
-                                }
-                            }, 3000);
-                            
-                        } catch(e) {
-                            if (tested === urls.length && !success) {
-                                resolve({
-                                    method: method,
-                                    working: false,
-                                    url: null
-                                });
-                            }
+                        if (win && !win.closed) {
+                            success = true;
+                            win.close();
+                            resolve({
+                                method: method,
+                                working: true,
+                                url: testUrl
+                            });
+                        } else {
+                            resolve({
+                                method: method,
+                                working: false,
+                                url: null
+                            });
                         }
-                    }, index * 4000);
-                });
+                    }, 2000);
+                    
+                } catch(e) {
+                    resolve({
+                        method: method,
+                        working: false,
+                        url: null
+                    });
+                }
             });
         }
 
@@ -1429,8 +1173,6 @@
             
             const statusText = status === 'testing' ? 'TESTING...' : 
                              status === 'working' ? 'WORKS' : 'FAILED';
-            const statusIcon = status === 'testing' ? '⏳' :
-                             status === 'working' ? '✅' : '❌';
             
             card.innerHTML = `
                 <div class="result-info">
@@ -1472,7 +1214,6 @@
             card.className = `result-card ${status}`;
             
             const statusText = status === 'working' ? 'WORKS' : 'FAILED';
-            const statusIcon = status === 'working' ? '✅' : '❌';
             
             card.innerHTML = `
                 <div class="result-info">
