@@ -521,6 +521,7 @@
         .option-label {
             min-width: 120px;
             color: #94a3b8;
+            font-size: 0.9rem;
         }
         
         .option-input {
@@ -530,22 +531,22 @@
             border: 1px solid #475569;
             border-radius: 5px;
             color: #e2e8f0;
-        }
-        
-        .option-checkbox {
-            margin-right: 8px;
+            font-size: 0.9rem;
         }
         
         .toggle-container {
             display: flex;
             align-items: center;
             gap: 10px;
+            padding: 5px 0;
         }
         
+        /* FIXED TOGGLE SWITCH - Much smaller */
         .toggle-switch {
             position: relative;
-            width: 50px;
-            height: 24px;
+            width: 40px;
+            height: 20px;
+            flex-shrink: 0;
         }
         
         .toggle-checkbox {
@@ -571,8 +572,8 @@
             content: "";
             height: 16px;
             width: 16px;
-            left: 4px;
-            bottom: 4px;
+            left: 2px;
+            bottom: 2px;
             background-color: white;
             transition: .4s;
             border-radius: 50%;
@@ -583,7 +584,7 @@
         }
         
         .toggle-checkbox:checked + .toggle-slider:before {
-            transform: translateX(26px);
+            transform: translateX(20px);
         }
         
         .method-tag {
@@ -599,6 +600,28 @@
         .tag-stealth { background: #10b981; }
         .tag-advanced { background: #8b5cf6; }
         .tag-proxy { background: #3b82f6; }
+        
+        .stealth-status {
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        /* FIX: Make options container more compact */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -664,38 +687,47 @@
             </div>
             
             <div class="advanced-options">
-                <h3 style="color:#60a5fa;margin-bottom:15px;">⚡ Advanced Options</h3>
-                <div class="option-row">
-                    <div class="option-label">User Agent:</div>
-                    <select class="option-input" id="userAgentSelect">
-                        <option value="random">Random Browser</option>
-                        <option value="chrome">Chrome (Latest)</option>
-                        <option value="firefox">Firefox (Latest)</option>
-                        <option value="safari">Safari (Mac)</option>
-                        <option value="mobile">Mobile Chrome</option>
-                        <option value="custom">Custom...</option>
-                    </select>
-                </div>
-                <div class="option-row">
-                    <div class="option-label">Referrer:</div>
-                    <select class="option-input" id="referrerSelect">
-                        <option value="google">Google Search</option>
-                        <option value="facebook">Facebook</option>
-                        <option value="twitter">Twitter</option>
-                        <option value="direct">Direct (None)</option>
-                        <option value="random">Random</option>
-                    </select>
-                </div>
-                <div class="option-row">
-                    <div class="toggle-container">
-                        <input type="checkbox" id="enableStealth" class="toggle-checkbox" checked>
-                        <label for="enableStealth" class="toggle-slider"></label>
-                        <span>Enable Stealth Mode</span>
+                <h3 style="color:#60a5fa;margin-bottom:15px;font-size:1.1rem;">⚡ Advanced Options</h3>
+                <div class="options-grid">
+                    <div class="option-row">
+                        <div class="option-label">User Agent:</div>
+                        <select class="option-input" id="userAgentSelect">
+                            <option value="random">Random Browser</option>
+                            <option value="chrome">Chrome (Latest)</option>
+                            <option value="firefox">Firefox (Latest)</option>
+                            <option value="safari">Safari (Mac)</option>
+                            <option value="mobile">Mobile Chrome</option>
+                        </select>
                     </div>
-                    <div class="toggle-container">
-                        <input type="checkbox" id="randomizeHeaders" class="toggle-checkbox">
-                        <label for="randomizeHeaders" class="toggle-slider"></label>
-                        <span>Randomize Headers</span>
+                    <div class="option-row">
+                        <div class="option-label">Referrer:</div>
+                        <select class="option-input" id="referrerSelect">
+                            <option value="google">Google Search</option>
+                            <option value="facebook">Facebook</option>
+                            <option value="twitter">Twitter</option>
+                            <option value="direct">Direct (None)</option>
+                            <option value="random">Random</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 15px; border-top: 1px solid rgba(148, 163, 184, 0.2); padding-top: 15px;">
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                        <div class="toggle-container">
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="enableStealth" class="toggle-checkbox" checked>
+                                <label for="enableStealth" class="toggle-slider"></label>
+                            </div>
+                            <span style="font-size: 0.9rem;">Enable Stealth Mode</span>
+                        </div>
+                        
+                        <div class="toggle-container">
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="randomizeHeaders" class="toggle-checkbox">
+                                <label for="randomizeHeaders" class="toggle-slider"></label>
+                            </div>
+                            <span style="font-size: 0.9rem;">Randomize Headers</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -705,7 +737,7 @@
             <!-- LEFT SIDE: ADVANCED METHODS -->
             <div class="manual-methods">
                 <h2 class="section-title">⚡ Advanced Bypass Methods</h2>
-                <p style="color:#94a3b8;margin-bottom:20px;">Click any method to open in stealth viewer</p>
+                <p style="color:#94a3b8;margin-bottom:20px;font-size:0.9rem;">Click any method to open in stealth viewer</p>
                 
                 <div class="category-title">🛡️ Stealth Proxies <span class="method-tag tag-stealth">HARD TO DETECT</span></div>
                 <div class="methods-grid">
@@ -856,7 +888,7 @@
                 </div>
                 
                 <!-- Stealth Status -->
-                <div style="background: rgba(16, 185, 129, 0.1); border-radius: 10px; padding: 15px; margin: 15px 0; border: 1px solid rgba(16, 185, 129, 0.3);">
+                <div class="stealth-status">
                     <div style="display:flex; align-items:center; gap:10px; color:#10b981;">
                         <span style="font-size:1.5rem;">🕶️</span>
                         <div>
@@ -1164,7 +1196,7 @@
                     const clean = url.replace(/^https?:\/\//, '');
                     return [
                         `https://r.jina.ai/http://${clean}`,
-                        `https://textise dot iitty/url=${encodeURIComponent(url)}`,
+                        `https://textise.dot.iitty/url=${encodeURIComponent(url)}`,
                         `https://text.npr.org/${clean.split('/')[0]}`
                     ];
                 }
