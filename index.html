@@ -185,16 +185,6 @@
             transform: translateY(-2px);
         }
         
-        .method-card.advanced {
-            border-color: #8b5cf6;
-            background: rgba(139, 92, 246, 0.1);
-        }
-        
-        .method-card.stealth {
-            border-color: #10b981;
-            background: rgba(16, 185, 129, 0.1);
-        }
-        
         .method-icon {
             font-size: 2rem;
             margin-bottom: 10px;
@@ -444,15 +434,6 @@
             background: #dc2626;
         }
         
-        .control-btn.stealth {
-            background: #10b981;
-            color: white;
-        }
-        
-        .control-btn.stealth:hover {
-            background: #0da271;
-        }
-        
         .viewer-content {
             flex: 1;
             position: relative;
@@ -502,126 +483,6 @@
             width: 100%;
             height: 100%;
         }
-        
-        .advanced-options {
-            background: rgba(15, 23, 42, 0.8);
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 20px;
-            border: 1px solid rgba(148, 163, 184, 0.2);
-        }
-        
-        .option-row {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 10px;
-            align-items: center;
-        }
-        
-        .option-label {
-            min-width: 120px;
-            color: #94a3b8;
-            font-size: 0.9rem;
-        }
-        
-        .option-input {
-            flex: 1;
-            padding: 8px 12px;
-            background: #1e293b;
-            border: 1px solid #475569;
-            border-radius: 5px;
-            color: #e2e8f0;
-            font-size: 0.9rem;
-        }
-        
-        .toggle-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 5px 0;
-        }
-        
-        /* FIXED TOGGLE SWITCH - Much smaller */
-        .toggle-switch {
-            position: relative;
-            width: 40px;
-            height: 20px;
-            flex-shrink: 0;
-        }
-        
-        .toggle-checkbox {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        
-        .toggle-slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #475569;
-            transition: .4s;
-            border-radius: 34px;
-        }
-        
-        .toggle-slider:before {
-            position: absolute;
-            content: "";
-            height: 16px;
-            width: 16px;
-            left: 2px;
-            bottom: 2px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-        
-        .toggle-checkbox:checked + .toggle-slider {
-            background-color: #10b981;
-        }
-        
-        .toggle-checkbox:checked + .toggle-slider:before {
-            transform: translateX(20px);
-        }
-        
-        .method-tag {
-            display: inline-block;
-            padding: 2px 8px;
-            background: #475569;
-            color: #e2e8f0;
-            border-radius: 10px;
-            font-size: 0.7rem;
-            margin-left: 5px;
-        }
-        
-        .tag-stealth { background: #10b981; }
-        .tag-advanced { background: #8b5cf6; }
-        .tag-proxy { background: #3b82f6; }
-        
-        .stealth-status {
-            background: rgba(16, 185, 129, 0.1);
-            border-radius: 10px;
-            padding: 15px;
-            margin: 15px 0;
-            border: 1px solid rgba(16, 185, 129, 0.3);
-        }
-        
-        /* FIX: Make options container more compact */
-        .options-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 10px;
-        }
-        
-        @media (max-width: 768px) {
-            .options-grid {
-                grid-template-columns: 1fr;
-            }
-        }
     </style>
 </head>
 <body>
@@ -632,10 +493,8 @@
                 <span id="viewerMethodIcon">🌐</span>
                 <span id="viewerMethodName">Loading...</span>
                 <span style="color:#94a3b8;font-size:0.9rem;" id="viewerUrl"></span>
-                <span id="viewerStealthBadge" style="display:none;background:#10b981;color:white;padding:2px 8px;border-radius:10px;font-size:0.7rem;">STEALTH</span>
             </div>
             <div class="viewer-controls">
-                <button class="control-btn stealth" id="viewerStealthBtn" title="Toggle stealth mode">🕶️ Stealth</button>
                 <button class="control-btn" id="viewerBackBtn">← Back</button>
                 <button class="control-btn" id="viewerReloadBtn">↻ Reload</button>
                 <button class="control-btn" id="viewerNewTabBtn">↗ New Tab</button>
@@ -646,7 +505,6 @@
             <div class="viewer-loading" id="viewerLoading">
                 <div class="spinner"></div>
                 <p>Loading embedded viewer...</p>
-                <p id="viewerLoadingDetails" style="font-size:0.9rem;color:#94a3b8;">Initializing stealth mode</p>
             </div>
             <div class="iframe-container">
                 <iframe class="viewer-frame" id="viewerFrame" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"></iframe>
@@ -660,7 +518,7 @@
     <div class="container">
         <header>
             <h1>🔓 Complete Portal</h1>
-            <p class="subtitle">Advanced Bypass Methods + Stealth Mode</p>
+            <p class="subtitle">Working Bypass Methods + Embedded Viewer</p>
         </header>
         
         <div class="search-section">
@@ -671,7 +529,6 @@
             
             <div class="main-buttons">
                 <button class="main-btn direct" id="directBtn">🎯 DIRECT TEST</button>
-                <button class="main-btn stealth" id="stealthBtn">🕶️ STEALTH MODE</button>
                 <button class="main-btn" id="openAllBtn">🚀 TEST ALL METHODS</button>
             </div>
             
@@ -685,165 +542,119 @@
                 <button class="quick-btn" data-url="instagram.com">Instagram</button>
                 <button class="quick-btn" data-url="spotify.com">Spotify</button>
             </div>
-            
-            <div class="advanced-options">
-                <h3 style="color:#60a5fa;margin-bottom:15px;font-size:1.1rem;">⚡ Advanced Options</h3>
-                <div class="options-grid">
-                    <div class="option-row">
-                        <div class="option-label">User Agent:</div>
-                        <select class="option-input" id="userAgentSelect">
-                            <option value="random">Random Browser</option>
-                            <option value="chrome">Chrome (Latest)</option>
-                            <option value="firefox">Firefox (Latest)</option>
-                            <option value="safari">Safari (Mac)</option>
-                            <option value="mobile">Mobile Chrome</option>
-                        </select>
-                    </div>
-                    <div class="option-row">
-                        <div class="option-label">Referrer:</div>
-                        <select class="option-input" id="referrerSelect">
-                            <option value="google">Google Search</option>
-                            <option value="facebook">Facebook</option>
-                            <option value="twitter">Twitter</option>
-                            <option value="direct">Direct (None)</option>
-                            <option value="random">Random</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div style="margin-top: 15px; border-top: 1px solid rgba(148, 163, 184, 0.2); padding-top: 15px;">
-                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                        <div class="toggle-container">
-                            <div class="toggle-switch">
-                                <input type="checkbox" id="enableStealth" class="toggle-checkbox" checked>
-                                <label for="enableStealth" class="toggle-slider"></label>
-                            </div>
-                            <span style="font-size: 0.9rem;">Enable Stealth Mode</span>
-                        </div>
-                        
-                        <div class="toggle-container">
-                            <div class="toggle-switch">
-                                <input type="checkbox" id="randomizeHeaders" class="toggle-checkbox">
-                                <label for="randomizeHeaders" class="toggle-slider"></label>
-                            </div>
-                            <span style="font-size: 0.9rem;">Randomize Headers</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
         
         <div class="content-wrapper">
-            <!-- LEFT SIDE: ADVANCED METHODS -->
+            <!-- LEFT SIDE: WORKING METHODS -->
             <div class="manual-methods">
-                <h2 class="section-title">⚡ Advanced Bypass Methods</h2>
-                <p style="color:#94a3b8;margin-bottom:20px;font-size:0.9rem;">Click any method to open in stealth viewer</p>
+                <h2 class="section-title">⚡ Working Bypass Methods</h2>
+                <p style="color:#94a3b8;margin-bottom:20px;">Click any method to open in embedded viewer</p>
                 
-                <div class="category-title">🛡️ Stealth Proxies <span class="method-tag tag-stealth">HARD TO DETECT</span></div>
-                <div class="methods-grid">
-                    <div class="method-card stealth" data-method="corporate">
-                        <div class="method-icon">🏢</div>
-                        <div class="method-name">Corporate Proxy</div>
-                        <div class="method-desc">Mimics corporate network traffic</div>
-                    </div>
-                    
-                    <div class="method-card stealth" data-method="educational">
-                        <div class="method-icon">🎓</div>
-                        <div class="method-name">Educational Tunnel</div>
-                        <div class="method-desc">School/university proxy style</div>
-                    </div>
-                    
-                    <div class="method-card stealth" data-method="cloudflare">
-                        <div class="method-icon">☁️</div>
-                        <div class="method-name">CloudFlare Worker</div>
-                        <div class="method-desc">CF Worker proxy bypass</div>
-                    </div>
-                    
-                    <div class="method-card stealth" data-method="websocket">
-                        <div class="method-icon">🔌</div>
-                        <div class="method-name">WS Tunnel</div>
-                        <div class="method-desc">WebSocket full tunnel</div>
-                    </div>
-                </div>
-                
-                <div class="category-title">🌐 Smart Proxies <span class="method-tag tag-proxy">AUTO-ROTATING</span></div>
+                <div class="category-title">🌐 Reliable Proxies</div>
                 <div class="methods-grid">
                     <div class="method-card" data-method="translate">
                         <div class="method-icon">🌐</div>
-                        <div class="method-name">Google Translate+</div>
-                        <div class="method-desc">Enhanced Google proxy</div>
+                        <div class="method-name">Google Translate</div>
+                        <div class="method-desc">Google's built-in proxy</div>
                     </div>
                     
                     <div class="method-card" data-method="archive">
                         <div class="method-icon">📚</div>
-                        <div class="method-name">Archive Smart</div>
-                        <div class="method-desc">Multiple archive sources</div>
+                        <div class="method-name">Wayback Machine</div>
+                        <div class="method-desc">Cached website versions</div>
+                    </div>
+                    
+                    <div class="method-card" data-method="reader">
+                        <div class="method-icon">📖</div>
+                        <div class="method-name">Reader View</div>
+                        <div class="method-desc">Clean reading mode</div>
                     </div>
                     
                     <div class="method-card" data-method="mobile">
                         <div class="method-icon">📱</div>
-                        <div class="method-name">Mobile Optimized</div>
-                        <div class="method-desc">Mobile-first rendering</div>
+                        <div class="method-name">Mobile View</div>
+                        <div class="method-desc">Mobile version of site</div>
                     </div>
-                    
-                    <div class="method-card" data-method="amp">
+                </div>
+                
+                <div class="category-title">🔌 Public Proxies</div>
+                <div class="methods-grid">
+                    <div class="method-card" data-method="cors">
                         <div class="method-icon">⚡</div>
-                        <div class="method-name">AMP Accelerated</div>
-                        <div class="method-desc">Google AMP networks</div>
+                        <div class="method-name">CORS Proxy</div>
+                        <div class="method-desc">CORS bypass proxy</div>
+                    </div>
+                    
+                    <div class="method-card" data-method="public">
+                        <div class="method-icon">🔄</div>
+                        <div class="method-name">Public Proxies</div>
+                        <div class="method-desc">Rotating proxy list</div>
+                    </div>
+                    
+                    <div class="method-card" data-method="allorigins">
+                        <div class="method-icon">🌍</div>
+                        <div class="method-name">All Origins</div>
+                        <div class="method-desc">Text content proxy</div>
+                    </div>
+                    
+                    <div class="method-card" data-method="websocket">
+                        <div class="method-icon">🔌</div>
+                        <div class="method-name">WebSocket Proxy</div>
+                        <div class="method-desc">WebSocket tunnel</div>
                     </div>
                 </div>
                 
-                <div class="category-title">🔬 Advanced Techniques <span class="method-tag tag-advanced">EXPERIMENTAL</span></div>
+                <div class="category-title">⚡ Advanced Methods</div>
                 <div class="methods-grid">
-                    <div class="method-card advanced" data-method="fragment">
-                        <div class="method-icon">🧩</div>
-                        <div class="method-name">Fragment Loader</div>
-                        <div class="method-desc">Load site in pieces</div>
-                    </div>
-                    
-                    <div class="method-card advanced" data-method="xhr">
-                        <div class="method-icon">📡</div>
-                        <div class="method-name">XHR Proxy</div>
-                        <div class="method-desc">AJAX-based loading</div>
-                    </div>
-                    
-                    <div class="method-card advanced" data-method="recursive">
-                        <div class="method-icon">🌀</div>
-                        <div class="method-name">Recursive Proxy</div>
-                        <div class="method-desc">Chain multiple proxies</div>
-                    </div>
-                    
-                    <div class="method-card advanced" data-method="p2p">
-                        <div class="method-icon">🤝</div>
-                        <div class="method-name">P2P Network</div>
-                        <div class="method-desc">Distributed loading</div>
-                    </div>
-                </div>
-                
-                <div class="category-title">🔧 Utility Methods</div>
-                <div class="methods-grid">
-                    <div class="method-card" data-method="reader">
-                        <div class="method-icon">📖</div>
-                        <div class="method-name">Reader View Pro</div>
-                        <div class="method-desc">Enhanced reading mode</div>
+                    <div class="method-card" data-method="textise">
+                        <div class="method-icon">📄</div>
+                        <div class="method-name">Textise Pro</div>
+                        <div class="method-desc">Text-only render</div>
                     </div>
                     
                     <div class="method-card" data-method="pdf">
                         <div class="method-icon">📑</div>
-                        <div class="method-name">PDF Export</div>
-                        <div class="method-desc">Convert to printable PDF</div>
+                        <div class="method-name">PDF View</div>
+                        <div class="method-desc">Printable PDF version</div>
                     </div>
                     
-                    <div class="method-card" data-method="textise">
-                        <div class="method-icon">📄</div>
-                        <div class="method-name">Text Only</div>
-                        <div class="method-desc">Stripped down content</div>
+                    <div class="method-card" data-method="dataurl">
+                        <div class="method-icon">🔗</div>
+                        <div class="method-name">Data URL</div>
+                        <div class="method-desc">Local HTML redirect</div>
                     </div>
                     
-                    <div class="method-card" data-method="mirror">
-                        <div class="method-icon">🪞</div>
-                        <div class="method-name">Site Mirror</div>
-                        <div class="method-desc">Create local copy</div>
+                    <div class="method-card" data-method="amp">
+                        <div class="method-icon">⚡</div>
+                        <div class="method-name">AMP Cache</div>
+                        <div class="method-desc">Google AMP version</div>
+                    </div>
+                </div>
+                
+                <div class="category-title">🛠️ Utility Methods</div>
+                <div class="methods-grid">
+                    <div class="method-card" data-method="outline">
+                        <div class="method-icon">📖</div>
+                        <div class="method-name">Outline.com</div>
+                        <div class="method-desc">Reader view service</div>
+                    </div>
+                    
+                    <div class="method-card" data-method="rss">
+                        <div class="method-icon">📰</div>
+                        <div class="method-name">RSS Feed</div>
+                        <div class="method-desc">RSS/Atom content</div>
+                    </div>
+                    
+                    <div class="method-card" data-method="json">
+                        <div class="method-icon">📊</div>
+                        <div class="method-name">JSON View</div>
+                        <div class="method-desc">Structured data view</div>
+                    </div>
+                    
+                    <div class="method-card" data-method="iframe">
+                        <div class="method-icon">📺</div>
+                        <div class="method-name">Direct Iframe</div>
+                        <div class="method-desc">Simple iframe view</div>
                     </div>
                 </div>
             </div>
@@ -873,8 +684,8 @@
                         <div class="stat-label">Working</div>
                     </div>
                     <div class="stat">
-                        <div class="stat-value" id="stealthScore">🕶️</div>
-                        <div class="stat-label">Stealth</div>
+                        <div class="stat-value" id="directStatus">❓</div>
+                        <div class="stat-label">Direct</div>
                     </div>
                 </div>
                 
@@ -887,380 +698,368 @@
                     </div>
                 </div>
                 
-                <!-- Stealth Status -->
-                <div class="stealth-status">
-                    <div style="display:flex; align-items:center; gap:10px; color:#10b981;">
-                        <span style="font-size:1.5rem;">🕶️</span>
-                        <div>
-                            <div style="font-weight:bold;">Stealth Mode Active</div>
-                            <div style="font-size:0.9rem;">Methods will use enhanced bypass techniques</div>
-                        </div>
-                    </div>
-                </div>
-                
                 <div class="result-cards" id="resultCards">
                     <!-- Scan result cards appear here -->
                 </div>
                 
                 <div class="log-box" id="logBox">
-                    <div class="log-entry info">Advanced Portal loaded. Stealth mode enabled.</div>
+                    <div class="log-entry info">Portal loaded. Click methods or use AUTO SCAN.</div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // ============ ENHANCED METHOD LIBRARY ============
+        // ============ WORKING METHOD LIBRARY ============
         const ALL_METHODS = {
-            // Stealth Proxies
-            corporate: {
-                name: 'Corporate Proxy',
-                icon: '🏢',
-                category: 'stealth',
-                execute: (url, options = {}) => {
-                    const clean = url.replace(/^https?:\/\//, '');
-                    const encoded = encodeURIComponent(url);
-                    
-                    // Corporate proxy URLs (looks like legit corporate traffic)
-                    return [
-                        `https://corporate-proxy-worker.glitch.me/proxy?url=${encoded}`,
-                        `https://secure-proxy-service.vercel.app/api/proxy?url=${encoded}&type=corporate`,
-                        `https://biz-proxy-${Date.now().toString(36)}.workers.dev/?url=${encoded}`
-                    ];
-                },
-                stealth: true
-            },
-            
-            educational: {
-                name: 'Educational Tunnel',
-                icon: '🎓',
-                category: 'stealth',
-                execute: (url, options = {}) => {
-                    const encoded = encodeURIComponent(url);
-                    const timestamp = Date.now();
-                    
-                    // Educational institution style proxies
-                    return [
-                        `https://edu-proxy-${timestamp % 1000}.pages.dev/?url=${encoded}`,
-                        `https://library-access-proxy.glitch.me/proxy?url=${encoded}&ref=edu`,
-                        `https://academic-bypass.vercel.app/api/proxy?url=${encoded}`
-                    ];
-                },
-                stealth: true
-            },
-            
-            cloudflare: {
-                name: 'CloudFlare Worker',
-                icon: '☁️',
-                category: 'stealth',
-                execute: (url, options = {}) => {
-                    const encoded = encodeURIComponent(url);
-                    // CloudFlare Worker proxies (hard to detect)
-                    return [
-                        `https://cfw-proxy.${Math.random().toString(36).substr(2, 8)}.workers.dev/?url=${encoded}`,
-                        `https://bypass-cf.vercel.app/api/proxy?url=${encoded}`,
-                        `https://worker-proxy-template.${Math.random().toString(36).substr(2, 6)}.workers.dev/${encoded}`
-                    ];
-                },
-                stealth: true
-            },
-            
-            websocket: {
-                name: 'WS Tunnel',
-                icon: '🔌',
-                category: 'stealth',
-                execute: (url, options = {}) => {
-                    const encoded = encodeURIComponent(url);
-                    // WebSocket tunnel proxies
-                    return [
-                        `https://ws-tunnel-proxy.glitch.me/tunnel?url=${encoded}`,
-                        `https://websocket-bypass.vercel.app/api/ws?url=${encoded}`,
-                        `https://tunnel-proxy-${Date.now().toString(36)}.workers.dev/?url=${encoded}&mode=ws`
-                    ];
-                },
-                stealth: true
-            },
-            
-            // Smart Proxies
+            // Reliable Proxies
             translate: {
-                name: 'Google Translate+',
+                name: 'Google Translate',
                 icon: '🌐',
-                category: 'proxy',
-                execute: (url, options = {}) => {
+                category: 'reliable',
+                execute: (url) => {
                     const encoded = encodeURIComponent(url);
-                    // Multiple Google Translate variants
                     return [
-                        `https://translate.google.com/translate?hl=en&sl=auto&tl=en&u=${encoded}&client=webapp`,
-                        `https://translate.googleusercontent.com/translate_p?hl=en&sl=auto&tl=en&u=${encoded}`,
-                        `https://www.google.com/translate?langpair=auto|en&u=${encoded}`
+                        `https://translate.google.com/translate?hl=en&sl=auto&tl=en&u=${encoded}`,
+                        `https://translate.googleusercontent.com/translate?hl=en&sl=auto&tl=en&u=${encoded}`
                     ];
-                }
+                },
+                reliable: true
             },
             
             archive: {
-                name: 'Archive Smart',
+                name: 'Wayback Machine',
                 icon: '📚',
-                category: 'proxy',
-                execute: (url, options = {}) => {
+                category: 'reliable',
+                execute: (url) => {
                     const clean = url.replace(/^https?:\/\//, '');
-                    // Multiple archive sources with different dates
-                    const dates = ['2023', '2022', '2021', '2020'];
-                    const date = dates[Math.floor(Math.random() * dates.length)];
                     return [
-                        `https://web.archive.org/web/${date}0000000000*/${url}`,
+                        `https://web.archive.org/web/${url}`,
                         `https://archive.is/${clean}`,
-                        `https://archive.today/${clean}`,
-                        `https://web.archive.org/web/2/${url}`
-                    ];
-                }
-            },
-            
-            mobile: {
-                name: 'Mobile Optimized',
-                icon: '📱',
-                category: 'proxy',
-                execute: (url, options = {}) => {
-                    const clean = url.replace(/^https?:\/\//, '');
-                    // Mobile-optimized variants
-                    return [
-                        `https://m.${clean}`,
-                        `https://mobile.${clean}`,
-                        `https://lite.${clean}`,
-                        `https://www.google.com/amp/s/${clean}`
-                    ];
-                }
-            },
-            
-            amp: {
-                name: 'AMP Accelerated',
-                icon: '⚡',
-                category: 'proxy',
-                execute: (url, options = {}) => {
-                    const clean = url.replace(/^https?:\/\//, '');
-                    // AMP cache variants
-                    return [
-                        `https://www.google.com/amp/s/${clean}`,
-                        `https://cdn.ampproject.org/c/${url}`,
-                        `https://${clean.split('/')[0]}.amp.${clean.split('/').slice(1).join('/')}`,
-                        `https://amp.${clean}`
-                    ];
-                }
-            },
-            
-            // Advanced Techniques
-            fragment: {
-                name: 'Fragment Loader',
-                icon: '🧩',
-                category: 'advanced',
-                execute: (url, options = {}) => {
-                    const clean = url.replace(/^https?:\/\//, '');
-                    // Fragment-based loading
-                    return [
-                        `https://fragment-proxy.glitch.me/load?url=${encodeURIComponent(url)}&mode=fragment`,
-                        `https://partial-loader.vercel.app/api/load?url=${encodeURIComponent(url)}`
+                        `https://archive.today/${clean}`
                     ];
                 },
-                advanced: true
+                reliable: true
             },
             
-            xhr: {
-                name: 'XHR Proxy',
-                icon: '📡',
-                category: 'advanced',
-                execute: (url, options = {}) => {
-                    // AJAX-based proxy
-                    const xhrProxyHTML = `
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XHR Proxy</title>
-    <style>
-        body { margin: 0; padding: 20px; font-family: sans-serif; }
-        #content { margin-top: 20px; }
-        .loading { text-align: center; padding: 40px; }
-        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 2s linear infinite; margin: 0 auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    </style>
-</head>
-<body>
-    <h1>XHR Proxy Loader</h1>
-    <div id="content" class="loading">
-        <div class="spinner"></div>
-        <p>Loading via XHR proxy...</p>
-    </div>
-    <script>
-        async function loadViaXHR() {
-            try {
-                const response = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('${url}'));
-                const data = await response.json();
-                document.getElementById('content').innerHTML = data.contents;
-            } catch(e) {
-                document.getElementById('content').innerHTML = '<div style="color:red;">Failed to load. Trying iframe...</div>' +
-                    '<iframe src="https://r.jina.ai/http://${clean}" style="width:100%;height:80vh;"></iframe>';
-            }
-        }
-        loadViaXHR();
-    <\\/script>
-</body>
-</html>`;
-                    return ['data:text/html;charset=utf-8,' + encodeURIComponent(xhrProxyHTML)];
-                },
-                advanced: true
-            },
-            
-            recursive: {
-                name: 'Recursive Proxy',
-                icon: '🌀',
-                category: 'advanced',
-                execute: (url, options = {}) => {
-                    const encoded = encodeURIComponent(url);
-                    // Chain proxies for extra obfuscation
-                    return [
-                        `https://proxyception.glitch.me/proxy?url=${encoded}&chain=3`,
-                        `https://recursive-bypass.vercel.app/api/chain?url=${encoded}&levels=2`
-                    ];
-                },
-                advanced: true
-            },
-            
-            p2p: {
-                name: 'P2P Network',
-                icon: '🤝',
-                category: 'advanced',
-                execute: (url, options = {}) => {
-                    // P2P style loading
-                    const p2pHTML = `
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>P2P Loader</title>
-    <style>
-        body { margin: 0; padding: 20px; font-family: monospace; background: #0f172a; color: #e2e8f0; }
-        .status { background: #1e293b; padding: 15px; border-radius: 10px; margin: 10px 0; }
-        .peer { color: #10b981; }
-    </style>
-</head>
-<body>
-    <h1>🔗 P2P Network Loader</h1>
-    <div class="status">
-        <p>Connecting to P2P network...</p>
-        <p class="peer">✓ Connected to peer #${Math.floor(Math.random() * 1000)}</p>
-        <p class="peer">✓ Connected to peer #${Math.floor(Math.random() * 1000)}</p>
-        <p>Loading content through distributed network...</p>
-    </div>
-    <iframe src="https://r.jina.ai/http://${url.replace(/^https?:\/\//, '')}" style="width:100%;height:70vh;border:none;border-radius:10px;"></iframe>
-</body>
-</html>`;
-                    return ['data:text/html;charset=utf-8,' + encodeURIComponent(p2pHTML)];
-                },
-                advanced: true
-            },
-            
-            // Utility Methods
             reader: {
-                name: 'Reader View Pro',
+                name: 'Reader View',
                 icon: '📖',
-                category: 'utility',
-                execute: (url, options = {}) => {
+                category: 'reliable',
+                execute: (url) => {
                     const clean = url.replace(/^https?:\/\//, '');
                     return [
                         `https://r.jina.ai/http://${clean}`,
-                        `https://outline.com/${clean}`,
-                        `https://readermode.io/view?url=${encodeURIComponent(url)}`
+                        `https://r.jina.ai/https://${clean}`
+                    ];
+                },
+                reliable: true
+            },
+            
+            mobile: {
+                name: 'Mobile View',
+                icon: '📱',
+                category: 'reliable',
+                execute: (url) => {
+                    const clean = url.replace(/^https?:\/\//, '');
+                    return [
+                        `https://m.${clean}`,
+                        `https://mobile.${clean}`,
+                        `https://www.google.com/amp/s/${clean}`
+                    ];
+                },
+                reliable: true
+            },
+            
+            // Public Proxies
+            cors: {
+                name: 'CORS Proxy',
+                icon: '⚡',
+                category: 'public',
+                execute: (url) => {
+                    const encoded = encodeURIComponent(url);
+                    return [
+                        `https://corsproxy.io/?${encoded}`,
+                        `https://api.codetabs.com/v1/proxy?quest=${url}`,
+                        `https://thingproxy.freeboard.io/fetch/${url}`
+                    ];
+                }
+            },
+            
+            public: {
+                name: 'Public Proxies',
+                icon: '🔄',
+                category: 'public',
+                execute: (url) => {
+                    const encoded = encodeURIComponent(url);
+                    return [
+                        `https://cors-anywhere.herokuapp.com/${url}`,
+                        `https://yacdn.org/proxy/${url}`,
+                        `https://api.allorigins.win/get?url=${encoded}`
+                    ];
+                }
+            },
+            
+            allorigins: {
+                name: 'All Origins',
+                icon: '🌍',
+                category: 'public',
+                execute: (url) => {
+                    const encoded = encodeURIComponent(url);
+                    return [
+                        `https://api.allorigins.win/get?url=${encoded}`,
+                        `https://api.allorigins.win/raw?url=${encoded}`
+                    ];
+                }
+            },
+            
+            websocket: {
+                name: 'WebSocket Proxy',
+                icon: '🔌',
+                category: 'public',
+                execute: (url) => {
+                    const encoded = encodeURIComponent(url);
+                    return [
+                        `https://proxy.cors.sh/${url}`,
+                        `https://corsproxy.io/?${encoded}`
+                    ];
+                }
+            },
+            
+            // Advanced Methods
+            textise: {
+                name: 'Textise Pro',
+                icon: '📄',
+                category: 'advanced',
+                execute: (url) => {
+                    const clean = url.replace(/^https?:\/\//, '');
+                    return [
+                        `https://r.jina.ai/http://${clean}`,
+                        `https://textise.dot.iitty/?url=${encodeURIComponent(url)}`
                     ];
                 }
             },
             
             pdf: {
-                name: 'PDF Export',
+                name: 'PDF View',
                 icon: '📑',
-                category: 'utility',
-                execute: (url, options = {}) => {
+                category: 'advanced',
+                execute: (url) => {
                     const encoded = encodeURIComponent(url);
                     return [
                         `https://www.printfriendly.com/print/?source=${encoded}`,
-                        `https://pdfmyurl.com/saveaspdf?url=${encoded}`,
-                        `https://html2pdf.com/convert?url=${encoded}`
+                        `https://pdfmyurl.com/saveaspdf?url=${encoded}`
                     ];
                 }
             },
             
-            textise: {
-                name: 'Text Only',
-                icon: '📄',
-                category: 'utility',
-                execute: (url, options = {}) => {
-                    const clean = url.replace(/^https?:\/\//, '');
-                    return [
-                        `https://r.jina.ai/http://${clean}`,
-                        `https://textise.dot.iitty/url=${encodeURIComponent(url)}`,
-                        `https://text.npr.org/${clean.split('/')[0]}`
-                    ];
-                }
-            },
-            
-            mirror: {
-                name: 'Site Mirror',
-                icon: '🪞',
-                category: 'utility',
-                execute: (url, options = {}) => {
-                    // Creates a local mirror page
-                    const mirrorHTML = `
+            dataurl: {
+                name: 'Data URL',
+                icon: '🔗',
+                category: 'advanced',
+                execute: (url) => {
+                    // Create a redirect page
+                    const redirectHTML = `
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Mirror: ${url}</title>
     <meta http-equiv="refresh" content="0;url=${url}">
+    <title>Redirecting...</title>
     <style>
         body { 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: #60a5fa;
             font-family: sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            color: white;
         }
-        .mirror-box {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            padding: 40px;
-            border-radius: 20px;
+        .content {
             text-align: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            padding: 40px;
         }
         .spinner {
-            border: 4px solid rgba(255,255,255,0.3);
-            border-top: 4px solid white;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(96, 165, 250, 0.3);
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
+            border-top-color: #60a5fa;
             animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+            margin: 20px auto;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-    <div class="mirror-box">
+    <div class="content">
         <div class="spinner"></div>
-        <h2>Creating Local Mirror...</h2>
-        <p>${url}</p>
-        <p style="font-size:0.9rem;opacity:0.8;">This page will redirect to the original site</p>
+        <h3>Redirecting to ${new URL(url).hostname}</h3>
+        <p><a href="${url}" style="color:#60a5fa;">Click here if not redirected</a></p>
     </div>
 </body>
 </html>`;
-                    return ['data:text/html;charset=utf-8,' + encodeURIComponent(mirrorHTML)];
+                    return ['data:text/html;charset=utf-8,' + encodeURIComponent(redirectHTML)];
+                }
+            },
+            
+            amp: {
+                name: 'AMP Cache',
+                icon: '⚡',
+                category: 'advanced',
+                execute: (url) => {
+                    const clean = url.replace(/^https?:\/\//, '');
+                    return [
+                        `https://www.google.com/amp/s/${clean}`,
+                        `https://cdn.ampproject.org/c/${url}`
+                    ];
+                }
+            },
+            
+            // Utility Methods
+            outline: {
+                name: 'Outline.com',
+                icon: '📖',
+                category: 'utility',
+                execute: (url) => {
+                    const clean = url.replace(/^https?:\/\//, '');
+                    return [
+                        `https://outline.com/${clean}`,
+                        `https://outline.com/${encodeURIComponent(url)}`
+                    ];
+                }
+            },
+            
+            rss: {
+                name: 'RSS Feed',
+                icon: '📰',
+                category: 'utility',
+                execute: (url) => {
+                    const clean = url.replace(/^https?:\/\//, '');
+                    return [
+                        `https://rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`,
+                        `https://rss.app/feed/${clean}`
+                    ];
+                }
+            },
+            
+            json: {
+                name: 'JSON View',
+                icon: '📊',
+                category: 'utility',
+                execute: (url) => {
+                    // Create a JSON viewer page
+                    const jsonHTML = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>JSON Viewer</title>
+    <style>
+        body { 
+            margin: 0; 
+            padding: 20px; 
+            background: #0f172a;
+            color: #e2e8f0;
+            font-family: monospace;
+        }
+        .json-viewer {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 10px;
+            overflow: auto;
+            max-height: 90vh;
+        }
+        .key { color: #60a5fa; }
+        .string { color: #10b981; }
+        .number { color: #f59e0b; }
+        .boolean { color: #8b5cf6; }
+        .null { color: #ef4444; }
+    </style>
+</head>
+<body>
+    <h1>📊 JSON Data Viewer</h1>
+    <p>Loading data from: ${url}</p>
+    <div class="json-viewer" id="jsonOutput">
+        Loading JSON data...
+    </div>
+    <script>
+        async function loadJSON() {
+            try {
+                const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent('${url}');
+                const response = await fetch(proxyUrl);
+                const data = await response.json();
+                
+                function syntaxHighlight(json) {
+                    json = JSON.stringify(json, null, 2);
+                    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    return json.replace(/("(\\\\u[a-zA-Z0-9]{4}|\\\\[^u]|[^\\\\"])*"(\\s*:)?|\\b(true|false|null)\\b|-?\\d+(?:\\.\\d*)?(?:[eE][+\\-]?\\d+)?)/g, 
+                        function(match) {
+                            let cls = 'number';
+                            if (/^"/.test(match)) {
+                                cls = /:$/.test(match) ? 'key' : 'string';
+                            } else if (/true|false/.test(match)) {
+                                cls = 'boolean';
+                            } else if (/null/.test(match)) {
+                                cls = 'null';
+                            }
+                            return '<span class="' + cls + '">' + match + '</span>';
+                        });
+                }
+                
+                document.getElementById('jsonOutput').innerHTML = '<pre>' + syntaxHighlight(JSON.parse(data.contents)) + '</pre>';
+            } catch(e) {
+                document.getElementById('jsonOutput').innerHTML = '<div style="color:#ef4444;">Error loading JSON: ' + e.message + '</div>';
+            }
+        }
+        loadJSON();
+    <\\/script>
+</body>
+</html>`;
+                    return ['data:text/html;charset=utf-8,' + encodeURIComponent(jsonHTML)];
+                }
+            },
+            
+            iframe: {
+                name: 'Direct Iframe',
+                icon: '📺',
+                category: 'utility',
+                execute: (url) => {
+                    // Simple iframe wrapper
+                    const iframeHTML = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Iframe Viewer</title>
+    <style>
+        body { margin: 0; padding: 10px; background: #0f172a; }
+        .iframe-container { 
+            border-radius: 10px; 
+            overflow: hidden; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        iframe { 
+            width: 100%; 
+            height: calc(100vh - 20px); 
+            border: none; 
+        }
+    </style>
+</head>
+<body>
+    <div class="iframe-container">
+        <iframe src="${url}" title="Website Preview"></iframe>
+    </div>
+</body>
+</html>`;
+                    return ['data:text/html;charset=utf-8,' + encodeURIComponent(iframeHTML)];
                 }
             }
         };
 
-        // ============ STATE & CONFIG ============
+        // ============ STATE ============
         let scanActive = false;
         let scanResults = {};
         let directTestResult = null;
@@ -1269,38 +1068,12 @@
             tested: 0,
             working: 0
         };
-        
-        let stealthMode = true;
-        let currentOptions = {
-            userAgent: 'random',
-            referrer: 'google',
-            randomizeHeaders: false,
-            stealthMode: true
-        };
-
-        // User Agent Database
-        const USER_AGENTS = {
-            chrome: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            firefox: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0',
-            safari: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15',
-            mobile: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Mobile/15E148 Safari/604.1'
-        };
-
-        // Referrer Database
-        const REFERRERS = {
-            google: 'https://www.google.com/',
-            facebook: 'https://www.facebook.com/',
-            twitter: 'https://twitter.com/',
-            direct: '',
-            random: ['https://www.google.com/', 'https://www.bing.com/', 'https://duckduckgo.com/', 'https://www.reddit.com/']
-        };
 
         // ============ DOM ELEMENTS ============
         const elements = {
             urlInput: document.getElementById('urlInput'),
             autoBtn: document.getElementById('autoBtn'),
             directBtn: document.getElementById('directBtn'),
-            stealthBtn: document.getElementById('stealthBtn'),
             openAllBtn: document.getElementById('openAllBtn'),
             stopBtn: document.getElementById('stopBtn'),
             directResult: document.getElementById('directResult'),
@@ -1314,19 +1087,12 @@
             viewerMethodIcon: document.getElementById('viewerMethodIcon'),
             viewerMethodName: document.getElementById('viewerMethodName'),
             viewerUrl: document.getElementById('viewerUrl'),
-            viewerStealthBadge: document.getElementById('viewerStealthBadge'),
             viewerMethodInfo: document.getElementById('viewerMethodInfo'),
-            viewerLoadingDetails: document.getElementById('viewerLoadingDetails'),
             viewerCloseBtn: document.getElementById('viewerCloseBtn'),
             viewerBackBtn: document.getElementById('viewerBackBtn'),
             viewerReloadBtn: document.getElementById('viewerReloadBtn'),
             viewerNewTabBtn: document.getElementById('viewerNewTabBtn'),
-            viewerStealthBtn: document.getElementById('viewerStealthBtn'),
-            viewerContent: document.getElementById('viewerContent'),
-            enableStealth: document.getElementById('enableStealth'),
-            randomizeHeaders: document.getElementById('randomizeHeaders'),
-            userAgentSelect: document.getElementById('userAgentSelect'),
-            referrerSelect: document.getElementById('referrerSelect')
+            viewerContent: document.getElementById('viewerContent')
         };
 
         // ============ UTILITIES ============
@@ -1351,13 +1117,16 @@
             document.getElementById('testedMethods').textContent = stats.tested;
             document.getElementById('workingMethods').textContent = stats.working;
             
-            const stealthScore = document.getElementById('stealthScore');
-            if (stealthMode) {
-                stealthScore.textContent = '🕶️';
-                stealthScore.style.color = '#10b981';
+            const directEl = document.getElementById('directStatus');
+            if (directTestResult === true) {
+                directEl.textContent = '✅';
+                directEl.style.color = '#10b981';
+            } else if (directTestResult === false) {
+                directEl.textContent = '❌';
+                directEl.style.color = '#ef4444';
             } else {
-                stealthScore.textContent = '👁️';
-                stealthScore.style.color = '#f59e0b';
+                directEl.textContent = '❓';
+                directEl.style.color = '#94a3b8';
             }
         }
 
@@ -1375,155 +1144,20 @@
             }
         }
 
-        // ============ ADVANCED PROXY FUNCTIONS ============
-        function getRandomUserAgent() {
-            if (currentOptions.userAgent === 'random') {
-                const agents = Object.values(USER_AGENTS);
-                return agents[Math.floor(Math.random() * agents.length)];
-            } else if (currentOptions.userAgent === 'custom') {
-                return USER_AGENTS.chrome; // Default fallback
-            } else {
-                return USER_AGENTS[currentOptions.userAgent] || USER_AGENTS.chrome;
-            }
-        }
-
-        function getReferrer() {
-            const ref = currentOptions.referrer;
-            if (ref === 'random') {
-                const refs = REFERRERS.random;
-                return refs[Math.floor(Math.random() * refs.length)];
-            }
-            return REFERRERS[ref] || '';
-        }
-
-        function enhanceUrlWithStealth(originalUrl, method) {
-            const url = new URL(originalUrl);
-            
-            // Add random parameters to look like normal traffic
-            if (stealthMode) {
-                const params = url.searchParams;
-                
-                // Add timestamp (but not exactly current time)
-                const timeOffset = Math.floor(Math.random() * 1000000);
-                params.append('_t', Date.now() - timeOffset);
-                
-                // Add random cache busters (but not obvious ones)
-                if (Math.random() > 0.5) {
-                    params.append('cb', Math.random().toString(36).substr(2, 8));
-                }
-                
-                // Add referrer info if not present
-                if (!params.has('ref')) {
-                    params.append('ref', getReferrer().split('/')[2] || 'direct');
-                }
-                
-                // Add random session-like ID
-                if (Math.random() > 0.7) {
-                    params.append('sessionid', Math.random().toString(36).substr(2, 16));
-                }
-            }
-            
-            return url.toString();
-        }
-
-        function createStealthIframe(url, method) {
-            // Create a more sophisticated iframe with stealth headers
-            const stealthHTML = `
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loading...</title>
-    <style>
-        body { 
-            margin: 0; 
-            padding: 0; 
-            background: #0f172a;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
-        .stealth-loader {
-            text-align: center;
-            color: #60a5fa;
-        }
-        .stealth-spinner {
-            width: 50px;
-            height: 50px;
-            border: 3px solid rgba(96, 165, 250, 0.3);
-            border-radius: 50%;
-            border-top-color: #60a5fa;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .stealth-details {
-            font-size: 0.9rem;
-            color: #94a3b8;
-            margin-top: 10px;
-        }
-    </style>
-    <script>
-        // Set custom headers before loading
-        Object.defineProperty(navigator, 'userAgent', {
-            get: () => '${getRandomUserAgent()}'
-        });
-        
-        // Add some delay to simulate real browsing
-        setTimeout(() => {
-            window.location.href = '${url}';
-        }, ${stealthMode ? Math.random() * 1000 + 500 : 100});
-    <\\/script>
-</head>
-<body>
-    <div class="stealth-loader">
-        <div class="stealth-spinner"></div>
-        <h3>Stealth Mode Active</h3>
-        <p>Loading via ${method.name}</p>
-        <div class="stealth-details">
-            <p>Using enhanced bypass techniques...</p>
-            <p>User Agent: ${getRandomUserAgent().substring(0, 40)}...</p>
-        </div>
-    </div>
-</body>
-</html>`;
-            
-            return 'data:text/html;charset=utf-8,' + encodeURIComponent(stealthHTML);
-        }
-
         // ============ EMBEDDED VIEWER ============
         let currentEmbedUrl = '';
         let currentMethod = null;
         let currentOriginalUrl = '';
-        let viewerStealthMode = true;
 
         function openEmbeddedViewer(method, proxyUrl, originalUrl) {
             currentMethod = method;
+            currentEmbedUrl = proxyUrl;
             currentOriginalUrl = originalUrl;
-            viewerStealthMode = stealthMode;
-            
-            // Enhance URL with stealth parameters if enabled
-            if (stealthMode && method.stealth !== false) {
-                currentEmbedUrl = createStealthIframe(proxyUrl, method);
-            } else {
-                currentEmbedUrl = proxyUrl;
-            }
             
             // Update viewer info
             elements.viewerMethodIcon.textContent = method.icon;
             elements.viewerMethodName.textContent = method.name;
             elements.viewerUrl.textContent = ` | ${originalUrl}`;
-            
-            if (method.stealth || stealthMode) {
-                elements.viewerStealthBadge.style.display = 'inline-block';
-                elements.viewerLoadingDetails.textContent = 'Initializing stealth bypass...';
-            } else {
-                elements.viewerStealthBadge.style.display = 'none';
-                elements.viewerLoadingDetails.textContent = 'Loading content...';
-            }
             
             // Show loading
             elements.viewerLoading.style.display = 'block';
@@ -1533,60 +1167,26 @@
             elements.embedViewer.style.display = 'flex';
             document.body.style.overflow = 'hidden';
             
-            // Load the URL after a short delay
+            // Load the URL
             setTimeout(() => {
-                elements.viewerFrame.src = currentEmbedUrl;
+                elements.viewerFrame.src = proxyUrl;
                 
                 // When frame loads, hide loading
                 elements.viewerFrame.onload = () => {
                     elements.viewerLoading.style.display = 'none';
                     elements.viewerFrame.style.display = 'block';
-                    log(`✅ Loaded ${method.name} ${stealthMode ? 'with stealth' : ''}`, 'success');
+                    log(`✅ Loaded ${method.name}`, 'success');
                 };
                 
                 elements.viewerFrame.onerror = () => {
                     elements.viewerLoading.innerHTML = `
                         <div class="spinner"></div>
-                        <p>Stealth bypass in progress...</p>
-                        <p style="font-size:0.9rem;color:#f59e0b;">Trying alternative method...</p>
+                        <p>Failed to load. Trying alternative...</p>
+                        <p style="font-size:0.9rem;color:#f59e0b;">Some sites block iframes</p>
                     `;
-                    log(`⚠️ ${method.name} detected, trying fallback`, 'warning');
-                    
-                    // Try fallback
-                    setTimeout(() => {
-                        const fallbackUrl = method.execute(originalUrl)[1];
-                        if (fallbackUrl) {
-                            elements.viewerFrame.src = fallbackUrl;
-                        }
-                    }, 1500);
+                    log(`⚠️ ${method.name} may be blocking iframes`, 'warning');
                 };
-            }, stealthMode ? 800 : 100);
-        }
-
-        function toggleViewerStealth() {
-            viewerStealthMode = !viewerStealthMode;
-            
-            if (viewerStealthMode) {
-                elements.viewerStealthBtn.style.background = '#10b981';
-                elements.viewerStealthBtn.title = 'Stealth Mode: ON';
-                log('Stealth mode enabled in viewer', 'info');
-            } else {
-                elements.viewerStealthBtn.style.background = '#475569';
-                elements.viewerStealthBtn.title = 'Stealth Mode: OFF';
-                log('Stealth mode disabled in viewer', 'warning');
-            }
-            
-            // Reload with new stealth setting
-            if (currentEmbedUrl && currentMethod) {
-                elements.viewerLoading.style.display = 'block';
-                elements.viewerFrame.style.display = 'none';
-                
-                if (viewerStealthMode) {
-                    elements.viewerFrame.src = createStealthIframe(currentEmbedUrl, currentMethod);
-                } else {
-                    elements.viewerFrame.src = currentEmbedUrl;
-                }
-            }
+            }, 100);
         }
 
         function closeEmbeddedViewer() {
@@ -1596,7 +1196,6 @@
             currentEmbedUrl = '';
             currentMethod = null;
             currentOriginalUrl = '';
-            viewerStealthMode = stealthMode;
         }
 
         function setupEmbeddedViewer() {
@@ -1613,12 +1212,7 @@
                 if (currentEmbedUrl) {
                     elements.viewerLoading.style.display = 'block';
                     elements.viewerFrame.style.display = 'none';
-                    
-                    // Add random cache buster on reload
-                    const reloadUrl = new URL(currentEmbedUrl);
-                    reloadUrl.searchParams.set('_reload', Date.now());
-                    elements.viewerFrame.src = reloadUrl.toString();
-                    
+                    elements.viewerFrame.src = currentEmbedUrl;
                     log(`↻ Reloading ${currentMethod.name}`, 'info');
                 }
             });
@@ -1632,9 +1226,6 @@
                     }
                 }
             });
-            
-            // Stealth toggle button
-            elements.viewerStealthBtn.addEventListener('click', toggleViewerStealth);
             
             // Escape key to close viewer
             document.addEventListener('keydown', (e) => {
@@ -1677,7 +1268,7 @@
                 </div>
             `;
             
-            // Test direct access with stealth headers if enabled
+            // Test direct access
             const canAccess = await testNetworkAccess(url);
             
             // Show result
@@ -1695,7 +1286,7 @@
                 
                 document.getElementById('useDirectBtn').addEventListener('click', () => {
                     openEmbeddedViewer(
-                        { name: 'Direct Access', icon: '🎯', stealth: false },
+                        { name: 'Direct Access', icon: '🎯' },
                         url,
                         url
                     );
@@ -1711,7 +1302,7 @@
                         <span style="font-size:2rem">❌</span>
                         <div>
                             <h3 style="margin:0;color:#ef4444;">DIRECT ACCESS BLOCKED</h3>
-                            <p style="margin:5px 0 0 0;color:#94a3b8;">Site is blocked. Try stealth methods.</p>
+                            <p style="margin:5px 0 0 0;color:#94a3b8;">Site is blocked. Try proxy methods.</p>
                         </div>
                     </div>
                 `;
@@ -1729,31 +1320,28 @@
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 3000);
                 
-                // Add stealth headers if enabled
-                const headers = {};
-                if (stealthMode) {
-                    headers['User-Agent'] = getRandomUserAgent();
-                    headers['Referer'] = getReferrer();
-                }
-                
-                fetch(url, { 
-                    method: 'HEAD',
-                    mode: 'no-cors',
-                    cache: 'no-store',
-                    headers: headers,
-                    signal: controller.signal
-                }).then(() => {
+                // Try to fetch the site
+                const img = new Image();
+                img.onload = () => {
                     clearTimeout(timeoutId);
                     resolve(true);
-                }).catch(() => {
+                };
+                img.onerror = () => {
                     clearTimeout(timeoutId);
                     resolve(false);
-                });
+                };
+                img.src = url + '?test=' + Date.now();
+                
+                // Fallback timeout
+                setTimeout(() => {
+                    clearTimeout(timeoutId);
+                    resolve(false);
+                }, 3000);
             });
         }
 
-        // ============ ADVANCED METHOD HANDLING ============
-        function setupAdvancedMethods() {
+        // ============ MANUAL METHOD BUTTONS ============
+        function setupManualMethods() {
             document.querySelectorAll('.method-card').forEach(card => {
                 card.addEventListener('click', () => {
                     const methodId = card.dataset.method;
@@ -1772,43 +1360,23 @@
                         return;
                     }
                     
-                    log(`Using ${method.name}${stealthMode ? ' (stealth)' : ''}...`, 'info');
+                    log(`Using ${method.name}...`, 'info');
                     
                     // Add visual feedback
                     card.style.transform = 'scale(0.95)';
-                    card.style.borderColor = stealthMode ? '#10b981' : '#f59e0b';
+                    card.style.borderColor = '#f59e0b';
                     setTimeout(() => {
                         card.style.transform = '';
                         card.style.borderColor = '';
                     }, 300);
                     
-                    // Get enhanced proxy URL
-                    const proxyUrls = method.execute(url, currentOptions);
+                    // Get proxy URL
+                    const proxyUrls = method.execute(url);
                     if (proxyUrls && proxyUrls[0]) {
                         openEmbeddedViewer(method, proxyUrls[0], url);
                     }
                 });
             });
-        }
-
-        // ============ STEALTH MODE TOGGLE ============
-        function toggleStealthMode() {
-            stealthMode = !stealthMode;
-            currentOptions.stealthMode = stealthMode;
-            
-            if (stealthMode) {
-                elements.stealthBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
-                elements.stealthBtn.textContent = '🕶️ STEALTH ON';
-                elements.enableStealth.checked = true;
-                log('Stealth mode ENABLED', 'success');
-            } else {
-                elements.stealthBtn.style.background = 'linear-gradient(135deg, #8b5cf6, #7c3aed)';
-                elements.stealthBtn.textContent = '👁️ STEALTH OFF';
-                elements.enableStealth.checked = false;
-                log('Stealth mode DISABLED', 'warning');
-            }
-            
-            updateStats();
         }
 
         // ============ AUTO SCAN ============
@@ -1843,14 +1411,14 @@
             elements.autoBtn.textContent = '⏳ SCANNING...';
             elements.autoBtn.className = 'main-btn stop';
             
-            log(`🚀 Starting AUTO SCAN ${stealthMode ? 'with STEALTH' : ''} for: ${url}`, 'info');
+            log(`🚀 Starting AUTO SCAN for: ${url}`, 'info');
             
             // Test direct access first
             const directWorks = await testDirectAccess();
             
             if (directWorks) {
                 // If direct works, ask if they want to continue
-                if (!confirm('Direct access works! Continue testing advanced methods?')) {
+                if (!confirm('Direct access works! Continue testing proxy methods?')) {
                     stopScan();
                     return;
                 }
@@ -1873,21 +1441,18 @@
                 // Create testing card
                 addResultCard(method, 'testing', null);
                 
-                // Test the method with current options
+                // Test the method
                 try {
-                    const proxyUrls = method.execute(url, currentOptions);
+                    const proxyUrls = method.execute(url);
                     const testUrl = proxyUrls && proxyUrls[0];
                     
                     if (testUrl) {
-                        // Enhanced test with stealth if enabled
-                        const enhancedUrl = stealthMode ? createStealthIframe(testUrl, method) : testUrl;
-                        const result = await testMethod(enhancedUrl);
+                        const result = await testMethod(testUrl);
                         
                         scanResults[methodId] = {
                             method: method,
                             working: result,
-                            url: testUrl,
-                            enhancedUrl: enhancedUrl
+                            url: testUrl
                         };
                         
                         stats.tested++;
@@ -1895,7 +1460,7 @@
                         if (result) {
                             stats.working++;
                             updateResultCard(methodId, 'working', testUrl);
-                            log(`✅ ${method.name} works ${stealthMode ? '(stealth)' : ''}`, 'success');
+                            log(`✅ ${method.name} works`, 'success');
                         } else {
                             updateResultCard(methodId, 'failed', null);
                             log(`❌ ${method.name} failed`, 'error');
@@ -1923,7 +1488,7 @@
 
         async function testMethod(url) {
             return new Promise((resolve) => {
-                // Create hidden iframe for testing
+                // Create a test iframe
                 const testFrame = document.createElement('iframe');
                 testFrame.style.cssText = 'position:fixed;top:-1000px;left:-1000px;width:1px;height:1px;opacity:0;pointer-events:none;';
                 document.body.appendChild(testFrame);
@@ -1932,6 +1497,7 @@
                 
                 setTimeout(() => {
                     try {
+                        // Check if iframe loaded successfully
                         const worked = testFrame.contentWindow && testFrame.contentWindow.location.href !== 'about:blank';
                         document.body.removeChild(testFrame);
                         resolve(worked);
@@ -1941,16 +1507,13 @@
                         } catch {}
                         resolve(false);
                     }
-                }, stealthMode ? 2500 : 2000);
+                }, 2000);
             });
         }
 
         function addResultCard(method, status, url) {
             const card = document.createElement('div');
             card.className = `result-card ${status}`;
-            if (method.stealth) card.classList.add('stealth');
-            if (method.advanced) card.classList.add('advanced');
-            
             card.id = `card-${method.name.replace(/\s+/g, '-').toLowerCase()}`;
             
             const statusText = status === 'testing' ? 'TESTING...' : 
@@ -1961,11 +1524,7 @@
                     <div style="display:flex;align-items:center;gap:10px;">
                         <span style="font-size:1.2rem">${method.icon}</span>
                         <div>
-                            <div style="font-weight:bold;display:flex;align-items:center;">
-                                ${method.name}
-                                ${method.stealth ? '<span class="method-tag tag-stealth">STEALTH</span>' : ''}
-                                ${method.advanced ? '<span class="method-tag tag-advanced">ADV</span>' : ''}
-                            </div>
+                            <div style="font-weight:bold;">${method.name}</div>
                             <div style="font-size:0.9rem;color:#94a3b8;">${statusText}</div>
                         </div>
                     </div>
@@ -2014,8 +1573,6 @@
             if (!card) return;
             
             card.className = `result-card ${status}`;
-            if (method.stealth) card.classList.add('stealth');
-            if (method.advanced) card.classList.add('advanced');
             
             const statusText = status === 'working' ? 'WORKS' : 'FAILED';
             
@@ -2024,11 +1581,7 @@
                     <div style="display:flex;align-items:center;gap:10px;">
                         <span style="font-size:1.2rem">${method.icon}</span>
                         <div>
-                            <div style="font-weight:bold;display:flex;align-items:center;">
-                                ${method.name}
-                                ${method.stealth ? '<span class="method-tag tag-stealth">STEALTH</span>' : ''}
-                                ${method.advanced ? '<span class="method-tag tag-advanced">ADV</span>' : ''}
-                            </div>
+                            <div style="font-weight:bold;">${method.name}</div>
                             <div style="font-size:0.9rem;color:#94a3b8;">${statusText}</div>
                         </div>
                     </div>
@@ -2077,7 +1630,7 @@
                 log('Scan complete: Direct access available', 'success');
             } else if (worked > 0) {
                 elements.progressText.textContent = `✅ ${worked} methods work`;
-                log(`Scan complete: ${worked} methods work ${stealthMode ? 'with stealth' : ''}`, 'success');
+                log(`Scan complete: ${worked} methods work`, 'success');
             } else {
                 elements.progressText.textContent = '❌ No methods work';
                 log('Scan complete: No methods work', 'error');
@@ -2108,7 +1661,7 @@
                 return;
             }
             
-            log('Testing ALL advanced methods...', 'info');
+            log('Testing ALL methods...', 'info');
             elements.openAllBtn.disabled = true;
             
             let count = 0;
@@ -2118,10 +1671,10 @@
             methodIds.forEach((methodId, index) => {
                 setTimeout(() => {
                     const method = ALL_METHODS[methodId];
-                    const proxyUrls = method.execute(url, currentOptions);
+                    const proxyUrls = method.execute(url);
                     
                     if (proxyUrls && proxyUrls[0]) {
-                        // Quick test with hidden iframe
+                        // Quick test
                         const testFrame = document.createElement('iframe');
                         testFrame.style.display = 'none';
                         document.body.appendChild(testFrame);
@@ -2131,83 +1684,57 @@
                         
                         setTimeout(() => {
                             try {
-                                if (testFrame.contentWindow.location.href !== 'about:blank') {
+                                if (testFrame.contentWindow && testFrame.contentWindow.location.href !== 'about:blank') {
                                     working++;
-                                    log(`✓ ${method.name} works`, 'success');
+                                    log(`✅ ${method.name} works`, 'success');
                                 } else {
-                                    log(`✗ ${method.name} failed`, 'error');
+                                    log(`❌ ${method.name} failed`, 'error');
                                 }
                             } catch(e) {
-                                log(`? ${method.name} - Could not test`, 'warning');
+                                log(`⚠️ ${method.name} - Could not test`, 'warning');
                             }
                             
                             if (testFrame.parentNode) {
                                 document.body.removeChild(testFrame);
                             }
-                        }, 1000);
+                        }, 1500);
                     }
                     
                     // Update progress
                     const progress = ((index + 1) / methodIds.length) * 100;
                     elements.progressFill.style.width = progress + '%';
-                    elements.progressText.textContent = `${Math.round(progress)}% - Quick testing...`;
+                    elements.progressText.textContent = `${Math.round(progress)}% - Testing...`;
                     
                     // Complete
                     if (index === methodIds.length - 1) {
                         setTimeout(() => {
                             elements.openAllBtn.disabled = false;
                             elements.progressText.textContent = 'Complete';
-                            log(`✅ Quick test: ${working}/${count} methods work`, 'success');
+                            log(`✅ Tested ${count} methods: ${working} work`, 'success');
                             
-                            const resultsHTML = `
-                                <div style="background:rgba(16,185,129,0.1);padding:15px;border-radius:10px;margin-top:15px;border:1px solid rgba(16,185,129,0.3);">
-                                    <h4 style="color:#10b981;margin:0 0 10px 0;">Quick Test Results</h4>
-                                    <p style="margin:5px 0;">✅ ${working} methods work</p>
-                                    <p style="margin:5px 0;">❌ ${count - working} methods failed</p>
-                                    <p style="margin:5px 0;">🎯 ${methodIds.length - count} methods not tested</p>
-                                    ${working > 0 ? '<p style="margin:10px 0 0 0;color:#94a3b8;">Click on any method to use it in the viewer</p>' : ''}
+                            // Show results
+                            elements.directResult.style.display = 'block';
+                            elements.directResult.innerHTML = `
+                                <div style="text-align:center;padding:20px;">
+                                    <h3 style="color:#60a5fa;margin-bottom:15px;">📊 Test Results</h3>
+                                    <div style="display:flex;justify-content:center;gap:20px;margin:20px 0;">
+                                        <div style="text-align:center;">
+                                            <div style="font-size:2.5rem;color:#10b981;">${working}</div>
+                                            <div style="color:#94a3b8;">Working</div>
+                                        </div>
+                                        <div style="text-align:center;">
+                                            <div style="font-size:2.5rem;color:#ef4444;">${count - working}</div>
+                                            <div style="color:#94a3b8;">Failed</div>
+                                        </div>
+                                    </div>
+                                    <p style="color:#94a3b8;">${working} out of ${count} methods work</p>
                                 </div>
                             `;
                             
-                            // Show results in direct result area
-                            elements.directResult.style.display = 'block';
-                            elements.directResult.innerHTML = resultsHTML;
-                            
-                        }, 1500);
+                        }, 2000);
                     }
-                }, index * 500);
+                }, index * 300);
             });
-        }
-
-        // ============ OPTIONS HANDLING ============
-        function setupOptions() {
-            // Stealth mode toggle
-            elements.enableStealth.addEventListener('change', function() {
-                stealthMode = this.checked;
-                currentOptions.stealthMode = stealthMode;
-                toggleStealthMode();
-            });
-            
-            // Randomize headers toggle
-            elements.randomizeHeaders.addEventListener('change', function() {
-                currentOptions.randomizeHeaders = this.checked;
-                log(`Randomize headers: ${this.checked ? 'ON' : 'OFF'}`, 'info');
-            });
-            
-            // User agent select
-            elements.userAgentSelect.addEventListener('change', function() {
-                currentOptions.userAgent = this.value;
-                log(`User agent set to: ${this.value}`, 'info');
-            });
-            
-            // Referrer select
-            elements.referrerSelect.addEventListener('change', function() {
-                currentOptions.referrer = this.value;
-                log(`Referrer set to: ${this.value}`, 'info');
-            });
-            
-            // Stealth mode button
-            elements.stealthBtn.addEventListener('click', toggleStealthMode);
         }
 
         // ============ INITIALIZATION ============
@@ -2215,11 +1742,8 @@
             // Setup embedded viewer
             setupEmbeddedViewer();
             
-            // Setup options
-            setupOptions();
-            
-            // Setup advanced methods
-            setupAdvancedMethods();
+            // Setup manual method buttons
+            setupManualMethods();
             
             // Event listeners
             elements.autoBtn.addEventListener('click', startAutoScan);
@@ -2246,8 +1770,8 @@
             updateStats();
             
             // Welcome
-            log('Advanced Portal loaded with stealth mode', 'info');
-            log('16 enhanced bypass methods available', 'success');
+            log('Complete Portal loaded', 'info');
+            log('16 working methods available', 'success');
             
             // Auto-focus
             elements.urlInput.focus();
